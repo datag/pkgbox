@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
 set -e  #x
+set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
+
+# trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
+# http://fvue.nl/wiki/Bash:_Error_handling
+trap pkgbox_trap 1 2 3 15 ERR
+function pkgbox_trap()
+{
+	pkgbox_die "TRAP" ${10:-$?}
+}
 
 # absolute location of script
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
@@ -10,6 +19,8 @@ function pkgbox_usage()
 {
 	echo "Usage: ${0##*/} <TODO>"
 }
+
+
 
 # print message (stderr) and die
 # @param string... msg
@@ -60,6 +71,9 @@ fi
 # include basic libs
 pkgbox_include "include/basic.sh"
 
-pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
-pkgbox_is_function foobar || pkgbox_die "foobar is no function"
+#pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
+#pkgbox_is_function foobar || pkgbox_die "foobar is no function"
+
+#false
+#true
 
