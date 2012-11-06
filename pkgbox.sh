@@ -16,17 +16,12 @@ function pkgbox_usage()
 # @param [int=1] exitcode
 function pkgbox_die()
 {
-	local exitcode=1 msg=
-	if [[ $# == 0 ]]; then
-		exit $exitcode
-	elif [[ $# == 1 ]]; then
-		msg="$1"
-	else
-		msg="${@:1:$# - 1}"
-		exitcode="${@:$#}"
-	fi
+	local exitcode=1 msg="$@"
 	
-	echo "[pkgbox die] $msg" >&2
+	# use last argument as exit code if it is an integer
+	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
+	
+	echo "[pkgbox die] ($exitcode) $msg" >&2
 	exit $exitcode
 }
 
@@ -39,17 +34,27 @@ function pkgbox_include()
 }
 
 # tests if function exists
-# @return int non-zero on error
+# @param string function name
+# @return int non-zero if function does not exist
 function pkgbox_is_function()
 {
 	declare -F "$1" >/dev/null
+}
+
+# tests if value is an integer (may be negative)
+# @param string value
+# @return int non-zero if value is not an integer
+function pkgbox_is_int()
+{
+	echo $1 | egrep '^-?[0-9]+$' >/dev/null
 }
 
 ################################################################################
 
 # check for valid invocation
 if [[ $# < 1 ]]; then
-	pkgbox_die "$(pkgbox_usage)" 1
+	pkgbox_usage >&2
+	exit 1
 fi
 
 # include basic libs
