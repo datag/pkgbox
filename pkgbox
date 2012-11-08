@@ -125,7 +125,10 @@ pkgbox_echo "$(pkgbox_sgr fg=red)Bash$(pkgbox_sgr) is a " \
 	"typically $(pkgbox_sgr underline)run$(pkgbox_sgr) in a "\
 	"$(pkgbox_sgr reverse)text window$(pkgbox_sgr), allowing "\
 	"$(pkgbox_sgr bg=red)t$(pkgbox_sgr bg=green)h$(pkgbox_sgr bg=blue)e$(pkgbox_sgr) " \
-	 "$(echo -n -e "\n\t")user to type commands which cause $(pkgbox_sgr fg=yellow)actions."
+	"$(echo -n -e "\n\t")user to type commands which cause $(pkgbox_sgr fg=yellow)actions."
+
+pkgbox_echo -n -e "\n\nHello\t$(pkgbox_sgr bold)dear$(pkgbox_sgr) friend: $(pkgbox_sgr reverse)"
+
 echo "A normal echo"
 
 # show variables defined by this script
