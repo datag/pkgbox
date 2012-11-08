@@ -21,7 +21,7 @@ function pkgbox_sgr()
 			"magenta") c=5 ;;
 			"cyan")    c=6 ;;
 			"white")   c=7 ;;
-			*)         c=0;  # black and others
+			*)         c=0 ;;  # black and others
 			esac
 			m="${m}${c}"
 			;;
