@@ -46,6 +46,8 @@ function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
 	[[ -r $file && -f $file ]] || pkgbox_die "Include file '$1' not found" 2
+	
+	# FIXME: "set -e" and "trap" on working on sourced script?
 	source "$file"
 }
 
@@ -118,8 +120,8 @@ pkgbox_include "include/basic.sh"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
 #echo ${PKGBOX_OPTS[test]}
 
-pkgbox_echo foo bar :blue: "what  the  hell" :red: foo\ bar
-echo teststring
+pkgbox_echo :yellow: foo bar :blue: "what  the  hell" :red: foo\ bar :reset: another :green:
+echo "normal echo"
 
 # show variables defined by this script
 #(grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v ^__VARS=) | less

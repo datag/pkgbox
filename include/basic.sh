@@ -1,9 +1,9 @@
-
+# http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+# http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 function pkgbox_echo()
 {
-	local magic=':' esc='\e[' term='m' arg color
+	local magic=':' csi='\e[' term='m' arg color
 	
-	# http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 	declare -A colors=( \
 		[black]="0;30" [bright_black]="1;30" \
 		[red]="0;31"  [bright_red]="1;31" \
@@ -16,16 +16,19 @@ function pkgbox_echo()
 		[reset]="0" \
 	)
 	
+	declare i=0
+	
 	for arg in "$@"; do
-		color="${arg:1:${#arg}-2}"  # the construct "${arg:1:-1}" is bash >= 4.2
+		color="${arg:1:${#arg}-2}"  # NOTE: the construct "${arg:1:-1}" is bash >= 4.2
 		
-		if [[ ${colors[$color]} ]]; then
-			echo -n -e ${esc}${colors[$color]}${term}
+		if [[ $arg == ${magic}*${magic} && ${#color} > 0 && ${colors[$color]} ]]; then
+			echo -n -e ${csi}${colors[$color]}${term}
 		else
+			(( i++ > 0  )) && echo -n " "
 			echo -n "$arg"
 		fi
 	done
 	
-	echo -e ${esc}${colors[reset]}${term} # reset and linebreak
+	echo -e ${csi}${colors[reset]}${term}  # reset SGR and break line
 }
 
