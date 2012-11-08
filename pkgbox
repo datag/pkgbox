@@ -65,6 +65,7 @@ function pkgbox_is_int()
 ################################################################################
 
 declare -i PKGBOX_VERBOSITY=0
+declare -A PKGBOX_OPTS
 
 while getopts ":vD:h" opt; do
 	case $opt in
@@ -72,8 +73,9 @@ while getopts ":vD:h" opt; do
 	v)
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
 		;;
+	# defines a special config variable... just a test for now
 	D)
-		echo "TEST: option -c with $OPTARG"
+		PKGBOX_OPTS[${OPTARG%%=*}]="${OPTARG#*=}"
 		;;
 	h)
 		pkgbox_usage >&2
@@ -110,4 +112,6 @@ pkgbox_include "include/basic.sh"
 
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
+#echo ${PKGBOX_OPTS[test]}
+
 
