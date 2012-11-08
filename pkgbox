@@ -7,6 +7,9 @@ set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 # http://fvue.nl/wiki/Bash:_Error_handling
 trap pkgbox_trap 1 2 3 15 ERR
 
+# remember variables on script start
+__VARS="$(set -o posix; set)"
+
 # absolute location of script
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -90,9 +93,10 @@ while getopts ":vD:h" opt; do
 	esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND-1))		# shift options
+unset opt OPTIND		# unset variables used for option parsing
 
-# check for valid invocation
+# the action and script are required arguments
 if [[ $# < 2 ]]; then
 	pkgbox_usage >&2
 	exit 1
@@ -103,10 +107,10 @@ declare -r PKGBOX_SCRIPT="$2"
 
 ################################################################################
 
-(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
-
 # include basic libs
 pkgbox_include "include/basic.sh"
+
+(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
 
 ################################################################################
 
@@ -114,4 +118,9 @@ pkgbox_include "include/basic.sh"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
 #echo ${PKGBOX_OPTS[test]}
 
+pkgbox_echo foo bar :blue: "what  the  hell" :red: foo\ bar
+echo teststring
+
+# show variables defined by this script
+#(grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v ^__VARS=) | less
 
