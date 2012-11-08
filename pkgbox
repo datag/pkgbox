@@ -6,21 +6,17 @@ set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
 # http://fvue.nl/wiki/Bash:_Error_handling
 trap pkgbox_trap 1 2 3 15 ERR
-function pkgbox_trap()
-{
-	pkgbox_die "TRAP" ${10:-$?}
-}
 
 # absolute location of script
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
+################################################################################
+
 # print usage (stdout)
 function pkgbox_usage()
 {
-	echo "Usage: ${0##*/} <TODO>"
+	echo "Usage: ${0##*/} [OPTION]... <ACTION> <PKGFILE>"
 }
-
-
 
 # print message (stderr) and die
 # @param string... msg
@@ -34,6 +30,12 @@ function pkgbox_die()
 	
 	echo "[pkgbox die] ($exitcode) $msg" >&2
 	exit $exitcode
+}
+
+# trap handler
+function pkgbox_trap()
+{
+	pkgbox_die $FUNCNAME ${10:-$?}
 }
 
 # includes functionality
@@ -62,18 +64,50 @@ function pkgbox_is_int()
 
 ################################################################################
 
+declare -i PKGBOX_VERBOSITY=0
+
+while getopts ":vD:h" opt; do
+	case $opt in
+	# be verbose; each -v adds to the verbosity level
+	v)
+		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
+		;;
+	D)
+		echo "TEST: option -c with $OPTARG"
+		;;
+	h)
+		pkgbox_usage >&2
+		exit 0
+		;;
+	\?)
+		pkgbox_die "Invalid option: -$OPTARG"
+		;;
+	:)
+		pkgbox_die "Option -$OPTARG requires an argument"
+		;;
+	esac
+done
+
+shift $((OPTIND-1))
+
 # check for valid invocation
-if [[ $# < 1 ]]; then
+if [[ $# < 2 ]]; then
 	pkgbox_usage >&2
 	exit 1
 fi
 
+declare -r PKGBOX_ACTION="$1"
+declare -r PKGBOX_SCRIPT="$2"
+
+################################################################################
+
+(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
+
 # include basic libs
 pkgbox_include "include/basic.sh"
 
+################################################################################
+
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
-
-#false
-#true
 
