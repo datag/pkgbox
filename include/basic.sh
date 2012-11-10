@@ -1,3 +1,48 @@
+# Prints usage (stdout)
+function pkgbox_usage()
+{
+	pkgbox_echo "Usage: ${0##*/} [OPTION]... <ACTION> <PKGFILE>"
+}
+
+# Prints message (stderr) and die
+# @param string... msg
+# @param [int=1] exitcode
+function pkgbox_die()
+{
+	local exitcode=1 msg="$@"
+	
+	# use last argument as exit code if it is an integer
+	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
+	
+	pkgbox_echo "$(_sgr fg=red reverse)[pkgbox die]$(_sgr) $(_sgr bold)($exitcode)$(_sgr) $msg" >&2
+	exit $exitcode
+}
+
+# Includes functionality
+function pkgbox_include()
+{
+	local file="$PKGBOX_PATH/$1"
+	[[ -r $file && -f $file ]] || pkgbox_die "Include file '$1' not found" 2
+	
+	source "$file"
+}
+
+# Tests whether function exists
+# @param string function name
+# @return int non-zero if function does not exist
+function pkgbox_is_function()
+{
+	declare -F "$1" >/dev/null
+}
+
+# Tests whether value is an integer (may be negative)
+# @param string value
+# @return int non-zero if value is not an integer
+function pkgbox_is_int()
+{
+	echo $1 | egrep '^-?[0-9]+$' >/dev/null
+}
+
 # Set SGR (Select Graphic Rendition) parameters
 #
 # If called without parameters it will reset SGR
