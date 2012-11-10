@@ -10,7 +10,7 @@ __VARS="$(set -o posix; set)"
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 # include basic lib
-source "include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2; exit 1; }
+source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2; exit 1; }
 
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
 # http://fvue.nl/wiki/Bash:_Error_handling
@@ -54,10 +54,15 @@ if [[ $# < 2 ]]; then
 fi
 
 declare -r PKGBOX_ACTION="$1"
-declare -r PKGBOX_SCRIPT="$2"
+declare -r PKGBOX_PACKAGE="$2"
 
 ################################################################################
 
+[[ ${#PKGBOX_OPTS[@]} > 0 ]] && pkgbox_msg debug "Using options: ${!PKGBOX_OPTS[@]}"
+
+pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
+
+################################################################################
 # pkgbox directories
 declare -A PKGBOX_DIR
 
@@ -66,24 +71,34 @@ PKGBOX_DIR[tmp]="${PKGBOX_DIR[base]}/tmp"
 PKGBOX_DIR[download]="${PKGBOX_DIR[base]}/download"
 
 for d in "${PKGBOX_DIR[@]}"; do
-	[[ ! -d "$d" ]] && { mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'" 2; }
+	if [[ ! -d "$d" ]]; then
+		pkgbox_msg info "Creating pkgbox directory '$d'"
+		mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'" 2
+	fi
 done
+
+################################################################################
+# other helpers
+
+pkgbox_include "include/utils.sh"
 
 ################################################################################
 
 #(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
+#pkgbox_include foo
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
 #echo ${PKGBOX_OPTS[test]}
 #pkgbox_echo -n -e "\nHello\t$(_sgr bold)dear$(_sgr) friend: welcome$(_sgr reverse)"
+#pkgbox_msg debug "This is debug string"
+#pkgbox_msg info "This is info string"
+#pkgbox_msg notice "This is notice string"
+#pkgbox_msg warn "This is warn string"
+#pkgbox_msg error "This is error string"
+#pkgbox_msg fatal "This is fatal string"
+#pkgbox_msg foobar "This is foobar string"
 
-pkgbox_msg debug "This is debug string"
-pkgbox_msg info "This is info string"
-pkgbox_msg notice "This is notice string"
-pkgbox_msg warn "This is warn string"
-pkgbox_msg error "This is error string"
-pkgbox_msg fatal "This is fatal string"
-pkgbox_msg foobar "This is foobar string"
+pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip'
 
 ################################################################################
 # debug: show variables defined by this script

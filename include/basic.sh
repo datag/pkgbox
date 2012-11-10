@@ -22,7 +22,7 @@ function pkgbox_die()
 function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
-	[[ -r $file && -f $file ]] || pkgbox_die "Include file '$1' not found" 2
+	[[ -r $file && -f $file ]] || pkgbox_die "$FUNCNAME: Include file '$1' not found" 2
 	
 	source "$file"
 }
@@ -32,7 +32,15 @@ function pkgbox_include()
 # @return int non-zero if function does not exist
 function pkgbox_is_function()
 {
-	declare -F "$1" >/dev/null
+	declare -F "$1" &>/dev/null
+}
+
+# Tests whether a command is available
+# @param string command name
+# @return int non-zero if command does not exist
+function pkgbox_is_command()
+{
+	type -P "$1" &>/dev/null
 }
 
 # Tests whether value is an integer (may be negative)
@@ -40,7 +48,7 @@ function pkgbox_is_function()
 # @return int non-zero if value is not an integer
 function pkgbox_is_int()
 {
-	echo $1 | egrep '^-?[0-9]+$' >/dev/null
+	echo $1 | egrep '^-?[0-9]+$' &>/dev/null
 }
 
 # Set SGR (Select Graphic Rendition) parameters
