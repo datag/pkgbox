@@ -7,7 +7,7 @@ set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 # http://fvue.nl/wiki/Bash:_Error_handling
 trap pkgbox_trap 1 2 3 15 ERR
 
-# remember variables on script start
+# remember initial variables on script start
 __VARS="$(set -o posix; set)"
 
 # absolute location of script
@@ -31,7 +31,7 @@ function pkgbox_die()
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
 	
-	echo "[pkgbox die] ($exitcode) $msg" >&2
+	pkgbox_echo "$(_sgr fg=red reverse)[pkgbox die]$(_sgr) $(_sgr bold)($exitcode)$(_sgr) $msg" >&2
 	exit $exitcode
 }
 
@@ -66,6 +66,9 @@ function pkgbox_is_int()
 {
 	echo $1 | egrep '^-?[0-9]+$' >/dev/null
 }
+
+# include basic libs
+pkgbox_include "include/basic.sh"
 
 ################################################################################
 
@@ -109,9 +112,6 @@ declare -r PKGBOX_SCRIPT="$2"
 
 ################################################################################
 
-# include basic libs
-pkgbox_include "include/basic.sh"
-
 (( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
 
 ################################################################################
@@ -119,18 +119,11 @@ pkgbox_include "include/basic.sh"
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
 #echo ${PKGBOX_OPTS[test]}
+#pkgbox_echo -n -e "\n\nHello\t$(_sgr bold)dear$(_sgr) friend: $(_sgr reverse)"
 
-pkgbox_echo "$(_sgr fg=red)Bash$(_sgr) is a" \
-	"$(_sgr fg=blue)command $(_sgr bold)processor$(_sgr)," \
-	"typically $(_sgr underline)run$(_sgr) in a" \
-	"$(_sgr reverse)text window$(_sgr), allowing" \
-	"$(_sgr bg=red)t$(_sgr bg=green)h$(_sgr bg=blue)e$(_sgr)" \
-	"$(echo -n -e "\n\t")user to type commands which cause $(_sgr fg=yellow)actions."
 
-pkgbox_echo -n -e "\n\nHello\t$(_sgr bold)dear$(_sgr) friend: $(_sgr reverse)"
 
-echo "A normal echo"
-
-# show variables defined by this script
+################################################################################
+# debug: show variables defined by this script
 #(grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v ^__VARS=) | less
 
