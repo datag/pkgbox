@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e  #x
+set -eE  #x
 set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
