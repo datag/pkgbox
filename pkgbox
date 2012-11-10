@@ -58,6 +58,19 @@ declare -r PKGBOX_SCRIPT="$2"
 
 ################################################################################
 
+# pkgbox directories
+declare -A PKGBOX_DIR
+
+PKGBOX_DIR[base]="$HOME/.pkgbox"
+PKGBOX_DIR[tmp]="${PKGBOX_DIR[base]}/tmp"
+PKGBOX_DIR[download]="${PKGBOX_DIR[base]}/download"
+
+for d in "${PKGBOX_DIR[@]}"; do
+	[[ ! -d "$d" ]] && { mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'" 2; }
+done
+
+################################################################################
+
 #(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
