@@ -5,7 +5,7 @@
 # @param [string...] Option
 # @url http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 # @url http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-function pkgbox_sgr()
+function _sgr()
 {
 	local csi='\e[' term='m' arg sgr opt m
 	
@@ -40,8 +40,9 @@ function pkgbox_sgr()
 	echo -n -e "${csi}${sgr}${term}"
 }
 
+# Echo function using _sgr() to reset SGR afterwards
 function pkgbox_echo()
 {
-	echo "$@$(pkgbox_sgr)"	# echo and reset SGR
+	echo "$@$(_sgr)"	# echo and reset SGR
 }
 
