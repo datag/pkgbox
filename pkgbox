@@ -14,7 +14,7 @@ source "include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2
 
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
 # http://fvue.nl/wiki/Bash:_Error_handling
-trap 'pkgbox_die $FUNCNAME ${10:-$?}' 1 2 3 15 ERR
+trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
 ################################################################################
 
@@ -23,7 +23,7 @@ declare -A PKGBOX_OPTS
 
 while getopts ":vD:h" opt; do
 	case $opt in
-	# be verbose; each -v adds to the verbosity level
+	# be verbose; each -v increases the verbosity level
 	v)
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
 		;;
@@ -58,10 +58,7 @@ declare -r PKGBOX_SCRIPT="$2"
 
 ################################################################################
 
-(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
-
-################################################################################
-
+#(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
 #pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
 #pkgbox_is_function foobar || pkgbox_die "foobar is no function"
 #echo ${PKGBOX_OPTS[test]}
