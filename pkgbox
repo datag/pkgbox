@@ -97,8 +97,7 @@ pkgbox_include "include/utils.sh"
 #pkgbox_msg error "This is error string"
 #pkgbox_msg fatal "This is fatal string"
 #pkgbox_msg foobar "This is foobar string"
-
-pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip'
+#pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip' 'jTimeSched-1.1.zip'
 
 ################################################################################
 # debug: show variables defined by this script
