@@ -14,7 +14,7 @@ function pkgbox_die()
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
 	
-	pkgbox_echo "$(_sgr fg=red reverse)[pkgbox die]$(_sgr) $(_sgr bold)($exitcode)$(_sgr) $msg" >&2
+	pkgbox_msg fatal "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
 	exit $exitcode
 }
 
@@ -89,5 +89,24 @@ function _sgr()
 function pkgbox_echo()
 {
 	echo "$@$(_sgr)"	# echo and reset SGR
+}
+
+# Message function using pkg_echo
+function pkgbox_msg()
+{
+	local t=$1 threshold=0 c=black
+	shift
+	
+	case $t in
+	"debug")  threshold=3; c=blue ;;
+	"info")   threshold=2; c=green ;;
+	"notice") threshold=1; c=cyan ;;
+	"warn")   c=yellow ;;
+	"error" | "fatal") c=red ;;
+	esac
+	
+	(( PKGBOX_VERBOSITY >= threshold )) && \
+		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" || \
+		true
 }
 

@@ -77,7 +77,13 @@ done
 #echo ${PKGBOX_OPTS[test]}
 #pkgbox_echo -n -e "\nHello\t$(_sgr bold)dear$(_sgr) friend: welcome$(_sgr reverse)"
 
-
+pkgbox_msg debug "This is debug string"
+pkgbox_msg info "This is info string"
+pkgbox_msg notice "This is notice string"
+pkgbox_msg warn "This is warn string"
+pkgbox_msg error "This is error string"
+pkgbox_msg fatal "This is fatal string"
+pkgbox_msg foobar "This is foobar string"
 
 ################################################################################
 # debug: show variables defined by this script
