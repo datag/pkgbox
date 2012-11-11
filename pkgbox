@@ -82,8 +82,9 @@ pkgbox_include "include/utils.sh"
 # testing
 
 if true; then
-	PKGBOX_VERBOSITY=3
+	#PKGBOX_VERBOSITY=3
 	pkgbox_include "include/_coretest.sh"
+	_run_tests
 	exit 0
 fi
 

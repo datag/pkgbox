@@ -5,8 +5,9 @@
 # @TODO: continue download
 function pkgbox_download()
 {
-	local rfile=$1 lname=$2 ldir=${3-${PKGBOX_DIR[download]}} verbosearg
-	local lfile="$ldir/$lname" errcode
+	local rfile=$1 lname=$2 ldir=${3-${PKGBOX_DIR[download]}}
+	local lfile="$ldir/$lname" cmd args errcode
+	declare -a args
 	
 	if [[ -f "$lfile" ]]; then
 		pkgbox_msg notice "Skipping download of file '${lname}' (already exists)"
@@ -16,25 +17,31 @@ function pkgbox_download()
 	fi
 	
 	if pkgbox_is_command curl; then
-		pkgbox_msg debug "$FUNCNAME: Using curl"
+		cmd=curl
 		
-		(( PKGBOX_VERBOSITY == 0 )) && verbosearg="--silent --show-error"
+		if (( PKGBOX_VERBOSITY == 0 )); then
+			args+=("--silent" "--show-error")
+		elif (( PKGBOX_VERBOSITY < 3 )); then
+			args+=("--progress-bar")
+		fi
 		
-		# -C - -J -O  (use subshell + cd for output directory "-P")
-		curl $verbosearg --output "$lfile" --location --fail "$rfile"
-		errcode=$?
+		args+=("--location" "--fail" "--output" "$lfile" "$rfile")
 	elif pkgbox_is_command wget; then
-		pkgbox_msg debug "$FUNCNAME: Using wget"
+		cmd=wget
 		
-		(( PKGBOX_VERBOSITY == 0 )) && verbosearg="-nv"
+		(( PKGBOX_VERBOSITY == 0 )) && args+=("-nv")
 		
 		# --continue -P "$ldir" [--trust-server-names|--content-disposition]
-		wget $verbosearg -O "$lfile" "$rfile"
-		errcode=$?
+		args+=("-O" "$lfile" "$rfile")
 	else
 		pkgbox_msg error "$FUNCNAME: No program for file download found"
 		return 2
 	fi
+	
+	pkgbox_msg debug "$FUNCNAME: $cmd ${args[@]}" # FIXME: output quotes
+	
+	$cmd "${args[@]}"
+	errcode=$?
 	
 	if [[ $errcode != 0 ]]; then
 		pkgbox_msg error "Download of '$lname' failed (code:$errcode)"
