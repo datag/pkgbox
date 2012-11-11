@@ -119,3 +119,11 @@ function pkgbox_msg()
 		true
 }
 
+# Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB
+# @param int Filesize in bytes
+# @test for i in $(seq 0 5); do	v=$((1024**i));	for j in $((v-1)) $((v)) $((v+1)) $((v*512)); do pkgbox_msg debug "pkgbox_byteshuman($j) = $(pkgbox_byteshuman $j)"; done; done
+function pkgbox_byteshuman()
+{
+	awk -v x="$1" 'BEGIN { if (x<1024) { print x " Byte(s)" } else { split("KiB MiB GiB TiB PiB", t); while (x>=1024) { x/=1024; ++i }; printf("%.2f %s", x, t[i]) } }'
+}
+
