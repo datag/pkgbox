@@ -135,3 +135,14 @@ function pkgbox_byteshuman()
 	awk -v x="$1" 'BEGIN { if (x<1024) { print x " Byte(s)" } else { split("KiB MiB GiB TiB PiB", t); while (x>=1024) { x/=1024; ++i }; printf("%.2f %s", x, t[i]) } }'
 }
 
+# Random string generator
+# @param [int=32] number of characters
+# @param [string] filter pattern
+# @test for i in '' 5 0; do	for j in '' 'a-c1-3'; do echo "pkgbox_rndstr($i, '$j') = $(pkgbox_rndstr "$i" "$j")"; done; done
+function pkgbox_rndstr()
+{
+	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c ${1:-32} || { \
+		[[ $? == 141 ]] && return 0 || pkgbox_msg error "Cannot generate random string"; \
+	}
+}
+
