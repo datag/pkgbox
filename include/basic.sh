@@ -9,12 +9,19 @@ function pkgbox_usage()
 # @param [int=1] exitcode
 function pkgbox_die()
 {
-	local exitcode=1 msg="$@"
+	local exitcode=1 msg="$@" frame=0 subcall
 	
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
 	
 	pkgbox_msg fatal "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
+	
+	# print stacktrace
+	while subcall="$(caller $frame)"; do
+		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $subcall" >&2
+		((++frame))
+	done
+	
 	exit $exitcode
 }
 
@@ -36,12 +43,12 @@ function pkgbox_is_function()
 	declare -F "$1" &>/dev/null
 }
 
-# Tests whether a command is available
+# Tests whether a command is available (tests for shell-builtin, function or alias, too)
 # @param string command name
 # @return int non-zero if command does not exist
 function pkgbox_is_command()
 {
-	type -P "$1" &>/dev/null
+	type -p "$1" &>/dev/null	# -P
 }
 
 # Tests whether value is an integer (may be negative)
@@ -115,6 +122,7 @@ function pkgbox_msg()
 	shift
 	
 	case $t in
+	"test")   threshold=3 c=white ;;
 	"debug")  threshold=3 c=blue ;;
 	"info")   threshold=2 c=green ;;
 	"notice") threshold=1 c=cyan ;;
@@ -141,7 +149,7 @@ function pkgbox_byteshuman()
 # @test for i in '' 5 0; do	for j in '' 'a-c1-3'; do echo "pkgbox_rndstr($i, '$j') = $(pkgbox_rndstr "$i" "$j")"; done; done
 function pkgbox_rndstr()
 {
-	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c ${1:-32} || { \
+	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c "${1:-32}" || { \
 		[[ $? == 141 ]] && return 0 || pkgbox_msg error "Cannot generate random string"; \
 	}
 }
