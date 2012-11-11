@@ -56,11 +56,7 @@ fi
 declare -r PKGBOX_ACTION="$1"
 declare -r PKGBOX_PACKAGE="$2"
 
-################################################################################
-
 [[ ${#PKGBOX_OPTS[@]} > 0 ]] && pkgbox_msg debug "Using options: ${!PKGBOX_OPTS[@]}"
-
-pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
 
 ################################################################################
 # pkgbox directories
@@ -83,14 +79,17 @@ done
 pkgbox_include "include/utils.sh"
 
 ################################################################################
+# testing
 
-#(( PKGBOX_VERBOSITY > 2 )) && echo "Verbosity is set to DEBUG (value: $PKGBOX_VERBOSITY)"
-#pkgbox_include foo
-#pkgbox_is_function pkgbox_usage || pkgbox_die "pkgbox_usage is no function"
-#pkgbox_is_function foobar || pkgbox_die "foobar is no function"
-#echo ${PKGBOX_OPTS[test]}
-#pkgbox_echo -n -e "\nHello\t$(_sgr bold)dear$(_sgr) friend: welcome$(_sgr reverse)"
-#pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip' 'jTimeSched-1.1.zip'
+if true; then
+	PKGBOX_VERBOSITY=3
+	pkgbox_include "include/_coretest.sh"
+	exit 0
+fi
+
+################################################################################
+
+pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
 
 ################################################################################
 # debug: show variables defined by this script

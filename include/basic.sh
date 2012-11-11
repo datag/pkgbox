@@ -30,9 +30,9 @@ function pkgbox_die()
 function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
-	[[ -r $file && -f $file ]] || { pkgbox_msg error "$FUNCNAME: Include not found or not readable"; return 2; }
+	[[ -r $file && -f $file ]] || { pkgbox_msg error "$FUNCNAME: Include '$file' not found or not readable"; return 2; }
 	
-	source "$file" || { pkgbox_msg error "$FUNCNAME: Include cannot be sourced"; return 2; }
+	source "$file" || { pkgbox_msg error "$FUNCNAME: Include '$file' cannot be sourced"; return 2; }
 }
 
 # Tests whether function exists
@@ -54,7 +54,6 @@ function pkgbox_is_command()
 # Tests whether value is an integer (may be negative)
 # @param string value
 # @return int non-zero if value is not an integer
-# @test for i in 1 12 0 -1 -12 0.0 1.0 -1.0 +3 1a a1 -a1 -1a '' ' '; do	echo "pkgbox_is_int($i) = $(pkgbox_is_int "$i" && echo yes || echo no)"; done
 function pkgbox_is_int()
 {
 	egrep '^-?[0-9]+$' <<<$1 &>/dev/null
@@ -113,16 +112,12 @@ function pkgbox_echo()
 # Message function with message-type as highlighted and left-padded prefix to the message (honors verbosity level and uses pkgbox_echo())
 # @param [string] type of message (debug|info|notice|warn|error|fatal)
 # @param [string]... message text
-# @test for i in debug info notice warn error fatal foobar '' ' '; do pkgbox_msg "$i" "pkgbox_msg($i)"; done
 function pkgbox_msg()
 {
-	(( $# )) || { pkgbox_msg warn "$FUNCNAME: Invalid invocation: No message type given"; return 0; }  # show warning but return no error
-	
 	local t=${1:-'??????'} threshold=0 c=black
 	shift
 	
 	case $t in
-	"test")   threshold=3 c=white ;;
 	"debug")  threshold=3 c=blue ;;
 	"info")   threshold=2 c=green ;;
 	"notice") threshold=1 c=cyan ;;
@@ -131,26 +126,28 @@ function pkgbox_msg()
 	esac
 	
 	(( PKGBOX_VERBOSITY >= threshold )) && \
-		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" || \
+		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" >&2 || \
 		true   # set function return value to 0
 }
 
 # Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB
 # @param int filesize in bytes
-# @test for i in $(seq 0 5); do	v=$((1024**i));	for j in $((v-1)) $((v)) $((v+1)) $((v*512)); do pkgbox_msg debug "pkgbox_byteshuman($j) = $(pkgbox_byteshuman $j)"; done; done
 function pkgbox_byteshuman()
 {
-	awk -v x="$1" 'BEGIN { if (x<1024) { print x " Byte(s)" } else { split("KiB MiB GiB TiB PiB", t); while (x>=1024) { x/=1024; ++i }; printf("%.2f %s", x, t[i]) } }'
+	local x=${1:-0}
+	pkgbox_is_int "$x" || return 2 && ((x >= 0)) || return 2
+	awk -v x="$x" 'BEGIN { if (x<1024) { printf("%d Byte(s)", x) } else { split("KiB MiB GiB TiB PiB", t); while (x>=1024) { x/=1024; ++i }; printf("%.2f %s", x, t[i]) } }'
 }
 
 # Random string generator
 # @param [int=32] number of characters
-# @param [string] filter pattern
-# @test for i in '' 5 0; do	for j in '' 'a-c1-3'; do echo "pkgbox_rndstr($i, '$j') = $(pkgbox_rndstr "$i" "$j")"; done; done
+# @param [string=alphanum] filter pattern
 function pkgbox_rndstr()
 {
-	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c "${1:-32}" || { \
-		[[ $? == 141 ]] && return 0 || pkgbox_msg error "Cannot generate random string"; \
-	}
+	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c "${1:-32}" 2>/dev/null
+	if [[ $? != 0 && $? != 141 ]]; then		# pipe closed is ok
+		pkgbox_msg error "Cannot generate random string"
+		return 2
+	fi
 }
 
