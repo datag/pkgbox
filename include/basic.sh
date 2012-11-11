@@ -46,9 +46,10 @@ function pkgbox_is_command()
 # Tests whether value is an integer (may be negative)
 # @param string value
 # @return int non-zero if value is not an integer
+# @test for i in 1 12 0 -1 -12 0.0 1.0 -1.0 +3 1a a1 -a1 -1a '' ' '; do	echo "is_int($i) = $(pkgbox_is_int "$i" && echo yes || echo no)"; done
 function pkgbox_is_int()
 {
-	echo $1 | egrep '^-?[0-9]+$' &>/dev/null
+	egrep '^-?[0-9]+$' <<<$1 &>/dev/null
 }
 
 # Set SGR (Select Graphic Rendition) parameters
