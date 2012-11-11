@@ -12,7 +12,7 @@ function pkgbox_download()
 		pkgbox_msg notice "Skipping download of file '${lname}' (already exists)"
 		return 0
 	else
-		pkgbox_msg info "$FUNCNAME: Downloading '$rfile'"
+		pkgbox_msg info "Downloading '$rfile'"
 	fi
 	
 	if pkgbox_is_command curly; then
@@ -30,7 +30,8 @@ function pkgbox_download()
 		# --continue -P "$ldir" [--trust-server-names|--content-disposition]
 		wget $verbosearg -O "$lfile" "$rfile"
 	else
-		pkgbox_die "$FUNCNAME: No program for file download found" 2
+		pkgbox_msg error "$FUNCNAME: No program for file download found"
+		return 2
 	fi
 }
 

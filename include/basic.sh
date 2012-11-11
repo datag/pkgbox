@@ -23,9 +23,9 @@ function pkgbox_die()
 function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
-	[[ -r $file && -f $file ]] || pkgbox_die "$FUNCNAME: Include file '$1' not found" 2
+	[[ -r $file && -f $file ]] || { pkgbox_msg error "$FUNCNAME: Include not found or not readable"; return 2; }
 	
-	source "$file"
+	source "$file" || { pkgbox_msg error "$FUNCNAME: Include cannot be sourced"; return 2; }
 }
 
 # Tests whether function exists
@@ -109,6 +109,8 @@ function pkgbox_echo()
 # @test for i in debug info notice warn error fatal foobar '' ' '; do pkgbox_msg "$i" "pkgbox_msg($i)"; done
 function pkgbox_msg()
 {
+	(( $# )) || { pkgbox_msg warn "$FUNCNAME: Invalid invocation: No message type given"; return 0; }  # show warning but return no error
+	
 	local t=${1:-'??????'} threshold=0 c=black
 	shift
 	
@@ -122,7 +124,7 @@ function pkgbox_msg()
 	
 	(( PKGBOX_VERBOSITY >= threshold )) && \
 		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" || \
-		true
+		true   # set function return value to 0
 }
 
 # Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB
