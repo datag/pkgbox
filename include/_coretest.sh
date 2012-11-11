@@ -18,7 +18,7 @@ function _t()
 	else
 		text="$(_sgr fg=green reverse)PASS"
 	fi
-	text="$text $(printf "exp:% 5s got:% 4s" $exp $code)$(_sgr)"
+	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
 	[[ -n "$out" ]] && out=" ($(_sgr bold)output:$(_sgr) $out)"
 	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
 	
@@ -113,7 +113,13 @@ for i in 0:'' 0:' ' 0:'a-c' ; do
 done
 
 ################################################################################
-#pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip' 'jTimeSched-1.1.zip'
+pkgbox_msg info "pkgbox_download()"
+
+_t !0 "pkgbox_download"
+_t !0 "pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip' 'jTimeSched-1.1.zip' '/proc'"
+_t !0 "pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/nope.zip' 'jTimeSched-1.1.zip' '/tmp'"
+_t  0 "pkgbox_download 'http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip' 'jTimeSched-1.1.zip' '/tmp'"
+_t  0 '[[ "$(md5sum /tmp/jTimeSched-1.1.zip | cut -f1 -d" ")" == "60fb7a599792e2a41982a3d23ef1813d" ]]'
 
 ################################################################################
 ################################################################################
