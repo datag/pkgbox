@@ -18,7 +18,8 @@ function pkgbox_die()
 	exit $exitcode
 }
 
-# Includes functionality
+# Includes functionality by sourcing a bash script
+# @param string pkgbox library relative to pkgbox installation
 function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
@@ -46,7 +47,7 @@ function pkgbox_is_command()
 # Tests whether value is an integer (may be negative)
 # @param string value
 # @return int non-zero if value is not an integer
-# @test for i in 1 12 0 -1 -12 0.0 1.0 -1.0 +3 1a a1 -a1 -1a '' ' '; do	echo "is_int($i) = $(pkgbox_is_int "$i" && echo yes || echo no)"; done
+# @test for i in 1 12 0 -1 -12 0.0 1.0 -1.0 +3 1a a1 -a1 -1a '' ' '; do	echo "pkgbox_is_int($i) = $(pkgbox_is_int "$i" && echo yes || echo no)"; done
 function pkgbox_is_int()
 {
 	egrep '^-?[0-9]+$' <<<$1 &>/dev/null
@@ -56,9 +57,10 @@ function pkgbox_is_int()
 #
 # If called without parameters it will reset SGR
 #
-# @param [string...] Option
+# @param [string...] option
 # @url http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 # @url http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+# @FIXME: "no-color"-mode and/or terminal
 function _sgr()
 {
 	local csi='\e[' term='m' arg sgr opt m
@@ -94,22 +96,26 @@ function _sgr()
 	echo -n -e "${csi}${sgr}${term}"
 }
 
-# Echo function using _sgr() to reset SGR afterwards
+# Echo function for text output (uses _sgr() to reset SGR afterwards)
+# @param [string...] text to output
 function pkgbox_echo()
 {
 	echo "$@$(_sgr)"	# echo and reset SGR
 }
 
-# Message function using pkg_echo
+# Message function with message-type as highlighted and left-padded prefix to the message (honors verbosity level and uses pkgbox_echo())
+# @param [string] type of message (debug|info|notice|warn|error|fatal)
+# @param [string]... message text
+# @test for i in debug info notice warn error fatal foobar '' ' '; do pkgbox_msg "$i" "pkgbox_msg($i)"; done
 function pkgbox_msg()
 {
-	local t=$1 threshold=0 c=black
+	local t=${1:-'??????'} threshold=0 c=black
 	shift
 	
 	case $t in
-	"debug")  threshold=3; c=blue ;;
-	"info")   threshold=2; c=green ;;
-	"notice") threshold=1; c=cyan ;;
+	"debug")  threshold=3 c=blue ;;
+	"info")   threshold=2 c=green ;;
+	"notice") threshold=1 c=cyan ;;
 	"warn")   c=yellow ;;
 	"error" | "fatal") c=red ;;
 	esac
@@ -120,7 +126,7 @@ function pkgbox_msg()
 }
 
 # Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB
-# @param int Filesize in bytes
+# @param int filesize in bytes
 # @test for i in $(seq 0 5); do	v=$((1024**i));	for j in $((v-1)) $((v)) $((v+1)) $((v*512)); do pkgbox_msg debug "pkgbox_byteshuman($j) = $(pkgbox_byteshuman $j)"; done; done
 function pkgbox_byteshuman()
 {
