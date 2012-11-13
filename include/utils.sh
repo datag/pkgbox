@@ -39,9 +39,7 @@ function pkgbox_download()
 		return 2
 	fi
 	
-	pkgbox_msg debug "$FUNCNAME: $cmd $(pkgbox_print_quoted_args "${args[@]}")"
-	
-	$cmd "${args[@]}"
+	pkgbox_exec "$cmd" "${args[@]}"
 	errcode=$?
 	
 	if [[ $errcode != 0 ]]; then

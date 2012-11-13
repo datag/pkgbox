@@ -3,6 +3,8 @@
 set -eE  #x
 set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 
+# FIXME: test for bash version >= 4.0
+
 # debug: remember initial variables on script start
 __VARS="$(set -o posix; set)"
 
@@ -81,6 +83,8 @@ done
 # other helpers
 
 pkgbox_include "include/utils.sh"
+
+# FIXME: test for dependencies (commands)
 
 ################################################################################
 # testing

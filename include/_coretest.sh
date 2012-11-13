@@ -47,6 +47,8 @@ function _run_tests()
 		pkgbox_is_command
 		pkgbox_byteshuman
 		pkgbox_rndstr
+		pkgbox_print_quoted_args
+		pkgbox_exec
 		pkgbox_download
 	)
 	
@@ -150,6 +152,29 @@ _test_pkgbox_rndstr()
 		_expval "$i"
 		_t $e "pkgbox_rndstr '10' '$v'"
 	done
+}
+
+################################################################################
+_test_pkgbox_print_quoted_args()
+{
+	_t 0 "pkgbox_print_quoted_args"
+	_t 0 "pkgbox_print_quoted_args --foo --bar"
+	_t 0 "pkgbox_print_quoted_args --foo 'bar    baz'"
+	_t 0 "pkgbox_print_quoted_args --foo 'bar '\\'' baz'"
+	_t 0 "pkgbox_print_quoted_args \\'"
+}
+
+################################################################################
+_test_pkgbox_exec()
+{
+	_t 0 "pkgbox_exec"
+	_t 0 "pkgbox_exec date"
+	_t 0 "pkgbox_exec date --rfc-2822"
+	_t 0 "pkgbox_exec date +'%Y-%m-%d   %H:%M:%S'"
+	_t 0 "pkgbox_exec date +'%Y-%m-%d   '\\''   %H:%M:%S'"
+	_t 0 "echo 'foo   bar' | pkgbox_exec tr '[:lower:]' '[:upper:]'"
+	_t 0 "pkgbox_exec head -n 1 </etc/hosts"
+	_t !0 "pkgbox_exec false"
 }
 
 ################################################################################

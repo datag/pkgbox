@@ -151,19 +151,40 @@ function pkgbox_rndstr()
 	fi
 }
 
-# Print arguments quoted
+# Print arguments quoted (for echo output only!)
 # @param string... arguments
 # @return Quoted arguments for echo output
-# @FIXME output quoted
-# @FIXME no preceding space
+# @FIXME Do real quoting (e.g. fancy characters) and not just wrapping with single quotes
 # @see http://wiki.bash-hackers.org/syntax/quoting
 # @see http://stackoverflow.com/questions/12985178/bash-quoted-array-expansion
 function pkgbox_print_quoted_args()
 {
-	local i argstr
+	local i arg argstr
 	for i in "$@"; do
-		argstr="$argstr $(printf "%q" "$i")"
+		if [[ $i =~ \  ]]; then
+			i=${i/\'/\'\\\'\'}
+			argstr="$argstr $(printf "'%s' " "$i")"   # printf("%q" "$i") doesn't put quotes around argument
+		else
+			argstr="$argstr $i"
+		fi
 	done
+	
+	# trim # FIXME: could be done smarter... without subshell or sed? maybe http://stackoverflow.com/a/8999678/984787 ?
+	argstr=${argstr# }
+	argstr=${argstr% }
+	
 	echo -n "$argstr"
+}
+
+# Executes a command
+# @param string Command
+# @param [string]... Arguments to command
+function pkgbox_exec()
+{
+	local cmd="$1"
+	shift
+	
+	(( PKGBOX_VERBOSITY > 2 )) && pkgbox_msg debug "$FUNCNAME: $(_sgr bold)$cmd$(_sgr) $(pkgbox_print_quoted_args "$@")"
+	$cmd "$@"
 }
 
