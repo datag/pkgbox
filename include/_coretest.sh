@@ -1,4 +1,5 @@
 # core tests
+# FIXME: possibility to assert output of stdout (maybe even stderr) as well
 ################################################################################
 
 # test wrapper
@@ -52,7 +53,7 @@ function _run_tests()
 		pkgbox_download
 	)
 	
-	local testfunc
+	local testfunc t
 	
 	for t in ${tests[@]}; do
 		testfunc="_test_$t"
@@ -63,6 +64,9 @@ function _run_tests()
 		
 		pkgbox_msg info "$(_sgr fg=black reverse)    RUNNING TESTS    $(_sgr) $t"
 		$testfunc
+		
+		# unset commonly used variables
+		unset i j k  e v   # i to k = loop variables used in tests; e and v = global expected:value
 	done
 	
 	################################################################################
@@ -182,9 +186,9 @@ _test_pkgbox_exec()
 _test_pkgbox_download()
 {
 	# cleanup
-	pkg_url='http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip'
-	pkg_file="jTimeSched-1.1 with space.zip"
-	pkg_filepath="${PKGBOX_DIR[download]}/$pkg_file"
+	local pkg_url='http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip'
+	local pkg_file="jTimeSched-1.1 with space.zip"
+	local pkg_filepath="${PKGBOX_DIR[download]}/$pkg_file"
 	
 	[[ -f "$pkg_filepath" ]] && rm "$pkg_filepath"
 	

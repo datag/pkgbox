@@ -78,6 +78,7 @@ for d in "${PKGBOX_DIR[@]}"; do
 		mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'" 2
 	fi
 done
+unset d
 
 ################################################################################
 # other helpers
