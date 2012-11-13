@@ -175,6 +175,7 @@ _test_pkgbox_exec()
 	_t 0 "echo 'foo   bar' | pkgbox_exec tr '[:lower:]' '[:upper:]'"
 	_t 0 "pkgbox_exec head -n 1 </etc/hosts"
 	_t !0 "pkgbox_exec false"
+	_t 0 "pkgbox_exec 'uname -o' -m"   # e.g. having "gm convert" as "single unit"
 }
 
 ################################################################################
