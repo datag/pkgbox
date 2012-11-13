@@ -64,8 +64,8 @@ function pkgbox_is_int()
 # If called without parameters it will reset SGR
 #
 # @param [string...] option
-# @url http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
-# @url http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+# @see http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+# @see http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 # @FIXME: "no-color"-mode and/or terminal
 function _sgr()
 {
@@ -149,5 +149,21 @@ function pkgbox_rndstr()
 		pkgbox_msg error "Cannot generate random string"
 		return 2
 	fi
+}
+
+# Print arguments quoted
+# @param string... arguments
+# @return Quoted arguments for echo output
+# @FIXME output quoted
+# @FIXME no preceding space
+# @see http://wiki.bash-hackers.org/syntax/quoting
+# @see http://stackoverflow.com/questions/12985178/bash-quoted-array-expansion
+function pkgbox_print_quoted_args()
+{
+	local i argstr
+	for i in "$@"; do
+		argstr="$argstr $(printf "%q" "$i")"
+	done
+	echo -n "$argstr"
 }
 

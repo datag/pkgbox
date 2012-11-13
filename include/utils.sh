@@ -2,7 +2,8 @@
 # @param string URI of remote file
 # @param string local file name (basename)
 # @param [string] output directory
-# @TODO: continue download
+# @TODO continue download
+# @TODO choose tool to use from config, then detection as fallback
 function pkgbox_download()
 {
 	local rfile=$1 lname=$2 ldir=${3-${PKGBOX_DIR[download]}}
@@ -38,7 +39,7 @@ function pkgbox_download()
 		return 2
 	fi
 	
-	pkgbox_msg debug "$FUNCNAME: $cmd ${args[@]}" # FIXME: output quotes
+	pkgbox_msg debug "$FUNCNAME: $cmd $(pkgbox_print_quoted_args "${args[@]}")"
 	
 	$cmd "${args[@]}"
 	errcode=$?
