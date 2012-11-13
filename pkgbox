@@ -36,10 +36,14 @@ while getopts ":vD:h" opt; do
 		exit 0
 		;;
 	\?)
-		pkgbox_die "Invalid option: -$OPTARG"
+		echo "Error: Invalid option -$OPTARG" >&2
+		pkgbox_usage >&2
+		exit 1
 		;;
 	:)
-		pkgbox_die "Option -$OPTARG requires an argument"
+		echo "Error: Option -$OPTARG requires an argument" >&2
+		pkgbox_usage >&2
+		exit 1
 		;;
 	esac
 done
