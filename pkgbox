@@ -19,7 +19,7 @@ source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic
 trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
 ################################################################################
-
+# parsing options
 declare -i PKGBOX_VERBOSITY=0
 declare -A PKGBOX_OPTS
 
@@ -65,7 +65,7 @@ declare -r PKGBOX_PACKAGE="$2"
 [[ ${#PKGBOX_OPTS[@]} > 0 ]] && pkgbox_msg debug "Using options: ${!PKGBOX_OPTS[@]}"
 
 ################################################################################
-# pkgbox directories
+# general setup: pkgbox directories, ...
 declare -A PKGBOX_DIR
 
 PKGBOX_DIR[base]="$HOME/.pkgbox"
@@ -81,27 +81,26 @@ done
 unset d
 
 ################################################################################
-# other helpers
+# include other helpers and perform checks
 
 pkgbox_include "include/utils.sh"
 
 # FIXME: test for dependencies (commands)
 
 ################################################################################
-# testing
+# main or test
 
-if true; then
-	#PKGBOX_VERBOSITY=3
+if [[ ${PKGBOX_OPTS[test]} ]]; then
 	pkgbox_include "include/_coretest.sh"
 	_run_tests
-	exit 0
+else
+	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
 fi
 
 ################################################################################
-
-pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
-
-################################################################################
 # debug: show variables defined by this script
-#(grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v ^__VARS=) | less
+if (( PKGBOX_VERBOSITY > 2 )); then
+	pkgbox_msg debug "Variables defined by this script:"
+	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS="
+fi
 
