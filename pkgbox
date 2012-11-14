@@ -105,6 +105,6 @@ fi
 # debug: show variables defined by this script
 if (( PKGBOX_VERBOSITY > 2 )); then
 	pkgbox_msg debug "Variables defined by this script:"
-	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS="
+	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
 fi
 

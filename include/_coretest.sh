@@ -24,7 +24,7 @@ function _t()
 			# empty string expected
 			[[ -z "$out" ]] || out_test=1 out_color=red
 		else
-			expr match "$out" "$exp_stdout" || out_test=$? out_color=red
+			expr match "$out" "$exp_stdout" &>/dev/null || out_test=$? out_color=red
 		fi
 	fi
 	
