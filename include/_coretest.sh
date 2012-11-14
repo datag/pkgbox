@@ -22,9 +22,9 @@ function _t()
 	if [[ $# > 2 ]]; then
 		if [[ -z "$exp_stdout" ]]; then
 			# empty string expected
-			[[ -z "$out" ]] || out_test=1
+			[[ -z "$out" ]] || out_test=1 out_color=red
 		else
-			expr match "$out" "$exp_stdout" || out_test=$?
+			expr match "$out" "$exp_stdout" || out_test=$? out_color=red
 		fi
 	fi
 	
@@ -39,7 +39,7 @@ function _t()
 	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
 	if [[ -n "$out" || $out_test != 0 ]]; then
 		out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=${out_color} underline)$out$(_sgr))"
-		[[ $out_test != 0 ]] && out="$out ($(_sgr bold)expected:$(_sgr) $(_sgr underline)$exp_stdout$(_sgr))"
+		[[ $out_test != 0 ]] && out="$out ($(_sgr bold)expected:$(_sgr) $(_sgr fg=${out_color} underline)$exp_stdout$(_sgr))"
 	fi
 	
 	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
