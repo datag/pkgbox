@@ -1,7 +1,15 @@
 # Prints usage (stdout)
 function pkgbox_usage()
 {
-	pkgbox_echo "Usage: ${0##*/} [OPTION]... <ACTION> <PKGFILE>"
+	cat <<-EOT
+		Usage: ${0##*/} [OPTION]... <ACTION> <PKGFILE>
+		
+		Options:
+		    -v	Be verbose (given multiple times increases verbosity level)
+		    -D <key>[=<value>]
+		        Define a setting; available settings:
+		        * test   Run test suite
+EOT
 }
 
 # Prints message (stderr) and die

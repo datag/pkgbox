@@ -9,8 +9,6 @@ if ((BASH_VERSINFO[0] < 4)); then
 	exit 1
 fi
 
-# FIXME: time execution time
-
 # debug: remember initial variables on script start
 __VARS="$(set -o posix; set)"
 
@@ -91,7 +89,7 @@ unset d
 
 pkgbox_include "include/utils.sh"
 
-# FIXME: test for dependencies (commands)
+# FIXME:Ttest for dependencies (commands)? Maybe when option "selftest" defined?
 
 ################################################################################
 # main or test
