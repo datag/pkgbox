@@ -6,10 +6,11 @@
 # 
 # @param [!]int Expected exit code (can be inverted when prefixed with "!")
 # @param string The statement to be evaled (may contain I/O-redirection, pipes, ...)
-# @param [string] The expected output of stdout
+# @param [string] The expected output of stdout (bash regex)
 function _t()
 {
-	local exp=$1 cmd=$2 code=0 out text
+	local exp=$1 cmd=$2 exp_stdout=$3
+	local code=0 out out_test=0 out_color=blue text
 	
 	#set -x
 	out=$(eval "$cmd") || code=$?
@@ -17,8 +18,13 @@ function _t()
 	
 	((++tests_run))
 	
+	# test output as well
+	if [[ $# > 2 ]]; then
+		expr match "$out" "$exp_stdout" || out_test=$?
+	fi
+	
 	# expected value is either a match or non-match (=prefixed with "!")
-	if [[ (${exp:0:1} != '!' && $code != $exp) || (${exp:0:1} == '!' && $code == ${exp:1:${#exp}-1}) ]]; then
+	if [[ (${exp:0:1} != '!' && $code != $exp) || (${exp:0:1} == '!' && $code == ${exp:1:${#exp}-1}) || $out_test != 0 ]]; then
 		text="$(_sgr fg=red reverse)FAIL"
 		((++tests_failed))
 	else
@@ -26,7 +32,10 @@ function _t()
 	fi
 	
 	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
-	[[ -n "$out" ]] && out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=blue underline)$out$(_sgr))"
+	if [[ -n "$out" || $out_test != 0 ]]; then
+		out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=${out_color} underline)$out$(_sgr))"
+		[[ $out_test != 0 ]] && out="$out ($(_sgr bold)expected:$(_sgr) $(_sgr underline)$exp_stdout$(_sgr))"
+	fi
 	
 	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
 	
@@ -169,15 +178,15 @@ _test_pkgbox_rndstr()
 _test_pkgbox_trim()
 {
 	_t 0 "pkgbox_trim"
-	_t 0 "pkgbox_trim foo"
-	_t 0 "pkgbox_trim '  foo  '"
-	_t 0 "pkgbox_trim 'foo  '"
-	_t 0 "pkgbox_trim '  foo'"
-	_t 0 "pkgbox_trim '  foo  bar  '"
-	_t 0 "pkgbox_trim '  foo  bar  baz  '"
-	_t 0 "pkgbox_trim 'foo  bar  '"
-	_t 0 "pkgbox_trim '  foo  bar'"
-	_t 0 "pkgbox_trim \$' \t\n''foo  bar'\$' \t\n'"
+	_t 0 "pkgbox_trim foo"							'foo'
+	_t 0 "pkgbox_trim '  foo  '"					'foo'
+	_t 0 "pkgbox_trim 'foo  '"						'foo'
+	_t 0 "pkgbox_trim '  foo'"						'foo'
+	_t 0 "pkgbox_trim '  foo  bar  '"				'foo  bar'
+	_t 0 "pkgbox_trim '  foo  bar  baz  '"			'foo  bar  baz'
+	_t 0 "pkgbox_trim 'foo  bar  '"					'foo  bar'
+	_t 0 "pkgbox_trim '  foo  bar'"					'foo  bar'
+	_t 0 "pkgbox_trim \$' \t\n''foo  bar'\$' \t\n'"	'foo  bar'
 }
 
 ################################################################################
