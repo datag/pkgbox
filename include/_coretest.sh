@@ -18,9 +18,14 @@ function _t()
 	
 	((++tests_run))
 	
-	# test output as well
+	# test stdout as well
 	if [[ $# > 2 ]]; then
-		expr match "$out" "$exp_stdout" || out_test=$?
+		if [[ -z "$exp_stdout" ]]; then
+			# empty string expected
+			[[ -z "$out" ]] || out_test=1
+		else
+			expr match "$out" "$exp_stdout" || out_test=$?
+		fi
 	fi
 	
 	# expected value is either a match or non-match (=prefixed with "!")
@@ -177,7 +182,7 @@ _test_pkgbox_rndstr()
 ################################################################################
 _test_pkgbox_trim()
 {
-	_t 0 "pkgbox_trim"
+	_t 0 "pkgbox_trim"								''
 	_t 0 "pkgbox_trim foo"							'foo'
 	_t 0 "pkgbox_trim '  foo  '"					'foo'
 	_t 0 "pkgbox_trim 'foo  '"						'foo'
