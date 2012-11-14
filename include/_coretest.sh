@@ -197,11 +197,11 @@ _test_pkgbox_trim()
 ################################################################################
 _test_pkgbox_print_quoted_args()
 {
-	_t 0 "pkgbox_print_quoted_args"
-	_t 0 "pkgbox_print_quoted_args --foo --bar"
-	_t 0 "pkgbox_print_quoted_args --foo 'bar    baz'"
-	_t 0 "pkgbox_print_quoted_args --foo 'bar '\\'' baz'"
-	_t 0 "pkgbox_print_quoted_args \\'"
+	_t 0 "pkgbox_print_quoted_args"							""
+	_t 0 "pkgbox_print_quoted_args --foo --bar"				"--foo --bar"
+	_t 0 "pkgbox_print_quoted_args --foo 'bar    baz'"		"--foo 'bar    baz'"
+	_t 0 "pkgbox_print_quoted_args --foo 'bar '\\'' baz'"	"--foo 'bar '\\\\'' baz'"
+	_t 0 "pkgbox_print_quoted_args \\'"						"'"
 }
 
 ################################################################################
