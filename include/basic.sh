@@ -9,7 +9,7 @@ function pkgbox_usage()
 # @param [int=1] exitcode
 function pkgbox_die()
 {
-	local exitcode=1 msg="$@" frame=0 subcall
+	local exitcode=1 msg=$@ frame=0 subcall
 	
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
@@ -153,8 +153,6 @@ function pkgbox_rndstr()
 
 # Print arguments quoted (for echo output only!)
 # @param string... arguments
-# @return Quoted arguments for echo output
-# @FIXME Do real quoting (e.g. fancy characters) and not just wrapping with single quotes
 # @see http://wiki.bash-hackers.org/syntax/quoting
 # @see http://stackoverflow.com/questions/12985178/bash-quoted-array-expansion
 function pkgbox_print_quoted_args()
@@ -163,28 +161,38 @@ function pkgbox_print_quoted_args()
 	for i in "$@"; do
 		if [[ $i =~ \  ]]; then
 			i=${i/\'/\'\\\'\'}
-			argstr="$argstr $(printf "'%s' " "$i")"   # printf("%q" "$i") doesn't put quotes around argument
+			argstr="$argstr $(printf "'%s'" "$i")"   # printf("%q" "$i") doesn't put quotes around argument
 		else
 			argstr="$argstr $i"
 		fi
 	done
 	
-	# trim # FIXME: could be done smarter... without subshell or sed? maybe http://stackoverflow.com/a/8999678/984787 ?
-	argstr=${argstr# }
-	argstr=${argstr% }
-	
-	echo -n "$argstr"
+	echo -n "${argstr# }"    # echo with first white-space removed
 }
 
 # Executes a command
 # @param string Command
 # @param [string]... Arguments to command
+# @return int Exit code of command executed
 function pkgbox_exec()
 {
-	local cmd="$1"
+	local cmd=$1
 	shift
 	
 	(( PKGBOX_VERBOSITY > 2 )) && pkgbox_msg debug "$FUNCNAME: $(_sgr bold)$cmd$(_sgr) $(pkgbox_print_quoted_args "$@")"
 	$cmd "$@"
+}
+
+# Trims a string (remove leading and trailing white-spaces)
+# @param string String to trim
+# @see http://stackoverflow.com/a/6282142/984787  (unused: approach using bash regex matching)
+# @see http://stackoverflow.com/a/8999678/984787  (unused: approach using read)
+function pkgbox_trim()
+{
+	#local str=$1
+	#[[ $str =~ [[:space:]]*([^[:space:]]|[^[:space:]].*[^[:space:]])[[:space:]]* ]] && str=${BASH_REMATCH[1]}
+	###local IFS=$' \t\n'; read -rd '' str <<<"$str"   # alternate approach
+	#echo -n "$str"
+	sed -e 's/^[[:space:]]*\|[[:space:]]*$//g' <<<"$1"   # my approach using sed
 }
 

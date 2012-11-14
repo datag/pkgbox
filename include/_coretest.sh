@@ -19,7 +19,7 @@ function _t()
 		text="$(_sgr fg=green reverse)PASS"
 	fi
 	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
-	[[ -n "$out" ]] && out=" ($(_sgr bold)output:$(_sgr) $out)"
+	[[ -n "$out" ]] && out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=blue underline)$out$(_sgr))"
 	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
 	
 	((tests_run++)) || true
@@ -48,6 +48,7 @@ function _run_tests()
 		pkgbox_is_command
 		pkgbox_byteshuman
 		pkgbox_rndstr
+		pkgbox_trim
 		pkgbox_print_quoted_args
 		pkgbox_exec
 		pkgbox_download
@@ -62,7 +63,7 @@ function _run_tests()
 			continue
 		fi
 		
-		pkgbox_msg info "$(_sgr fg=black reverse)    RUNNING TESTS    $(_sgr) $t"
+		pkgbox_echo -e "\n$(_sgr fg=black reverse)  RUNNING TESTS    $(printf "% 59s" "$t")  " >&2
 		$testfunc
 		
 		# unset commonly used variables
@@ -73,7 +74,7 @@ function _run_tests()
 	# summary
 	pkgbox_msg info "tests run   : $tests_run"
 	pkgbox_msg info "tests passed: $((tests_run - tests_failed))"
-	(( tests_failed > 0 )) && pkgbox_msg warn "tests failed: $(_sgr fg=red reverse)$tests_failed$(_sgr)"
+	(( tests_failed > 0 )) && pkgbox_msg warn "tests failed: $(_sgr fg=red reverse)$tests_failed"
 
 	# clean exit
 	return 0
@@ -156,6 +157,21 @@ _test_pkgbox_rndstr()
 		_expval "$i"
 		_t $e "pkgbox_rndstr '10' '$v'"
 	done
+}
+
+################################################################################
+_test_pkgbox_trim()
+{
+	_t 0 "pkgbox_trim"
+	_t 0 "pkgbox_trim foo"
+	_t 0 "pkgbox_trim '  foo  '"
+	_t 0 "pkgbox_trim 'foo  '"
+	_t 0 "pkgbox_trim '  foo'"
+	_t 0 "pkgbox_trim ' foo    bar '"
+	_t 0 "pkgbox_trim '  foo    bar  '"
+	_t 0 "pkgbox_trim ' foo  bar  baz '"
+	_t 0 "pkgbox_trim 'foo  bar  '"
+	_t 0 "pkgbox_trim '  foo  bar'"
 }
 
 ################################################################################

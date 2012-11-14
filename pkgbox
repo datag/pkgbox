@@ -4,6 +4,7 @@ set -eE  #x
 set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 
 # FIXME: test for bash version >= 4.0
+# FIXME: time execution time
 
 # debug: remember initial variables on script start
 __VARS="$(set -o posix; set)"
