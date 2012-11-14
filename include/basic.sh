@@ -197,10 +197,10 @@ function pkgbox_exec()
 # @see http://stackoverflow.com/a/8999678/984787  (unused: approach using read)
 function pkgbox_trim()
 {
-	#local str=$1
-	#[[ $str =~ [[:space:]]*([^[:space:]]|[^[:space:]].*[^[:space:]])[[:space:]]* ]] && str=${BASH_REMATCH[1]}
-	###local IFS=$' \t\n'; read -rd '' str <<<"$str"   # alternate approach
-	#echo -n "$str"
-	sed -e 's/^[[:space:]]*\|[[:space:]]*$//g' <<<"$1"   # my approach using sed
+	if [[ $1 =~ [[:space:]]*([^[:space:]]|[^[:space:]].*[^[:space:]])[[:space:]]* ]]; then
+		echo -n "${BASH_REMATCH[1]}"
+	else
+		echo -n "$1"
+	fi
 }
 

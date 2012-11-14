@@ -33,7 +33,7 @@ while getopts ":vD:h" opt; do
 	v)
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
 		;;
-	# defines a special config variable... just a test for now
+	# defines a special config variable
 	D)
 		PKGBOX_OPTS[${OPTARG%%=*}]="${OPTARG#*=}"
 		;;

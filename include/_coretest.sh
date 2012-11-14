@@ -2,7 +2,11 @@
 # FIXME: possibility to assert output of stdout (maybe even stderr) as well
 ################################################################################
 
-# test wrapper
+# Test wrapper
+# 
+# @param [!]int Expected exit code (can be inverted when prefixed with "!")
+# @param string The statement to be evaled (may contain I/O-redirection, pipes, ...)
+# @param [string] The expected output of stdout
 function _t()
 {
 	local exp=$1 cmd=$2 code=0 out text
@@ -11,18 +15,20 @@ function _t()
 	out=$(eval "$cmd") || code=$?
 	#set +x
 	
-	# expected value is either a match or not-match (prefixed with "!")
+	((++tests_run))
+	
+	# expected value is either a match or non-match (=prefixed with "!")
 	if [[ (${exp:0:1} != '!' && $code != $exp) || (${exp:0:1} == '!' && $code == ${exp:1:${#exp}-1}) ]]; then
 		text="$(_sgr fg=red reverse)FAIL"
-		((tests_failed++)) || true
+		((++tests_failed))
 	else
 		text="$(_sgr fg=green reverse)PASS"
 	fi
+	
 	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
 	[[ -n "$out" ]] && out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=blue underline)$out$(_sgr))"
-	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
 	
-	((tests_run++)) || true
+	pkgbox_msg test "$text $(_sgr underline)$cmd$(_sgr)$out"
 	
 	return 0
 }
@@ -167,11 +173,11 @@ _test_pkgbox_trim()
 	_t 0 "pkgbox_trim '  foo  '"
 	_t 0 "pkgbox_trim 'foo  '"
 	_t 0 "pkgbox_trim '  foo'"
-	_t 0 "pkgbox_trim ' foo    bar '"
-	_t 0 "pkgbox_trim '  foo    bar  '"
-	_t 0 "pkgbox_trim ' foo  bar  baz '"
+	_t 0 "pkgbox_trim '  foo  bar  '"
+	_t 0 "pkgbox_trim '  foo  bar  baz  '"
 	_t 0 "pkgbox_trim 'foo  bar  '"
 	_t 0 "pkgbox_trim '  foo  bar'"
+	_t 0 "pkgbox_trim \$' \t\n''foo  bar'\$' \t\n'"
 }
 
 ################################################################################
