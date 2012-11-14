@@ -3,7 +3,12 @@
 set -eE  #x
 set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 
-# FIXME: test for bash version >= 4.0
+# test for too old bash version
+if ((BASH_VERSINFO[0] < 4)); then
+	echo "Error: This script requires a bash version >= 4.0 (got $BASH_VERSION). Exiting." >&2
+	exit 1
+fi
+
 # FIXME: time execution time
 
 # debug: remember initial variables on script start
