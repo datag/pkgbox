@@ -12,7 +12,7 @@ if ((BASH_VERSINFO[0] < 4)); then
 fi
 
 # debug: remember initial variables on script start
-#__VARS="$(set -o posix; set)"
+__VARS=$(set -o posix; set)
 
 # determine absolute location of script
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
@@ -108,8 +108,8 @@ fi
 
 ################################################################################
 # debug: show variables defined by this script
-#if (( PKGBOX_VERBOSITY > 3 )); then
-#	pkgbox_msg debug "Variables defined by this script:"
-#	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
-#fi
+if (( PKGBOX_VERBOSITY > 3 )); then
+	pkgbox_msg debug "Variables defined by this script:"
+	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
+fi
 

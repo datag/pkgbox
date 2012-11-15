@@ -47,9 +47,19 @@ function pkgbox_action_init()
 		pkgbox_msg debug "$i='${!i}'"
 	done
 	
+	# debug: remember all variables/functions
+	local funcs_before=$(declare -F | cut -f3- -d' ')
+	local vars_before=$(set -o posix; set)
+	
 	# include script
+	pkgbox_msg debug "Sourcing $PKGBOX_PACKAGE"
 	source "$PKGBOX_PACKAGE" || pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
 	
+	# debug: print variables/functions declared by the package script
+	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
+	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')")"
+	
+	# declare default functions
 	if ! pkgbox_is_function "src_unpack"; then
 		pkgbox_msg debug "Defining default src_unpack()"
 		
