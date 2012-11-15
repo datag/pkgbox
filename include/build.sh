@@ -60,6 +60,16 @@ function pkgbox_action_init()
 	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')")"
 	
 	# declare default functions
+	if ! pkgbox_is_function "src_fetch"; then
+		pkgbox_msg debug "Defining default src_fetch()"
+		
+		function src_fetch()
+		{
+			pkgbox_msg debug "Default src_fetch()"
+			pkgbox_download "$SRC_URI" "${SRC_URI##*/}"
+		}
+	fi	
+	
 	if ! pkgbox_is_function "src_unpack"; then
 		pkgbox_msg debug "Defining default src_unpack()"
 		
@@ -73,13 +83,15 @@ function pkgbox_action_init()
 	fi
 }
 
-function pkgbox_action_unpack()
-{
-	src_unpack
-}
-
 function pkgbox_action_fetch()
 {
-	pkgbox_msg debug TODO: fetch
+	pkgbox_msg info "src_fetch()"
+	src_fetch
+}
+
+function pkgbox_action_unpack()
+{
+	pkgbox_msg info "src_unpack()"
+	src_unpack
 }
 

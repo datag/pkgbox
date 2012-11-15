@@ -4,6 +4,7 @@
 # @param [string] output directory
 # @TODO continue download
 # @TODO choose tool to use from config, then detection as fallback
+# @TODO trust server filename if $2 not given (or null)
 function pkgbox_download()
 {
 	local rfile=$1 lname=$2 ldir=${3-${PKGBOX_DIR[download]}}
