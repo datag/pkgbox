@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# remove unneeded quotes!
+
 set -eE  #x
 set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
 
@@ -10,7 +12,7 @@ if ((BASH_VERSINFO[0] < 4)); then
 fi
 
 # debug: remember initial variables on script start
-__VARS="$(set -o posix; set)"
+#__VARS="$(set -o posix; set)"
 
 # determine absolute location of script
 declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
@@ -63,8 +65,8 @@ if [[ $# < 2 ]]; then
 	exit 1
 fi
 
-declare -r PKGBOX_ACTION="$1"
-declare -r PKGBOX_PACKAGE="$2"
+declare -r PKGBOX_PACKAGE="$1"
+declare -r PKGBOX_ACTION="$2"
 
 [[ ${#PKGBOX_OPTS[@]} > 0 ]] && pkgbox_msg debug "Using options: ${!PKGBOX_OPTS[@]}"
 
@@ -87,9 +89,10 @@ unset d
 ################################################################################
 # include other helpers and perform checks
 
+pkgbox_include "include/build.sh"
 pkgbox_include "include/utils.sh"
 
-# FIXME:Ttest for dependencies (commands)? Maybe when option "selftest" defined?
+# FIXME: Test for dependencies (commands)? Maybe when option "selftest" defined?
 
 ################################################################################
 # main or test
@@ -99,12 +102,14 @@ if [[ ${PKGBOX_OPTS[test]} ]]; then
 	_run_tests
 else
 	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
+	
+	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"
 fi
 
 ################################################################################
 # debug: show variables defined by this script
-if (( PKGBOX_VERBOSITY > 2 )); then
-	pkgbox_msg debug "Variables defined by this script:"
-	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
-fi
+#if (( PKGBOX_VERBOSITY > 3 )); then
+#	pkgbox_msg debug "Variables defined by this script:"
+#	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
+#fi
 

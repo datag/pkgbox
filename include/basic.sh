@@ -2,7 +2,7 @@
 function pkgbox_usage()
 {
 	cat <<-EOT
-		Usage: ${0##*/} [OPTION]... <ACTION> <PKGFILE>
+		Usage: ${0##*/} [OPTION]... <PKGFILE> <ACTION>
 		
 		Options:
 		    -v	Be verbose (given multiple times increases verbosity level)
