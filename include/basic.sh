@@ -105,7 +105,7 @@ function _sgr()
 		sgr="${sgr}${m};"
 	done
 	
-	[[ -z "$sgr" ]] && sgr="0" || sgr="${sgr:0:${#sgr}-1}"	# remove superfluous trailing ";"
+	[[ -z "$sgr" ]] && sgr="0" || sgr=${sgr%;}	# remove superfluous trailing ";"
 	
 	echo -n -e "${csi}${sgr}${term}"
 }

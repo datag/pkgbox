@@ -12,7 +12,7 @@ function pkgbox_download()
 	declare -a args
 	
 	if [[ -f "$lfile" ]]; then
-		pkgbox_msg notice "Skipping download of file '${lname}' (already exists)"
+		pkgbox_msg info "Skipping download of file '${lname}' (already exists)"
 		return 0
 	else
 		pkgbox_msg info "Downloading '$rfile'"
@@ -51,5 +51,33 @@ function pkgbox_download()
 		fi
 		return 3
 	fi
+}
+
+function pkgbox_unpack()
+{
+	local lfile=$1 ldir=${2-$WORKDIR}
+	
+	pkgbox_msg debug "Unpacking $lfile"
+	
+	case "${lfile##*.}" in
+	"gz" | "bz2" | "xz" | "lzma")
+		# is probably a compressed tar, fall through
+		;&
+	"tar" | "tgz" | "tbz" | "txz" | "tlzma")
+		tar -xf "$lfile" -C "$ldir"
+		;;
+	"zip")
+		pkgbox_msg error "$FUNCNAME zip yet not implemented"
+		return 1
+		;;
+	"7z")
+		pkgbox_msg error "$FUNCNAME 7z yet not implemented"
+		return 1
+		;;
+	*)
+		pkgbox_msg error "$FUNCNAME: Unknown file type"
+		return 1
+		;;
+	esac
 }
 

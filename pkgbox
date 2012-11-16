@@ -3,7 +3,10 @@
 # remove unneeded quotes!
 
 set -eE  #x
-set -o pipefail		# http://petereisentraut.blogspot.de/2010/11/pipefail.html
+set -o pipefail	  # http://petereisentraut.blogspot.de/2010/11/pipefail.html
+
+# unset all aliases
+unalias -a
 
 # test for too old bash version
 if ((BASH_VERSINFO[0] < 4)); then

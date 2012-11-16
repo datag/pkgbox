@@ -31,16 +31,18 @@ function pkgbox_action_init()
 	# imitate ebuild variables: http://devmanual.gentoo.org/ebuild-writing/variables/index.html
 	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) pkg_basename=${PKGBOX_PACKAGE##*/} i
 	
-	DISTDIR=${PKGBOX_DIR[download]}
 	FILESDIR="${pkg_canonical%/*}/files"
-	
 	P=${pkg_basename%.pkgbox}
 	PN=${P%-*}
 	PV=${P##*-}
-	WORKDIR="${PKGBOX_DIR[tmp]}/work"
-	S="$WORKDIR/$P"
 	T="${PKGBOX_DIR[tmp]}/temp"
 	D="${PKGBOX_DIR[tmp]}/image"
+	WORKDIR="${PKGBOX_DIR[tmp]}/work"
+	S="$WORKDIR/$P"
+	
+	for i in "$T" "$D" "$WORKDIR"; do
+		[[ ! -d "$i" ]] && mkdir "$i"
+	done
 	
 	# debug: output all global vars
 	for i in DISTDIR FILESDIR P PN PV WORKDIR S T D; do
@@ -59,6 +61,12 @@ function pkgbox_action_init()
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
 	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')")"
 	
+	# prepare some more environment variables
+	A=()
+	for i in "${SRC_URI[@]}"; do
+		A+=( "${PKGBOX_DIR[download]}/${i##*/}" )
+	done
+	
 	# declare default functions
 	if ! pkgbox_is_function "src_fetch"; then
 		pkgbox_msg debug "Defining default src_fetch()"
@@ -75,18 +83,25 @@ function pkgbox_action_init()
 		
 		function src_unpack()
 		{
+			local filename
 			pkgbox_msg debug "Default src_unpack()"
-			#if [[ -n "${A}" ]]; then
-			#	pkgbox_unpack ${A}
-			#fi
+			
+			for filename in ${A[@]}; do
+				pkgbox_unpack $filename
+			done
 		}
 	fi
 }
 
 function pkgbox_action_fetch()
 {
+	local uri
+	
 	pkgbox_msg info "src_fetch()"
-	src_fetch
+	
+	for uri in "${SRC_URI[@]}"; do
+		pkgbox_download "$uri" "${uri##*/}"
+	done
 }
 
 function pkgbox_action_unpack()
