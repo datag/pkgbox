@@ -2,6 +2,7 @@
 
 PKGBOX_API=1
 
+pkgver 1.1
 MY_PN=jTimeSched
 MY_P=$MY_PN-$PV
 

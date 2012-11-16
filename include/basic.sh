@@ -6,6 +6,7 @@ function pkgbox_usage()
 		
 		Options:
 		    -v	Be verbose (given multiple times increases verbosity level)
+		    -V <version>	Override package default version
 		    -D <key>[=<value>]
 		        Define a setting; available settings:
 		        * test   Run test suite
@@ -136,6 +137,17 @@ function pkgbox_msg()
 	(( PKGBOX_VERBOSITY >= threshold )) && \
 		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" >&2 || \
 		true   # set function return value to 0
+}
+
+# Outputs variables for debugging purpose
+# @param string... Name of variable (resolved via indirection)
+function pkgbox_debug_vars()
+{
+	local str i
+	for i in $@; do
+		str="$str"$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$i")$(_sgr) = $(_sgr underline)${!i}$(_sgr)"
+	done
+	pkgbox_msg debug "Vars:$str"
 }
 
 # Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB

@@ -32,11 +32,15 @@ trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 declare -i PKGBOX_VERBOSITY=0
 declare -A PKGBOX_OPTS
 
-while getopts ":vD:h" opt; do
+while getopts ":vD:V:h" opt; do
 	case $opt in
 	# be verbose; each -v increases the verbosity level
 	v)
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
+		;;
+	# override package version
+	V)
+		PV=$OPTARG
 		;;
 	# defines a special config variable
 	D)

@@ -31,23 +31,28 @@ function pkgbox_action_init()
 	# imitate ebuild variables: http://devmanual.gentoo.org/ebuild-writing/variables/index.html
 	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) pkg_basename=${PKGBOX_PACKAGE##*/} i
 	
+	# global variables
 	FILESDIR="${pkg_canonical%/*}/files"
-	P=${pkg_basename%.pkgbox}
+	P=${pkg_basename%.pkgbox}		# try to extract $P (name + version) from filename
 	PN=${P%-*}
-	PV=${P##*-}
+	PV=${PV:=${P##*-}}				# may be overridden by version provided via "-V" option
+	if ! pkgbox_is_int ${PV:0:1}; then
+		unset P PV
+	else
+		P=$PN-$PV						# in case filename did not contain $PV
+	fi
+	
 	T="${PKGBOX_DIR[tmp]}/temp"
 	D="${PKGBOX_DIR[tmp]}/image"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
-	S="$WORKDIR/$P"
 	
+	# FIXME: prepare directories somewhere else
 	for i in "$T" "$D" "$WORKDIR"; do
 		[[ ! -d "$i" ]] && mkdir "$i"
 	done
 	
-	# debug: output all global vars
-	for i in DISTDIR FILESDIR P PN PV WORKDIR S T D; do
-		pkgbox_msg debug "$i='${!i}'"
-	done
+	# debug: global vars
+	pkgbox_debug_vars FILESDIR WORKDIR T D P PN PV
 	
 	# debug: remember all variables/functions
 	local funcs_before=$(declare -F | cut -f3- -d' ')
@@ -61,11 +66,17 @@ function pkgbox_action_init()
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
 	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')")"
 	
-	# prepare some more environment variables
+	# TODO: check global variables
+	
+	# prepare some more global variables
+	S=${S:="$WORKDIR/$P"}
 	A=()
 	for i in "${SRC_URI[@]}"; do
 		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
+	
+	# debug: global vars
+	pkgbox_debug_vars P PN PV A S
 	
 	# declare default functions
 	if ! pkgbox_is_function "src_fetch"; then
@@ -117,5 +128,15 @@ function pkgbox_action_unpack()
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
+}
+
+function pkgver()
+{
+	[[ -n "$PV" ]] && return 0		# default is overridden
+	
+	PV=$1
+	P=$PN-$PV
+	
+	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
 }
 

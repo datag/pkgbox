@@ -2,6 +2,7 @@
 
 PKGBOX_API=1
 
+pkgver 1.3.17
 MY_P=${P/graphicsmagick/GraphicsMagick}
 
 DESCRIPTION="GraphicsMagick is the swiss army knife of image processing"
@@ -14,10 +15,6 @@ SRC_URI=(
 IUSE="bzip jpeg png"
 
 S=${WORKDIR}/${MY_P}
-
-__src_unpack() {
-	echo unpack
-}
 
 src_prepare() {
 	echo prepare
