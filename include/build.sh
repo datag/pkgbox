@@ -64,7 +64,7 @@ function pkgbox_action_init()
 	# prepare some more environment variables
 	A=()
 	for i in "${SRC_URI[@]}"; do
-		A+=( "${PKGBOX_DIR[download]}/${i##*/}" )
+		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
 	
 	# declare default functions
@@ -86,8 +86,8 @@ function pkgbox_action_init()
 			local filename
 			pkgbox_msg debug "Default src_unpack()"
 			
-			for filename in ${A[@]}; do
-				pkgbox_unpack $filename
+			for filename in "${A[@]}"; do
+				pkgbox_unpack "$filename"
 			done
 		}
 	fi
@@ -107,6 +107,15 @@ function pkgbox_action_fetch()
 function pkgbox_action_unpack()
 {
 	pkgbox_msg info "src_unpack()"
+	
+	if [[ -d "$S" ]]; then
+		pkgbox_msg info "Skipping unpacking file (directory already exists)"
+		return 0
+	fi
+	
 	src_unpack
+	
+	pkgbox_msg debug "Changing current working directory to $S"
+	cd "$S"
 }
 

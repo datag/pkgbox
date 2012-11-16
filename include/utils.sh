@@ -67,8 +67,7 @@ function pkgbox_unpack()
 		tar -xf "$lfile" -C "$ldir"
 		;;
 	"zip")
-		pkgbox_msg error "$FUNCNAME zip yet not implemented"
-		return 1
+		unzip -qq "$lfile" -d "$ldir"
 		;;
 	"7z")
 		pkgbox_msg error "$FUNCNAME 7z yet not implemented"
