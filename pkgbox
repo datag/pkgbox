@@ -81,7 +81,7 @@ declare -r PKGBOX_ACTION="$2"
 # general setup: pkgbox directories, ...
 declare -A PKGBOX_DIR
 
-PKGBOX_DIR[base]="$HOME/.pkgbox"
+PKGBOX_DIR[base]=${PKGBOX_OPTS[base]:="$HOME/.pkgbox"}
 PKGBOX_DIR[tmp]="${PKGBOX_DIR[base]}/tmp"
 PKGBOX_DIR[download]="${PKGBOX_DIR[base]}/download"
 
@@ -92,6 +92,16 @@ for d in "${PKGBOX_DIR[@]}"; do
 	fi
 done
 unset d
+
+################################################################################
+# include config(s)
+for c in /etc/pkgbox "${PKGBOX_DIR[base]}/config" "${PKGBOX_OPTS[config]}"; do
+	if [[ -r $c && -f $c ]]; then
+		pkgbox_msg info "Using config '$c'"
+		source "$c"
+	fi
+done
+unset c
 
 ################################################################################
 # include other helpers and perform checks
