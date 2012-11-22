@@ -4,6 +4,18 @@ function pkgbox_action()
 	declare -a actions
 	
 	case $1 in
+	"install")
+		actions+=("install")
+		;&
+	"compile")
+		actions+=("compile")
+		;&
+	"configure")
+		actions+=("configure")
+		;&
+	"prepare")
+		actions+=("prepare")
+		;&
 	"unpack")
 		actions+=("unpack")
 		;&
@@ -102,6 +114,48 @@ function pkgbox_action_init()
 			done
 		}
 	fi
+	
+	if ! pkgbox_is_function "src_prepare"; then
+		pkgbox_msg debug "Defining default src_prepare()"
+		
+		function src_prepare()
+		{
+			pkgbox_msg debug "Default src_prepare()"
+		}
+	fi
+	
+	if ! pkgbox_is_function "src_configure"; then
+		pkgbox_msg debug "Defining default src_configure()"
+		
+		function src_configure()
+		{
+			pkgbox_msg debug "Default src_configure()"
+			
+			./configure --prefix="${PKGBOX_DIR[install]}"
+		}
+	fi
+	
+	if ! pkgbox_is_function "src_compile"; then
+		pkgbox_msg debug "Defining default src_compile()"
+		
+		function src_compile()
+		{
+			pkgbox_msg debug "Default src_compile()"
+			
+			make
+		}
+	fi
+	
+	if ! pkgbox_is_function "src_install"; then
+		pkgbox_msg debug "Defining default src_install()"
+		
+		function src_install()
+		{
+			pkgbox_msg debug "Default src_install()"
+			
+			make install
+		}
+	fi
 }
 
 function pkgbox_action_fetch()
@@ -126,15 +180,77 @@ function pkgbox_action_unpack()
 {
 	pkgbox_msg info "src_unpack()"
 	
-	if [[ -d "$S" ]]; then
-		pkgbox_msg info "Skipping unpacking file (directory already exists)"
+	if [[ -f "$S/.pkgbox_unpack" ]]; then
+		pkgbox_msg info "Skipping unpack (already done)"
 		return 0
 	fi
 	
 	src_unpack
+	touch "$S/.pkgbox_unpack"
+}
+
+function pkgbox_action_prepare()
+{
+	pkgbox_msg info "src_prepare()"
+	
+	if [[ -f "$S/.pkgbox_prepare" ]]; then
+		pkgbox_msg info "Skipping prepare (already done)"
+		return 0
+	fi
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
+	
+	src_prepare
+	touch "$S/.pkgbox_prepare"
+}
+
+function pkgbox_action_configure()
+{
+	pkgbox_msg info "src_configure()"
+	
+	if [[ -f "$S/.pkgbox_configure" ]]; then
+		pkgbox_msg info "Skipping configure (already done)"
+		return 0
+	fi
+	
+	pkgbox_msg debug "Changing current working directory to $S"
+	cd "$S"
+	
+	src_configure
+	touch "$S/.pkgbox_configure"
+}
+
+function pkgbox_action_compile()
+{
+	pkgbox_msg info "src_compile()"
+	
+	if [[ -f "$S/.pkgbox_compile" ]]; then
+		pkgbox_msg info "Skipping compile (already done)"
+		return 0
+	fi
+	
+	pkgbox_msg debug "Changing current working directory to $S"
+	cd "$S"
+	
+	src_compile
+	touch "$S/.pkgbox_compile"
+}
+
+function pkgbox_action_install()
+{
+	pkgbox_msg info "src_install()"
+	
+	if [[ -f "$S/.pkgbox_install" ]]; then
+		pkgbox_msg info "Skipping install (already done)"
+		return 0
+	fi
+	
+	pkgbox_msg debug "Changing current working directory to $S"
+	cd "$S"
+	
+	src_install
+	touch "$S/.pkgbox_install"
 }
 
 function pkgver()
