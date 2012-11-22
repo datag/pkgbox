@@ -57,6 +57,7 @@ function pkgbox_action_init()
 	T="${PKGBOX_DIR[tmp]}/temp"
 	D="${PKGBOX_DIR[tmp]}/image"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
+	INSTALLDIR=${PKGBOX_OPTS[prefix]}
 	
 	# FIXME: prepare directories somewhere else
 	for i in "$T" "$D" "$WORKDIR"; do
@@ -131,7 +132,7 @@ function pkgbox_action_init()
 		{
 			pkgbox_msg debug "Default src_configure()"
 			
-			./configure --prefix="${PKGBOX_DIR[install]}"
+			./configure --prefix="$INSTALLDIR"
 		}
 	fi
 	
@@ -249,6 +250,7 @@ function pkgbox_action_install()
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
 	
+	[[ ! -d "$INSTALLDIR" ]] && mkdir -p "$INSTALLDIR"
 	src_install
 	touch "$S/.pkgbox_install"
 }
