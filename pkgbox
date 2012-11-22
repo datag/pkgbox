@@ -81,6 +81,7 @@ declare -A PKGBOX_DIR
 
 ################################################################################
 # include config(s)
+# FIXME: move before options? or merge options afterwards?
 for c in /etc/pkgbox "${PKGBOX_OPTS[base]:="$HOME/.pkgbox"}/config" "${PKGBOX_OPTS[config]}"; do
 	if [[ -r $c && -f $c ]]; then
 		pkgbox_msg info "Using config '$c'"
@@ -94,10 +95,6 @@ unset c
 PKGBOX_DIR[base]=${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
 PKGBOX_DIR[tmp]=${PKGBOX_DIR[tmp]:="${PKGBOX_DIR[base]}/tmp"}
 PKGBOX_DIR[download]=${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
-PKGBOX_DIR[install]=${PKGBOX_DIR[install]:="/usr/local"}
-
-# allow overriding install-prefix by option
-[[ ${PKGBOX_OPTS[prefix]} ]] && PKGBOX_DIR[install]=${PKGBOX_OPTS[prefix]}
 
 for d in "${PKGBOX_DIR[@]}"; do
 	if [[ ! -d "$d" ]]; then
@@ -117,6 +114,9 @@ pkgbox_include "include/utils.sh"
 
 ################################################################################
 # main or test
+
+# allow overriding install-prefix by option
+PKGBOX_OPTS[prefix]=${PKGBOX_OPTS[prefix]:="/usr/local"}
 
 if [[ ${PKGBOX_OPTS[test]} ]]; then
 	pkgbox_include "include/_coretest.sh"

@@ -9,9 +9,10 @@ function pkgbox_usage()
 		    -V <version>	Override package default version
 		    -D <key>[=<value>]
 		        Define a setting; available settings:
-		        * base   Base directory of pkgbox (default: \$HOME/.pkgbox)
-		        * config Additional config to include
-		        * test   Run test suite
+		        * base     Base directory of pkgbox (default: \$HOME/.pkgbox)
+		        * config   Additional config to include
+		        * prefix   Install prefix (default: /usr/local)
+		        * test     Run test suite
 EOT
 }
 
