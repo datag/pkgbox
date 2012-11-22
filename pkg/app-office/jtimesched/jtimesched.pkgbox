@@ -8,14 +8,38 @@ MY_P=$MY_PN-$PV
 
 DESCRIPTION="jTimeSched is a simple and lightweight time tracking tool"
 HOMEPAGE="http://kbase.dominik-geyer.de/apps:jtimesched"
-SRC_URI="http://www.dominik-geyer.de/files/$MY_PN/$MY_P.zip"
+SCM_REPO="https://github.com/datag/jtimesched.git"
 
 IUSE=""
 
 S=${WORKDIR}/${MY_P}
 
 src_unpack() {
-	# package doesn't have $P as first path component
-	pkgbox_unpack "$A" "$S"
+	# nothing to do
+	:
+}
+
+src_unpack() {
+	git clone $SCM_REPO "$S"
+}
+
+src_configure() {
+	# nothing to do
+	:
+}
+
+src_compile() {
+	ant -Dversion="${PV}-pkgbox" jar
+}
+
+src_install() {
+	cp -t $INSTALLDIR \
+		README.md ChangeLog.txt LICENSE.txt \
+		dist/jTimeSched.jar \
+		launcher/jTimeSched.sh
+	
+	cp data/img/appicon/jTimeSched_on_256px.png $INSTALLDIR/jTimeSched.png
+	
+	chmod a+x $INSTALLDIR/jTimeSched.{jar,sh}
 }
 

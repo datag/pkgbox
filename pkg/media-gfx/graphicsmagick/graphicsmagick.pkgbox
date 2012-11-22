@@ -16,7 +16,3 @@ IUSE="bzip jpeg png"
 
 S=${WORKDIR}/${MY_P}
 
-src_prepare() {
-	echo prepare
-}
-
