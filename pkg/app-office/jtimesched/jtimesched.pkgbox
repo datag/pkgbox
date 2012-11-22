@@ -2,7 +2,7 @@
 
 PKGBOX_API=1
 
-pkgver 1.1
+pkgver master  # devel, release-1.1
 MY_PN=jTimeSched
 MY_P=$MY_PN-$PV
 
@@ -21,6 +21,8 @@ src_unpack() {
 
 src_unpack() {
 	git clone $SCM_REPO "$S"
+	
+	{ cd "$S"; git checkout $PV; }
 }
 
 src_configure() {
