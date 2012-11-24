@@ -1,7 +1,9 @@
 function pkgbox_action()
 {
-	local action=$1 i n curaction
+	local action=$1 i n curaction outdesc
 	declare -a actions
+	
+	(( PKGBOX_VERBOSITY < 2 )) && outdesc=/dev/null || outdesc=/dev/stdout
 	
 	case $1 in
 	"install")
@@ -32,9 +34,9 @@ function pkgbox_action()
 	n=${#actions[@]}
 	for (( i = n - 1; i >= 0; --i )); do
 		curaction=${actions[$i]}
-		pkgbox_msg debug "Action #$((n - i)): $curaction"
+		pkgbox_msg notice "Action #$((n - i)): $curaction"
 		
-		pkgbox_action_$curaction
+		pkgbox_action_$curaction >$outdesc
 	done
 }
 
@@ -77,7 +79,7 @@ function pkgbox_action_init()
 	
 	# debug: print variables/functions declared by the package script
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
-	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')")"
+	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')" || true)"
 	
 	# TODO: check global variables
 	
@@ -132,7 +134,7 @@ function pkgbox_action_init()
 		{
 			pkgbox_msg debug "Default src_configure()"
 			
-			./configure --prefix="$INSTALLDIR"
+			pkgConfigure
 		}
 	fi
 	
@@ -265,9 +267,15 @@ function pkgVer()
 	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
 }
 
+function pkgConfigure()
+{
+	pkgbox_exec ./configure --prefix="$INSTALLDIR"
+}
+
 function pkgMake()
 {
 	local target=$1
-	make ${PKGBOX_OPTS[make_opts]} $target
+	
+	pkgbox_exec make ${PKGBOX_OPTS[make_opts]} $target
 }
 
