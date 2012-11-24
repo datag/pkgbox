@@ -143,7 +143,7 @@ function pkgbox_action_init()
 		{
 			pkgbox_msg debug "Default src_compile()"
 			
-			make
+			pkgMake
 		}
 	fi
 	
@@ -154,7 +154,7 @@ function pkgbox_action_init()
 		{
 			pkgbox_msg debug "Default src_install()"
 			
-			make install
+			pkgMake install
 		}
 	fi
 }
@@ -255,7 +255,7 @@ function pkgbox_action_install()
 	touch "$S/.pkgbox_install"
 }
 
-function pkgver()
+function pkgVer()
 {
 	[[ -n "$PV" ]] && return 0		# default is overridden
 	
@@ -263,5 +263,11 @@ function pkgver()
 	P=$PN-$PV
 	
 	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
+}
+
+function pkgMake()
+{
+	local target=$1
+	make ${PKGBOX_OPTS[make_opts]} $target
 }
 
