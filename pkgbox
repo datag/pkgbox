@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-# remove unneeded quotes!
-
 set -eE  #x
-set -o pipefail	  # http://petereisentraut.blogspot.de/2010/11/pipefail.html
+set -o pipefail
 
 # unset all aliases
 unalias -a
@@ -18,13 +16,12 @@ fi
 __VARS=$(set -o posix; set)
 
 # determine absolute location of script
-declare -r PKGBOX_PATH="$(dirname "$(readlink -f "$BASH_SOURCE")")"
+declare -r PKGBOX_PATH=$(dirname "$(readlink -f "$BASH_SOURCE")")
 
 # include basic lib
 source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2; exit 1; }
 
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
-# http://fvue.nl/wiki/Bash:_Error_handling
 trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
 declare -i PKGBOX_VERBOSITY=0
@@ -45,7 +42,7 @@ while getopts ":vD:V:h" opt; do
 		;;
 	# defines a special config variable
 	D)
-		PKGBOX_OPTS_USR[${OPTARG%%=*}]="${OPTARG#*=}"
+		PKGBOX_OPTS_USR[${OPTARG%%=*}]=${OPTARG#*=}
 		;;
 	h)
 		pkgbox_usage >&2
@@ -73,8 +70,8 @@ if [[ $# < 2 ]]; then
 	exit 1
 fi
 
-declare -r PKGBOX_PACKAGE="$1"
-declare -r PKGBOX_ACTION="$2"
+declare -r PKGBOX_PACKAGE=$1
+declare -r PKGBOX_ACTION=$2
 
 declare -A PKGBOX_DIR
 
@@ -92,7 +89,7 @@ unset c
 if [[ ${#PKGBOX_OPTS_USR[@]} > 0 ]]; then
 	for o in "${!PKGBOX_OPTS_USR[@]}"; do
 		pkgbox_msg debug "Overriding option $o"
-		PKGBOX_OPTS[$o]="${PKGBOX_OPTS_USR[$o]}"
+		PKGBOX_OPTS[$o]=${PKGBOX_OPTS_USR[$o]}
 	done
 fi
 
