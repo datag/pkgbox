@@ -29,16 +29,7 @@ trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
 declare -i PKGBOX_VERBOSITY=0
 declare -A PKGBOX_OPTS
-
-################################################################################
-# include pre config(s)
-for c in /etc/pkgbox "${PKGBOX_OPTS[base]:="$HOME/.pkgbox"}/conf"; do
-	if [[ -r $c && -f $c ]]; then
-		pkgbox_msg info "Using (pre)config '$c'"
-		source "$c"
-	fi
-done
-unset c
+declare -A PKGBOX_OPTS_USR
 
 ################################################################################
 # parse options
@@ -54,7 +45,7 @@ while getopts ":vD:V:h" opt; do
 		;;
 	# defines a special config variable
 	D)
-		PKGBOX_OPTS[${OPTARG%%=*}]="${OPTARG#*=}"
+		PKGBOX_OPTS_USR[${OPTARG%%=*}]="${OPTARG#*=}"
 		;;
 	h)
 		pkgbox_usage >&2
@@ -85,19 +76,33 @@ fi
 declare -r PKGBOX_PACKAGE="$1"
 declare -r PKGBOX_ACTION="$2"
 
-[[ ${#PKGBOX_OPTS[@]} > 0 ]] && pkgbox_msg debug "Using options: ${!PKGBOX_OPTS[@]}"
-
 declare -A PKGBOX_DIR
 
 ################################################################################
-# include post config(s)
-for c in "${PKGBOX_OPTS[config]}"; do
+# include config(s)
+for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:="$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]}"; do
 	if [[ -r $c && -f $c ]]; then
-		pkgbox_msg info "Using (post)config '$c'"
+		pkgbox_msg info "Using config '$c'"
 		source "$c"
 	fi
 done
 unset c
+
+# merge user provided options with config array (override config with user options)
+if [[ ${#PKGBOX_OPTS_USR[@]} > 0 ]]; then
+	for o in "${!PKGBOX_OPTS_USR[@]}"; do
+		pkgbox_msg debug "Overriding option $o"
+		PKGBOX_OPTS[$o]="${PKGBOX_OPTS_USR[$o]}"
+	done
+fi
+
+# debug output all options
+if [[ ${#PKGBOX_OPTS[@]} > 0 ]]; then
+	for o in "${!PKGBOX_OPTS[@]}"; do
+		pkgbox_msg debug "OPTION: $(printf '% 15s' "$o") = '${PKGBOX_OPTS[$o]}'"
+	done
+fi
+unset PKGBOX_OPTS_USR o
 
 ################################################################################
 # general setup: pkgbox directories, ...
