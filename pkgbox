@@ -27,11 +27,21 @@ source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic
 # http://fvue.nl/wiki/Bash:_Error_handling
 trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
-################################################################################
-# parsing options
 declare -i PKGBOX_VERBOSITY=0
 declare -A PKGBOX_OPTS
 
+################################################################################
+# include pre config(s)
+for c in /etc/pkgbox "${PKGBOX_OPTS[base]:="$HOME/.pkgbox"}/conf"; do
+	if [[ -r $c && -f $c ]]; then
+		pkgbox_msg info "Using (pre)config '$c'"
+		source "$c"
+	fi
+done
+unset c
+
+################################################################################
+# parse options
 while getopts ":vD:V:h" opt; do
 	case $opt in
 	# be verbose; each -v increases the verbosity level
@@ -80,11 +90,10 @@ declare -r PKGBOX_ACTION="$2"
 declare -A PKGBOX_DIR
 
 ################################################################################
-# include config(s)
-# FIXME: move before options? or merge options afterwards?
-for c in /etc/pkgbox "${PKGBOX_OPTS[base]:="$HOME/.pkgbox"}/config" "${PKGBOX_OPTS[config]}"; do
+# include post config(s)
+for c in "${PKGBOX_OPTS[config]}"; do
 	if [[ -r $c && -f $c ]]; then
-		pkgbox_msg info "Using config '$c'"
+		pkgbox_msg info "Using (post)config '$c'"
 		source "$c"
 	fi
 done
