@@ -13,7 +13,11 @@ function pkgbox_usage()
 		        * config   Additional config to include
 		        * prefix   Install prefix (default: /usr/local)
 		        * test     Run test suite
-EOT
+		
+		Actions:
+		    fetch, unpack, prepare, configure, compile, install,
+		    info, clean
+	EOT
 }
 
 # Prints message (stderr) and die

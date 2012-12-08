@@ -6,6 +6,12 @@ function pkgbox_action()
 	(( PKGBOX_VERBOSITY < 2 )) && outdesc=/dev/null || outdesc=/dev/stdout
 	
 	case $1 in
+	"info")
+		actions+=("info")
+		;;
+	"clean")
+		actions+=("clean")
+		;;
 	"install")
 		actions+=("install")
 		;&
@@ -255,6 +261,28 @@ function pkgbox_action_install()
 	[[ ! -d "$INSTALLDIR" ]] && mkdir -p "$INSTALLDIR"
 	src_install
 	touch "$S/.pkgbox_install"
+}
+
+function pkgbox_action_clean()
+{
+	local filename
+	
+	pkgbox_msg info "clean()"
+	
+	pkgbox_msg notice "Removing '$PN' working directory"
+	[[ "${S:0:${#WORKDIR}}" == "$WORKDIR" ]] || pkgbox_die "Invalid working directory '$S'"
+	rm -rf "$S" &>/dev/null
+	
+	for filename in "${A[@]}"; do
+		pkgbox_msg notice "Removing '$PN' download file"
+		rm -f "$filename" &>/dev/null
+	done
+}
+
+function pkgbox_action_info()
+{
+	pkgbox_msg info "info()"
+	
 }
 
 function pkgVer()
