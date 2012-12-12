@@ -32,16 +32,13 @@ declare -A PKGBOX_OPTS_USR
 # parse options
 while getopts ":vD:V:h" opt; do
 	case $opt in
-	# be verbose; each -v increases the verbosity level
-	v)
+	v)	# be verbose; each -v increases the verbosity level
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
 		;;
-	# override package version
-	V)
+	V)	# override package version
 		PV=$OPTARG
 		;;
-	# defines a special config variable
-	D)
+	D)	# defines a special config variable
 		PKGBOX_OPTS_USR[${OPTARG%%=*}]=${OPTARG#*=}
 		;;
 	h)
