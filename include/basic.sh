@@ -12,6 +12,7 @@ function pkgbox_usage()
 		        * base     Base directory of pkgbox (default: \$HOME/.pkgbox)
 		        * config   Additional config to include
 		        * prefix   Install prefix (default: /usr/local)
+		        * force    Force re-running action
 		        * test     Run test suite
 		
 		Actions:

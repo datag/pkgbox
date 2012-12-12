@@ -5,7 +5,7 @@ function pkgbox_action()
 	
 	(( PKGBOX_VERBOSITY < 2 )) && outdesc=/dev/null || outdesc=/dev/stdout
 	
-	case $1 in
+	case $action in
 	"info")
 		actions+=("info")
 		;;
@@ -35,12 +35,23 @@ function pkgbox_action()
 		;;
 	esac
 	
-	actions+=("init")
+	# always needed
+	pkgbox_action_init >$outdesc
 	
 	n=${#actions[@]}
 	for (( i = n - 1; i >= 0; --i )); do
 		curaction=${actions[$i]}
 		pkgbox_msg notice "Action #$((n - i)): $curaction"
+		
+		# already done?
+		if [[ -f "$S/.pkgbox_$curaction" ]]; then
+			if [[ $curaction == $action && -n "${PKGBOX_OPTS[force]}" ]]; then
+				pkgbox_msg info "Action '$curaction' forced"
+			else
+				pkgbox_msg info "Action '$curaction' already completed, skipping..."
+				continue
+			fi
+		fi
 		
 		pkgbox_action_$curaction >$outdesc
 	done
@@ -189,11 +200,6 @@ function pkgbox_action_unpack()
 {
 	pkgbox_msg info "src_unpack()"
 	
-	if [[ -f "$S/.pkgbox_unpack" ]]; then
-		pkgbox_msg info "Skipping unpack (already done)"
-		return 0
-	fi
-	
 	src_unpack
 	touch "$S/.pkgbox_unpack"
 }
@@ -201,11 +207,6 @@ function pkgbox_action_unpack()
 function pkgbox_action_prepare()
 {
 	pkgbox_msg info "src_prepare()"
-	
-	if [[ -f "$S/.pkgbox_prepare" ]]; then
-		pkgbox_msg info "Skipping prepare (already done)"
-		return 0
-	fi
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
@@ -218,11 +219,6 @@ function pkgbox_action_configure()
 {
 	pkgbox_msg info "src_configure()"
 	
-	if [[ -f "$S/.pkgbox_configure" ]]; then
-		pkgbox_msg info "Skipping configure (already done)"
-		return 0
-	fi
-	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
 	
@@ -234,11 +230,6 @@ function pkgbox_action_compile()
 {
 	pkgbox_msg info "src_compile()"
 	
-	if [[ -f "$S/.pkgbox_compile" ]]; then
-		pkgbox_msg info "Skipping compile (already done)"
-		return 0
-	fi
-	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
 	
@@ -249,11 +240,6 @@ function pkgbox_action_compile()
 function pkgbox_action_install()
 {
 	pkgbox_msg info "src_install()"
-	
-	if [[ -f "$S/.pkgbox_install" ]]; then
-		pkgbox_msg info "Skipping install (already done)"
-		return 0
-	fi
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
