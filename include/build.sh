@@ -283,13 +283,22 @@ function pkgVer()
 
 function pkgConfigure()
 {
-	pkgbox_exec ./configure --prefix="$INSTALLDIR"
+	pkgbox_exec \
+		./configure \
+			CFLAGS="${PKGBOX_OPTS[cflags]}" \
+			CXXFLAGS="${PKGBOX_OPTS[cxxflags]}" \
+			CPPFLAGS="${PKGBOX_OPTS[cppflags]}" \
+			LDFLAGS="${PKGBOX_OPTS[ldflags]}" \
+			--prefix="$INSTALLDIR" \
+			"$@"
 }
 
 function pkgMake()
 {
 	local target=$1
+	shift || true
 	
-	pkgbox_exec make ${PKGBOX_OPTS[make_opts]} $target
+	pkgbox_exec \
+		make ${PKGBOX_OPTS[make_opts]} "$@" $target
 }
 

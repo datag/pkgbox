@@ -15,3 +15,17 @@ IUSE=""
 
 S=${WORKDIR}/${MY_P}
 
+
+# package specific
+LAYOUT=Apache
+MODS_SHARED=most  # reallyall, all, most, few or none
+MPM=worker  # prefork, worker or event
+
+src_configure()
+{
+	pkgConfigure \
+		--enable-layout=$LAYOUT \
+		--enable-mods-shared=$MODS_SHARED \
+		--with-mpm=$MPM
+}
+

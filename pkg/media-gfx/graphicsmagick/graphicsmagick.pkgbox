@@ -1,6 +1,8 @@
 # pkgbox: ImageMagick
-
 PKGBOX_API=1
+
+# Build documentation
+# http://www.graphicsmagick.org/INSTALL-unix.html
 
 pkgVer 1.3.17
 MY_P=${P/graphicsmagick/GraphicsMagick}
