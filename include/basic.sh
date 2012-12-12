@@ -6,6 +6,7 @@ function pkgbox_usage()
 		
 		Options:
 		    -v	Be verbose (given multiple times increases verbosity level)
+		    -q	Be quiet (given multiple times decreases verbosity level)
 		    -V <version>	Override package default version
 		    -D <key>[=<value>]
 		        Define a setting; available settings:

@@ -24,7 +24,7 @@ source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic
 # trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
 trap 'pkgbox_die trap ${10:-$?}' 1 2 3 15 ERR
 
-declare -i PKGBOX_VERBOSITY=0
+declare -i PKGBOX_VERBOSITY=1
 declare -A PKGBOX_OPTS
 declare -A PKGBOX_OPTS_USR
 
@@ -34,6 +34,9 @@ while getopts ":vD:V:h" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
+		;;
+	q)	# be quiet; each -q decreases the verbosity level
+		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY - 1))
 		;;
 	V)	# override package version
 		PV=$OPTARG
