@@ -267,8 +267,14 @@ function pkgbox_action_clean()
 
 function pkgbox_action_info()
 {
-	pkgbox_msg info "info()"
+	local str=$(cat <<-EOT
+		Package information:
+		    Package:    $PN
+		    Version:    $PV
+	EOT
+	)
 	
+	pkgbox_msg notice "$str"
 }
 
 function pkgVer()
