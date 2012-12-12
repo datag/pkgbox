@@ -295,10 +295,7 @@ function pkgConfigure()
 
 function pkgMake()
 {
-	local target=$1
-	shift || true
-	
 	pkgbox_exec \
-		make ${PKGBOX_OPTS[make_opts]} "$@" $target
+		make ${PKGBOX_OPTS[make_opts]} "$@"
 }
 
