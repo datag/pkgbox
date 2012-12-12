@@ -1,0 +1,17 @@
+# pkgbox: Apache httpd
+PKGBOX_API=1
+
+# Compiling and Installing: http://httpd.apache.org/docs/current/en/install.html
+# Configuring the source tree: http://httpd.apache.org/docs/current/en/programs/configure.html
+
+pkgVer 2.4.3
+MY_P=${P/apache/httpd}
+
+DESCRIPTION="The Apache Web Server"
+HOMEPAGE="http://httpd.apache.org/"
+SRC_URI="http://mirror.synyx.de/apache/httpd/$MY_P.tar.bz2"
+
+IUSE=""
+
+S=${WORKDIR}/${MY_P}
+
