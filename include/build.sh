@@ -269,8 +269,12 @@ function pkgbox_action_info()
 {
 	local str=$(cat <<-EOT
 		Package information:
-		    Package:    $PN
-		    Version:    $PV
+		    Package:     $PN
+		    Version:     $PV
+		    Description: $DESCRIPTION
+		    Homepage:    $HOMEPAGE
+		    Source URIs: ${SRC_URI[@]}
+		    USE flags:   $IUSE
 	EOT
 	)
 	
