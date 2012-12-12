@@ -70,7 +70,7 @@ if [[ $# < 2 ]]; then
 	exit 1
 fi
 
-declare -r PKGBOX_PACKAGE=$1
+declare PKGBOX_PACKAGE=$1
 declare -r PKGBOX_ACTION=$2
 
 declare -A PKGBOX_DIR
@@ -104,6 +104,7 @@ unset PKGBOX_OPTS_USR o
 ################################################################################
 # general setup: pkgbox directories, ...
 PKGBOX_DIR[base]=${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
+PKGBOX_DIR[packages]=${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
 PKGBOX_DIR[tmp]=${PKGBOX_DIR[tmp]:="${PKGBOX_DIR[base]}/tmp"}
 PKGBOX_DIR[download]=${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
 
@@ -134,6 +135,11 @@ if [[ ${PKGBOX_OPTS[test]} ]]; then
 	_run_tests
 else
 	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
+	
+	# no explicit pkgbox-file given? build up default path
+	if [[ ! -f "$PKGBOX_PACKAGE" ]]; then
+		PKGBOX_PACKAGE="${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox"
+	fi
 	
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"
 fi
