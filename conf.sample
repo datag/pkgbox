@@ -1,9 +1,12 @@
 # pkgbox config
 
 PKGBOX_OPTS[prefix]="$HOME/local/pkgbox_test"
+
 PKGBOX_OPTS[cflags]="-march=native -O2 -pipe"
 PKGBOX_OPTS[cxxflags]=${PKGBOX_OPTS[cflags]}
 PKGBOX_OPTS[cppflags]="-I${PKGBOX_OPTS[prefix]}/include"
 PKGBOX_OPTS[ldflags]="-L${PKGBOX_OPTS[prefix]}/lib"
+
 PKGBOX_OPTS[make_opts]="-j3"
+
 
