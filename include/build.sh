@@ -294,7 +294,7 @@ function pkgVer()
 function pkgConfigure()
 {
 	pkgbox_exec \
-		./configure \
+		${CONFIGURE_SCRIPT:-"./configure"} \
 			CFLAGS="${PKGBOX_OPTS[cflags]}" \
 			CXXFLAGS="${PKGBOX_OPTS[cxxflags]}" \
 			CPPFLAGS="${PKGBOX_OPTS[cppflags]}" \

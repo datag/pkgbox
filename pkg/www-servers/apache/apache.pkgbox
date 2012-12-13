@@ -14,7 +14,7 @@ SRC_URI="http://mirror.synyx.de/apache/httpd/$MY_P.tar.bz2"
 IUSE=""
 
 # package specific
-LAYOUT=Apache		# Layout to use: Apache, GNU, ... (see file config.layout)
+LAYOUT=GNU			# Layout to use: Apache, GNU, ... (see file config.layout)
 MODS_SHARED=most	# Modules to build: reallyall, all, most, few or none
 MPM=worker			# Multi-processing module: prefork, worker or event
 

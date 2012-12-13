@@ -1,0 +1,98 @@
+# pkgbox: PHP
+PKGBOX_API=1
+
+# FAQ Installation: http://www.php.net/manual/en/faq.installation.php
+# Install on UNIX / Apache2: http://php.net/manual/en/install.unix.apache2.php
+# List of core configure options: http://php.net/manual/en/configure.about.php
+# Configure script (trunk): http://svn.php.net/viewvc/php/php-src/trunk/configure.in?view=markup
+
+pkgVer 5.4.9
+
+DESCRIPTION="The PHP language runtime engine"
+HOMEPAGE="http://php.net/"
+SRC_URI="http://de3.php.net/get/${P}.tar.bz2/from/this/mirror?dummy=/${P}.tar.bz2"
+
+IUSE=""
+
+# package specific
+LAYOUT=GNU		# PHP, GNU
+CONFIG_FILE_PATH="$INSTALLDIR/etc"
+MYSQL_SOCK="$INSTALLDIR/var/run/mysqld/mysqld.sock"
+
+src_configure()
+{
+	pkgConfigure \
+		--with-layout=$LAYOUT \
+		--enable-cgi \
+		--with-config-file-path="$CONFIG_FILE_PATH" \
+		--disable-debug \
+		--with-regex=php \
+		--disable-rpath \
+		--disable-static \
+		--with-pic \
+		--enable-calendar \
+		--enable-sysvsem \
+		--enable-sysvshm \
+		--enable-sysvmsg \
+		--enable-bcmath \
+		--with-bz2 \
+		--enable-ctype \
+		--with-iconv \
+		--enable-exif \
+		--enable-ftp \
+		--with-gettext \
+		--enable-mbstring \
+		--with-pcre-regex=/usr \
+		--enable-shmop \
+		--enable-sockets \
+		--enable-wddx \
+		--with-libxml-dir=/usr \
+		--with-zlib \
+		--with-openssl=/usr \
+		--enable-zip \
+		--with-mhash=yes \
+		--without-mm \
+		--with-curl=/usr \
+		--with-zlib-dir=/usr \
+		--with-gd --enable-gd-native-ttf \
+		--with-jpeg-dir=/usr \
+		--with-png-dir=/usr \
+		--with-freetype-dir=/usr \
+		--enable-intl \
+		--with-mysql=mysqlnd \
+		--with-mysqli=mysqlnd \
+		--with-xsl=/usr \
+		--with-sqlite3=/usr \
+		--enable-pdo \
+		--with-pdo-mysql=mysqlnd \
+		--with-pdo-sqlite=/usr \
+		--with-mysql-sock="$MYSQL_SOCK" \
+		--with-readline
+		
+		#	--with-mcrypt \
+		#	--with-pspell=/usr \
+		#	--with-recode=/usr \
+		#	--with-gmp=/usr \
+		#	--with-kerberos=/usr \
+		#	--with-db4 \
+		#	--without-gdbm \
+		#	--enable-soap \
+		#	--with-exec-dir=/usr/lib/php5/libexec \
+		#	--with-enchant=/usr \
+		#	--with-xpm-dir=/usr/X11R6 \
+		#	--with-t1lib=/usr \
+		#	--with-ldap=/usr \
+		#	--with-ldap-sasl=/usr \
+		#	--with-unixODBC=/usr \
+		#	--with-snmp=/usr \
+		#	--with-sqlite=/usr \
+		#	--with-mssql=/usr \
+		#	--with-tidy=/usr \
+		#	--with-xmlrpc=shared \
+		#	--with-pgsql=/usr PGSQL_INCLUDE=`pg_config --includedir` \
+		#	--without-pdo-dblib \
+		#	--with-pdo-odbc=unixODBC,/usr \
+		#	--with-pdo-pgsql=/usr/bin/pg_config \
+		#	--with-pdo-dblib=/usr \
+}
+
