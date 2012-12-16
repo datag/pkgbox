@@ -259,10 +259,11 @@ function pkgbox_action_clean()
 	[[ "${S:0:${#WORKDIR}}" == "$WORKDIR" ]] || pkgbox_die "Invalid working directory '$S'"
 	rm -rf "$S" &>/dev/null
 	
-	for filename in "${A[@]}"; do
-		pkgbox_msg notice "Removing '$PN' download file"
-		rm -f "$filename" &>/dev/null
-	done
+	# remove downloaded files
+	#for filename in "${A[@]}"; do
+	#	pkgbox_msg notice "Removing '$PN' download file"
+	#	rm -f "$filename" &>/dev/null
+	#done
 }
 
 function pkgbox_action_info()
