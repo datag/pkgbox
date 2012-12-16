@@ -1,0 +1,37 @@
+# pkgbox: MySQL
+PKGBOX_API=1
+
+# Building from source: http://dev.mysql.com/doc/mysql-sourcebuild-excerpt/5.5/en/index.html
+# Configure options: http://dev.mysql.com/doc/mysql-sourcebuild-excerpt/5.5/en/source-configuration-options.html
+
+pkgVer 5.5.28
+
+DESCRIPTION="A fast, multi-threaded, multi-user SQL database server"
+HOMEPAGE="http://www.mysql.com/"
+SRC_URI="http://dev.mysql.com/get/Downloads/MySQL-${PV:0:3}/$P.tar.gz/from/http://cdn.mysql.com/?dummy=/$P.tar.gz"
+
+IUSE=""
+
+# package specific
+MYSQL_DATADIR="$INSTALLDIR/var/lib/mysql"
+SYSCONFDIR="$INSTALLDIR/etc/mysql"
+MYSQL_UNIX_ADDR="$INSTALLDIR/var/run/mysqld/mysqld.sock"
+
+# install MySQL in separate directory (has strange layout...)
+MY_INSTALLDIR="$INSTALLDIR/mysql"
+
+src_configure()
+{
+	cmake \
+		-DCMAKE_INSTALL_PREFIX="$MY_INSTALLDIR" \
+		-DINSTALL_BINDIR="$INSTALLDIR/bin" \
+		-DINSTALL_SBINDIR="$INSTALLDIR/bin" \
+		-DINSTALL_LIBDIR="$INSTALLDIR/lib" \
+		-DINSTALL_INCLUDEDIR="$INSTALLDIR/include/mysql" \
+		-DINSTALL_MANDIR="$INSTALLDIR/man" \
+		-DMYSQL_DATADIR="$MYSQL_DATADIR" \
+		-DSYSCONFDIR="$SYSCONFDIR" \
+		-DMYSQL_UNIX_ADDR="$MYSQL_UNIX_ADDR" \
+		.
+}
+
