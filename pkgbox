@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+################################################################################
+# pkgbox - The build toolbox
+# 
+# Copyright 2012 Dominik D. Geyer <dominik.geyer@gmail.com>
+# License: GPLv3 (see file LICENSE)
+################################################################################
 
 set -eE  #x
 set -o pipefail
