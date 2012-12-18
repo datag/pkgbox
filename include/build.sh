@@ -306,6 +306,8 @@ function pkgConfigure()
 
 function pkgMake()
 {
+	# FIXME: target "install" (or similar) may cause problems with -jX
+	
 	pkgbox_exec \
 		make ${PKGBOX_OPTS[make_opts]} "$@"
 }

@@ -1,0 +1,27 @@
+# pkgbox: Xdebug
+PKGBOX_API=1
+
+# Compiling: http://xdebug.org/docs/install#compile
+# Configuring PHP: http://xdebug.org/install.php#configure-php
+
+pkgVer 2.2.1
+
+DESCRIPTION="A PHP debugging and profiling extension"
+HOMEPAGE="http://www.xdebug.org/"
+SRC_URI="http://xdebug.org/files/$P.tgz"
+
+IUSE=""
+
+# package specific
+PHPIZE="$INSTALLDIR/bin/phpize"
+PHPCONFIG="$INSTALLDIR/bin/php-config"
+
+src_configure()
+{
+	$PHPIZE
+	
+	pkgConfigure \
+		--with-php-config="$PHPCONFIG" \
+		--enable-xdebug
+}
+
