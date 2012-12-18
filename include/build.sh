@@ -296,12 +296,12 @@ function pkgConfigure()
 {
 	pkgbox_exec \
 		${CONFIGURE_SCRIPT:-"./configure"} \
+			--prefix="$INSTALLDIR" \
+			"$@" \
 			CFLAGS="${PKGBOX_OPTS[cflags]}" \
 			CXXFLAGS="${PKGBOX_OPTS[cxxflags]}" \
 			CPPFLAGS="${PKGBOX_OPTS[cppflags]}" \
-			LDFLAGS="${PKGBOX_OPTS[ldflags]}" \
-			--prefix="$INSTALLDIR" \
-			"$@"
+			LDFLAGS="${PKGBOX_OPTS[ldflags]}"
 }
 
 function pkgMake()
