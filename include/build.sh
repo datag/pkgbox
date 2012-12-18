@@ -292,18 +292,25 @@ function pkgVer()
 	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
 }
 
+# @see: http://www.gnu.org/prep/standards/html_node/Configuration.html
+# @see: http://www.gnu.org/software/autoconf/manual/autoconf.html
 function pkgConfigure()
 {
 	pkgbox_exec \
 		${CONFIGURE_SCRIPT:-"./configure"} \
 			--prefix="$INSTALLDIR" \
 			"$@" \
-			CFLAGS="${PKGBOX_OPTS[cflags]}" \
-			CXXFLAGS="${PKGBOX_OPTS[cxxflags]}" \
-			CPPFLAGS="${PKGBOX_OPTS[cppflags]}" \
-			LDFLAGS="${PKGBOX_OPTS[ldflags]}"
+			CFLAGS="${PKGBOX_OPTS[CFLAGS]}" \
+			CXXFLAGS="${PKGBOX_OPTS[CXXFLAGS]}" \
+			CPPFLAGS="${PKGBOX_OPTS[CPPFLAGS]}" \
+			LDFLAGS="${PKGBOX_OPTS[LDFLAGS]}" \
+			EXTRA_LDFLAGS_PROGRAM="${PKGBOX_OPTS[EXTRA_LDFLAGS_PROGRAM]}" \
+			LIBS="${PKGBOX_OPTS[LIBS]}" \
+			CC="${PKGBOX_OPTS[CC]}" \
+			CXX="${PKGBOX_OPTS[CXX]}"
 }
 
+# @see: http://www.gnu.org/software/make/manual/make.html
 function pkgMake()
 {
 	# FIXME: target "install" (or similar) may cause problems with -jX
