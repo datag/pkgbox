@@ -7,9 +7,16 @@ PKGBOX_API=1
 pkgVer 2.4.3
 MY_P=${P/apache/httpd}
 
+APR_VER=1.4.6
+APR_UTIL_VER=1.5.1
+
 DESCRIPTION="The Apache Web Server"
 HOMEPAGE="http://httpd.apache.org/"
-SRC_URI="http://mirror.synyx.de/apache/httpd/$MY_P.tar.bz2"
+SRC_URI=(
+	"http://mirror.synyx.de/apache/httpd/$MY_P.tar.bz2"
+	"http://mirror.synyx.de/apache/apr/apr-$APR_VER.tar.bz2"
+	"http://mirror.synyx.de/apache/apr/apr-util-$APR_UTIL_VER.tar.bz2"
+)
 
 IUSE=""
 
@@ -21,11 +28,23 @@ MPM=worker			# Multi-processing module: prefork, worker or event
 
 S=${WORKDIR}/${MY_P}
 
+src_unpack()
+{
+	pkgbox_unpack "${PKGBOX_DIR[download]}/$MY_P.tar.bz2"
+	
+	pkgbox_unpack "${PKGBOX_DIR[download]}/apr-$APR_VER.tar.bz2" "$S/srclib"
+	mv "$S/srclib/apr-$APR_VER" "$S/srclib/apr"
+	
+	pkgbox_unpack "${PKGBOX_DIR[download]}/apr-util-$APR_UTIL_VER.tar.bz2" "$S/srclib"
+	mv "$S/srclib/apr-util-$APR_UTIL_VER" "$S/srclib/apr-util"
+}
+
 src_configure()
 {
 	pkgConfigure \
 		--enable-layout=$LAYOUT \
 		--enable-mods-shared=$MODS_SHARED \
-		--with-mpm=$MPM
+		--with-mpm=$MPM \
+		--with-included-apr
 }
 
