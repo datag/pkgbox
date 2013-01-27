@@ -61,16 +61,31 @@ function pkgbox_action_init()
 {
 	# imitate ebuild variables: http://devmanual.gentoo.org/ebuild-writing/variables/index.html
 	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) pkg_basename=${PKGBOX_PACKAGE##*/} i
+	local pkg_path=${pkg_canonical%/*}
 	
-	# global variables
-	FILESDIR="${pkg_canonical%/*}/files"
-	P=${pkg_basename%.pkgbox}		# try to extract $P (name + version) from filename
-	PN=${P%-*}
-	PV=${PV:=${P##*-}}				# may be overridden by version provided via "-V" option
-	if ! pkgbox_is_int ${PV:0:1}; then
+	# globals
+	FILESDIR="${pkg_path}/files"
+	
+	P=${pkg_basename%.pkgbox}		# filename without path and extension
+	
+	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
+	if [[ $P =~ $regex ]]; then
+		PN=${BASH_REMATCH[1]}
+		
+		if [[ -z $PV ]]; then		# version override by option '-V'
+			PV=${BASH_REMATCH[2]}
+			PV=${PV:1}		# cut off first dash
+		fi
+		
+		P="$PN-$PV"
+	else
+		PN=$P
+	fi
+	
+	if [[ -z $PV ]]; then
 		unset P PV
 	else
-		P=$PN-$PV						# in case filename did not contain $PV
+		P="$PN-$PV"
 	fi
 	
 	T="${PKGBOX_DIR[tmp]}/temp"
