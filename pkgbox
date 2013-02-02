@@ -142,9 +142,12 @@ if [[ ${PKGBOX_OPTS[test]} ]]; then
 else
 	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
 	
-	# no explicit pkgbox-file given? build up default path
+	# no explicit pkgbox-file given? try some default paths...
 	if [[ ! -f "$PKGBOX_PACKAGE" ]]; then
-		PKGBOX_PACKAGE="${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox"
+		for f in "${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox"; do
+			[[ -f "$f" ]] && { PKGBOX_PACKAGE=$f; break; }
+		done
+		unset f
 	fi
 	
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"
