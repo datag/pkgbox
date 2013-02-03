@@ -1,5 +1,4 @@
 # core tests
-# FIXME: possibility to assert output of stdout (maybe even stderr) as well
 ################################################################################
 
 # Test wrapper
@@ -221,11 +220,11 @@ _test_pkgbox_exec()
 ################################################################################
 _test_pkgbox_download()
 {
-	# cleanup
 	local pkg_url='http://www.dominik-geyer.de/files/jTimeSched/jTimeSched-latest.zip'
 	local pkg_file="jTimeSched-1.1 with space.zip"
 	local pkg_filepath="${PKGBOX_DIR[download]}/$pkg_file"
 	
+	# cleanup
 	[[ -f "$pkg_filepath" ]] && rm "$pkg_filepath"
 	
 	_t !0 "pkgbox_download"
