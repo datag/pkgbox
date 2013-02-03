@@ -1,0 +1,31 @@
+# pkgbox: PECL ssh2
+PKGBOX_API=1
+
+# PECL ssh2: http://pecl.php.net/ssh2
+# PHP ssh2: http://php.net/manual/en/book.ssh2.php
+# php-config: http://www.php.net/manual/en/install.pecl.php-config.php
+
+pkgVer 0.12
+MY_P=${P/pecl-ssh2/ssh2}
+
+DESCRIPTION="Provides bindings to the functions of libssh2 which implements the SSH2 protocol."
+HOMEPAGE="http://pecl.php.net/ssh2"
+SRC_URI="http://pecl.php.net/get/$MY_P.tgz"
+
+IUSE=""
+
+S=${WORKDIR}/${MY_P}
+
+# package specific
+PHPIZE="$INSTALLDIR/bin/phpize"
+PHPCONFIG="$INSTALLDIR/bin/php-config"
+
+src_configure()
+{
+	$PHPIZE
+	
+	# --prefix will be ignored if php-config provided
+	pkgConfigure \
+		--with-php-config="$PHPCONFIG"
+}
+

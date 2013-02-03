@@ -3,6 +3,7 @@ PKGBOX_API=1
 
 # Compiling: http://xdebug.org/docs/install#compile
 # Configuring PHP: http://xdebug.org/install.php#configure-php
+# php-config: http://www.php.net/manual/en/install.pecl.php-config.php
 
 pkgVer 2.2.1
 
@@ -20,6 +21,7 @@ src_configure()
 {
 	$PHPIZE
 	
+	# --prefix will be ignored if php-config provided
 	pkgConfigure \
 		--with-php-config="$PHPCONFIG" \
 		--enable-xdebug
