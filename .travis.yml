@@ -11,8 +11,9 @@ before_script:
 script:
     - "pkgbox -h"
     - "pkgbox -vvv -D test foo bar"
-    - "pkgbox -v media-gfx/graphicsmagick install"
+    - "pkgbox app-misc/hello info"
+    - "pkgbox -v app-misc/hello install"
 
 after_script:
-    - "~/local/bin/gm -version"
+    - "~/local/bin/hello --next-generation"
 
