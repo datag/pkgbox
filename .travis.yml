@@ -6,11 +6,13 @@ compiler: gcc
 before_script:
     - "bash --version | head -n 1"
     - "export PATH=$PWD:$PATH"
+    - "mkdir ~/.pkgbox && cp -v conf.sample ~/.pkgbox/conf"
 
 script:
+    - "pkgbox -h"
     - "pkgbox -vvv -D test foo bar"
     - "pkgbox -v media-gfx/graphicsmagick install"
 
 after_script:
-    - "/usr/local/bin/gm -version"
+    - "~/local/bin/gm -version"
 
