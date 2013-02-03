@@ -82,7 +82,9 @@ function _run_tests()
 			continue
 		fi
 		
-		pkgbox_echo -e "\n$(_sgr fg=black reverse)  RUNNING TESTS    $(printf "% 59s" "$t")  " >&2
+		echo >&2
+		pkgbox_echo "$(_sgr fg=black reverse)  RUNNING TESTS    $(printf "% 59s" "$t")  " >&2
+		
 		$testfunc
 		
 		# unset commonly used variables
