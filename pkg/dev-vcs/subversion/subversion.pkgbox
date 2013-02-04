@@ -4,7 +4,7 @@ PKGBOX_API=1
 # http://subversion.apache.org/source-code.html
 # http://svn.apache.org/repos/asf/subversion/trunk/INSTALL
 
-pkgVer 1.7.7
+pkgVer 1.7.8
 
 DESCRIPTION="Advanced version control system"
 HOMEPAGE="http://subversion.apache.org/"
