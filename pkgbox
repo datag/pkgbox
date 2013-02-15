@@ -83,7 +83,7 @@ declare -A PKGBOX_DIR
 
 ################################################################################
 # include config(s)
-for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:="$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]}"; do
+for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]}"; do
 	if [[ -r $c && -f $c ]]; then
 		pkgbox_msg info "Using config '$c'"
 		source "$c"
@@ -109,10 +109,13 @@ unset PKGBOX_OPTS_USR o
 
 ################################################################################
 # general setup: pkgbox directories, ...
-PKGBOX_DIR[base]=${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
-PKGBOX_DIR[packages]=${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
-PKGBOX_DIR[tmp]=${PKGBOX_DIR[tmp]:="${PKGBOX_DIR[base]}/tmp"}
-PKGBOX_DIR[download]=${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
+
+PKGBOX_DIR[base]=${PKGBOX_OPTS[base]}   # override by option
+
+: ${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
+: ${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
+: ${PKGBOX_DIR[tmp]:="${PKGBOX_DIR[base]}/tmp"}
+: ${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
 
 for d in "${PKGBOX_DIR[@]}"; do
 	if [[ ! -d "$d" ]]; then
