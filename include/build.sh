@@ -328,9 +328,12 @@ function pkgConfigure()
 # @see: http://www.gnu.org/software/make/manual/make.html
 function pkgMake()
 {
-	# FIXME: target "install" (or similar) may cause problems with -jX
+	local make_opts=${PKGBOX_OPTS[make_opts]}
+	
+	# target "install" may cause problems with parallel execution (-jX)
+	make_opts=$(sed -e 's/-j[0-9]\+//g' <<<"$make_opts")
 	
 	pkgbox_exec \
-		make ${PKGBOX_OPTS[make_opts]} "$@"
+		make $make_opts "$@"
 }
 
