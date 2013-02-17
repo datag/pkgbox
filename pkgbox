@@ -137,7 +137,7 @@ pkgbox_include "include/utils.sh"
 # main or test
 
 # allow overriding install-prefix by option
-PKGBOX_OPTS[prefix]=${PKGBOX_OPTS[prefix]:="/usr/local"}
+: ${PKGBOX_OPTS[prefix]:="/usr/local"}
 
 if [[ ${PKGBOX_OPTS[test]} ]]; then
 	pkgbox_include "include/_coretest.sh"
