@@ -147,7 +147,10 @@ else
 	
 	# no explicit pkgbox-file given? try some default paths...
 	if [[ ! -f "$PKGBOX_PACKAGE" ]]; then
-		for f in "${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox"; do
+		for f in \
+			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE##*/}.pkgbox"
+		do
 			[[ -f "$f" ]] && { PKGBOX_PACKAGE=$f; break; }
 		done
 		unset f
