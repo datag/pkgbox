@@ -8,21 +8,24 @@ MY_P=$MY_PN-$PV
 
 DESCRIPTION="jTimeSched is a simple and lightweight time tracking tool"
 HOMEPAGE="http://kbase.dominik-geyer.de/apps:jtimesched"
-SCM_REPO="https://github.com/datag/jtimesched.git"
+GIT_REPO="https://github.com/datag/jtimesched.git"
 
 IUSE=""
 
 S=${WORKDIR}/${MY_P}
 
-src_unpack() {
-	# nothing to do
-	:
+src_fetch() {
+	if [[ ! -d "$S" ]]; then
+		git clone $GIT_REPO "$S"
+		{ cd "$S"; git checkout $PV; }
+	else
+		{ cd "$S"; git pull; }
+	fi
 }
 
 src_unpack() {
-	git clone $SCM_REPO "$S"
-	
-	{ cd "$S"; git checkout $PV; }
+	# nothing to do
+	:
 }
 
 src_configure() {

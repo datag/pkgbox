@@ -131,8 +131,13 @@ function pkgbox_action_init()
 		
 		function src_fetch()
 		{
+			local uri filename
 			pkgbox_msg debug "Default src_fetch()"
-			pkgbox_download "$SRC_URI" "${SRC_URI##*/}"
+			
+			for uri in "${SRC_URI[@]}"; do
+				filename=${uri##*/}
+				pkgbox_download "$uri" "$filename"
+			done
 		}
 	fi	
 	
@@ -195,20 +200,9 @@ function pkgbox_action_init()
 
 function pkgbox_action_fetch()
 {
-	local uri filename
-	
 	pkgbox_msg info "src_fetch()"
 	
-	for uri in "${SRC_URI[@]}"; do
-		filename=${uri##*/}
-		pkgbox_download "$uri" "$filename"
-		
-		# check naively for invalid download (e.g. HTML instead of 404)
-		if head -c 100 "${PKGBOX_DIR[download]}/$filename" | grep -i '<html' &>/dev/null; then
-			pkgbox_msg warn "Downloaded file '$filename' seems to be invalid (is HTML)"
-			#return 1
-		fi
-	done
+	src_fetch
 }
 
 function pkgbox_action_unpack()
