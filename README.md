@@ -2,7 +2,7 @@
 
 pkgbox is a software build toolbox which eases configuring, compiling and installing software.
 
-It is heavily inspired by the [Gentoo Portage ebuild](http://www.gentoo.org/proj/en/devrel/handbook/handbook.xml?part=2&chap=1) system.
+It is inspired by the [Gentoo Portage ebuild](http://www.gentoo.org/proj/en/devrel/handbook/handbook.xml?part=2&chap=1) system.
 However, it does not resolve dependencies by itself as it should be seen as a handy utility for building software from source and not as a 
 package manager nor a complete solution.
 
@@ -28,7 +28,16 @@ Per default the configuration is stored at `$HOME/.pkgbox/conf`. An example conf
 
 ## Writing packages ##
 
-Example pkgbox-package for the GNU "Hello world" program.
+Per default the package repository is located in the `pkg`-directory of the pkgbox base directory. Packages may be organized in
+category directories (e.g. `app-misc`) and each package may reside in a separate directory with the name of the package (e.g. `app-misc/hello/hello.pkgbox`).
+
+These are the ways pkgbox can be invoked with a package:
+
+1. Complete path to `.pkgbox` file, e.g. `pkgbox /my/path/to/package.pkgbox`.
+2. Specifying category plus package name, e.g. `app-misc/hello`. If no category directories are used, specify only the package name, e.g. `hello`.
+3. Specify as in 2), but provide the desired package version to use (e.g. `app-misc/hello-2.7`).
+
+### Example pkgbox-package for the GNU "Hello world" program ###
 
 	# pkgbox: GNU Hello
 	PKGBOX_API=1
