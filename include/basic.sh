@@ -3,6 +3,7 @@ function pkgbox_usage()
 {
 	cat <<-EOT
 		Usage: ${0##*/} [OPTION...] <PKGFILE> <ACTION>
+		       ${0##*/} -T
 		
 		Options:
 		    -v	Be verbose (given multiple times increases verbosity level)
@@ -14,7 +15,7 @@ function pkgbox_usage()
 		        * config   Additional config to include
 		        * prefix   Install prefix (default: /usr/local)
 		        * force    Force re-running action
-		        * test     Run test suite
+		    -T  Run test suite
 		
 		Actions:
 		    fetch, unpack, prepare, configure, compile, install,

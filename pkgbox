@@ -36,7 +36,7 @@ declare -A PKGBOX_OPTS_USR
 
 ################################################################################
 # parse options
-while getopts ":vD:V:h" opt; do
+while getopts ":vD:V:Th" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
 		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
@@ -49,6 +49,9 @@ while getopts ":vD:V:h" opt; do
 		;;
 	D)	# defines a special config variable
 		PKGBOX_OPTS_USR[${OPTARG%%=*}]=${OPTARG#*=}
+		;;
+	T)	# runs test suite
+		PKGBOX_TEST=1
 		;;
 	h)
 		pkgbox_usage >&2
@@ -70,14 +73,16 @@ done
 shift $((OPTIND-1))		# shift options
 unset opt OPTIND		# unset variables used for option parsing
 
-# the action and script are required arguments
-if [[ $# < 2 ]]; then
-	pkgbox_usage >&2
-	exit 1
-fi
+# the action and script are required arguments (in non-test mode)
+if [[ -z "$PKGBOX_TEST" ]]; then
+	if [[ $# < 2 ]]; then
+		pkgbox_usage >&2
+		exit 1
+	fi
 
-declare PKGBOX_PACKAGE=$1
-declare -r PKGBOX_ACTION=$2
+	declare PKGBOX_PACKAGE=$1
+	declare -r PKGBOX_ACTION=$2
+fi
 
 declare -A PKGBOX_DIR
 
@@ -139,7 +144,7 @@ pkgbox_include "include/utils.sh"
 # allow overriding install-prefix by option
 : ${PKGBOX_OPTS[prefix]:="/usr/local"}
 
-if [[ ${PKGBOX_OPTS[test]} ]]; then
+if [[ -n "$PKGBOX_TEST" ]]; then
 	pkgbox_include "include/_coretest.sh"
 	_run_tests
 else

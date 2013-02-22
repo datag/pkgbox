@@ -10,7 +10,7 @@ before_script:
 
 script:
     - "pkgbox -h"
-    - "pkgbox -vvv -D test foo bar"
+    - "pkgbox -vvv -T"
     - "pkgbox app-misc/hello info"
     - "pkgbox -v app-misc/hello install"
 
