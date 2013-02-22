@@ -28,7 +28,9 @@ Per default the configuration is stored at `$HOME/.pkgbox/conf`. An example conf
 
 ## Writing packages ##
 
-Per default the package repository is located in the `pkg`-directory of the pkgbox base directory. Packages may be organized in
+Per default the package repository is located in the `pkg`-directory of the pkgbox base directory, which is a Git submodule pointing to [datag/pkgbox-packages](https://github.com/datag/pkgbox-packages).
+
+Packages may be organized in
 category directories (e.g. `app-misc`) and each package may reside in a separate directory with the name of the package (e.g. `app-misc/hello/hello.pkgbox`).
 
 These are the ways pkgbox can be invoked with a package:
