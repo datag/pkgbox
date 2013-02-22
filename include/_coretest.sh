@@ -68,6 +68,7 @@ function _run_tests()
 		pkgbox_byteshuman
 		pkgbox_rndstr
 		pkgbox_trim
+		pkgbox_package_version_parts
 		pkgbox_print_quoted_args
 		pkgbox_exec
 		pkgbox_download
@@ -193,6 +194,20 @@ _test_pkgbox_trim()
 	_t 0 "pkgbox_trim 'foo  bar  '"					'foo  bar'
 	_t 0 "pkgbox_trim '  foo  bar'"					'foo  bar'
 	_t 0 "pkgbox_trim \$' \t\n''foo  bar'\$' \t\n'"	'foo  bar'
+}
+
+################################################################################
+_test_pkgbox_package_version_parts()
+{
+	_t 0 "pkgbox_package_version_parts"									'  '
+	_t 0 "pkgbox_package_version_parts hello"							'hello hello '
+	_t 0 "pkgbox_package_version_parts app-misc/hello"					'hello hello '
+	_t 0 "pkgbox_package_version_parts app-misc/hello-2.7"				'hello-2.7 hello 2.7'
+	_t 0 "pkgbox_package_version_parts app-misc/hello-foo"				'hello-foo hello-foo '
+	_t 0 "pkgbox_package_version_parts app-misc/hello-foo-2.7"			'hello-foo-2.7 hello-foo 2.7'
+	_t 0 "pkgbox_package_version_parts app-misc/hello-foo 9.9"			'hello-foo-9.9 hello-foo 9.9'
+	_t 0 "pkgbox_package_version_parts app-misc/hello-foo-2.7 9.9"		'hello-foo-9.9 hello-foo 9.9'
+	_t 0 "pkgbox_package_version_parts app-misc/hello-foo-2.7a"			'hello-foo-2.7a hello-foo 2.7a'
 }
 
 ################################################################################

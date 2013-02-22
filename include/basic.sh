@@ -226,3 +226,34 @@ function pkgbox_trim()
 	fi
 }
 
+# Splits a package string into it's parts
+# @param string Package string, e.g. app-misc/hello-2.8
+# @param [string] Override version
+# @return string Parts separated by space: "name-version name version"
+function pkgbox_package_version_parts()
+{
+	local pn pv=$2
+	local p=${1##*/}	# strip path, if any
+	p=${p%.pkgbox}		# strip extension, if set
+	
+	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
+	if [[ $p =~ $regex ]]; then
+		pn=${BASH_REMATCH[1]}
+		
+		if [[ -z $pv ]]; then		# version override
+			pv=${BASH_REMATCH[2]}
+			pv=${pv:1}		# cut off first dash
+		fi
+		
+		p="$pn-$pv"
+	else
+		pn=$p
+	fi
+	
+	if [[ -n "$pv" ]]; then
+		p="$pn-$pv"
+	fi
+	
+	echo "$p $pn $pv"
+}
+

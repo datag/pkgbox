@@ -74,7 +74,7 @@ shift $((OPTIND-1))		# shift options
 unset opt OPTIND		# unset variables used for option parsing
 
 # the action and script are required arguments (in non-test mode)
-if [[ -z "$PKGBOX_TEST" ]]; then
+if [[ -z $PKGBOX_TEST ]]; then
 	if [[ $# < 2 ]]; then
 		pkgbox_usage >&2
 		exit 1
@@ -152,13 +152,25 @@ else
 	
 	# no explicit pkgbox-file given? try some default paths...
 	if [[ ! -f "$PKGBOX_PACKAGE" ]]; then
+		read l_p l_pn l_pv <<<$(IFS=";" && pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")
+		
 		for f in \
-			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE}/${PKGBOX_PACKAGE##*/}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE##*/}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE%/*}/${l_pn}/${l_p}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE%/*}/${l_pn}/${l_pn}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${l_pn}/${l_p}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${l_pn}/${l_pn}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${l_p}.pkgbox" \
+			"${PKGBOX_DIR[packages]}/${l_pn}.pkgbox"
 		do
-			[[ -f "$f" ]] && { PKGBOX_PACKAGE=$f; break; }
+			pkgbox_msg debug "Trying file $f"
+			if [[ -f "$f" ]]; then
+				PKGBOX_PACKAGE=$f
+				pkgbox_msg debug "Found package file at $PKGBOX_PACKAGE"
+				break
+			fi
 		done
-		unset f
+		
+		unset f l_p l_pn l_pv
 	fi
 	
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"

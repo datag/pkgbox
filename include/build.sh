@@ -60,38 +60,24 @@ function pkgbox_action()
 function pkgbox_action_init()
 {
 	# imitate ebuild variables: http://devmanual.gentoo.org/ebuild-writing/variables/index.html
-	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) pkg_basename=${PKGBOX_PACKAGE##*/} i
+	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) i
 	local pkg_path=${pkg_canonical%/*}
 	
-	# globals
-	FILESDIR="${pkg_path}/files"
 	
-	P=${pkg_basename%.pkgbox}		# filename without path and extension
-	
-	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
-	if [[ $P =~ $regex ]]; then
-		PN=${BASH_REMATCH[1]}
-		
-		if [[ -z $PV ]]; then		# version override by option '-V'
-			PV=${BASH_REMATCH[2]}
-			PV=${PV:1}		# cut off first dash
-		fi
-		
-		P="$PN-$PV"
-	else
-		PN=$P
-	fi
+	# package string, name and version
+	read P PN PV <<<$(IFS=";" && pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")
 	
 	if [[ -z $PV ]]; then
 		unset P PV
-	else
-		P="$PN-$PV"
 	fi
 	
+	
+	# globals: directories
 	T="${PKGBOX_DIR[tmp]}/temp"
 	D="${PKGBOX_DIR[tmp]}/image"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
 	INSTALLDIR=${PKGBOX_OPTS[prefix]}
+	FILESDIR="${pkg_path}/files"
 	
 	# FIXME: prepare directories somewhere else
 	for i in "$T" "$D" "$WORKDIR"; do
