@@ -1,6 +1,6 @@
 # Download helper
 # @param string URI of remote file
-# @param string local file name (basename)
+# @param string local file name (basename) or "-" for stdout
 # @param [string] output directory
 # @TODO continue download
 # @TODO choose tool to use from config, then detection as fallback
@@ -11,7 +11,9 @@ function pkgbox_download()
 	local lfile="$ldir/$lname" cmd args errcode
 	declare -a args
 	
-	if [[ -f "$lfile" ]]; then
+	if [[ $lname == "-" ]]; then  # stdout
+		lfile="-"
+	elif [[ -f "$lfile" ]]; then
 		pkgbox_msg info "Skipping download of file '${lname}' (already exists)"
 		return 0
 	else
