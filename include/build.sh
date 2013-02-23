@@ -74,18 +74,17 @@ function pkgbox_action_init()
 	
 	# globals: directories
 	T="${PKGBOX_DIR[tmp]}/temp"
-	D="${PKGBOX_DIR[tmp]}/image"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
 	INSTALLDIR=${PKGBOX_OPTS[prefix]}
 	FILESDIR="${pkg_path}/files"
 	
 	# FIXME: prepare directories somewhere else
-	for i in "$T" "$D" "$WORKDIR"; do
+	for i in "$T" "$WORKDIR"; do
 		[[ ! -d "$i" ]] && mkdir "$i"
 	done
 	
 	# debug: global vars
-	pkgbox_debug_vars FILESDIR WORKDIR T D P PN PV
+	pkgbox_debug_vars FILESDIR WORKDIR T P PN PV
 	
 	# debug: remember all variables/functions
 	local funcs_before=$(declare -F | cut -f3- -d' ')
