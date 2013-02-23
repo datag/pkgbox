@@ -114,8 +114,9 @@ unset PKGBOX_OPTS_USR o
 
 ################################################################################
 # general setup: pkgbox directories, ...
-
-PKGBOX_DIR[base]=${PKGBOX_OPTS[base]}   # override by option
+if [[ -n "${PKGBOX_OPTS[base]}" ]]; then
+	PKGBOX_DIR[base]="${PKGBOX_OPTS[base]}"   # override by option
+fi
 
 : ${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
 : ${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
