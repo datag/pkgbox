@@ -43,7 +43,7 @@ function pkgbox_action()
 		curaction=${actions[$i]}
 		
 		pkgbox_title "$P <#$((n - i)) $curaction> - pkgbox"
-		pkgbox_msg debug "Action #$((n - i)) $curaction"
+		pkgbox_msg notice "Action #$((n - i)) $curaction"
 		
 		# already done?
 		if [[ -f "$S/.pkgbox_$curaction" ]]; then
@@ -227,14 +227,14 @@ function pkgbox_find_package()
 
 function pkgbox_action_fetch()
 {
-	pkgbox_msg info "src_fetch()"
+	pkgbox_msg debug "src_fetch()"
 	
 	src_fetch
 }
 
 function pkgbox_action_unpack()
 {
-	pkgbox_msg info "src_unpack()"
+	pkgbox_msg debug "src_unpack()"
 	
 	src_unpack
 	touch "$S/.pkgbox_unpack"
@@ -242,7 +242,7 @@ function pkgbox_action_unpack()
 
 function pkgbox_action_prepare()
 {
-	pkgbox_msg info "src_prepare()"
+	pkgbox_msg debug "src_prepare()"
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
@@ -253,7 +253,7 @@ function pkgbox_action_prepare()
 
 function pkgbox_action_configure()
 {
-	pkgbox_msg info "src_configure()"
+	pkgbox_msg debug "src_configure()"
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
@@ -264,7 +264,7 @@ function pkgbox_action_configure()
 
 function pkgbox_action_compile()
 {
-	pkgbox_msg info "src_compile()"
+	pkgbox_msg debug "src_compile()"
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
@@ -275,7 +275,7 @@ function pkgbox_action_compile()
 
 function pkgbox_action_install()
 {
-	pkgbox_msg info "src_install()"
+	pkgbox_msg debug "src_install()"
 	
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
@@ -289,7 +289,7 @@ function pkgbox_action_clean()
 {
 	local filename
 	
-	pkgbox_msg info "clean()"
+	pkgbox_msg debug "clean()"
 	
 	pkgbox_msg notice "Removing '$PN' working directory"
 	[[ ${S:0:${#WORKDIR}} == $WORKDIR ]] || pkgbox_die "Invalid working directory '$S'"
