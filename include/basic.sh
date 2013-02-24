@@ -40,6 +40,7 @@ function pkgbox_usage()
 # Prints message (stderr) and die
 # @param string... msg
 # @param [int=1] exitcode
+# @see http://wiki.bash-hackers.org/commands/builtin/caller
 function pkgbox_die()
 {
 	local exitcode=1 msg=$@ frame=0 subcall
@@ -150,9 +151,18 @@ function _sgr()
 # @see http://en.wikipedia.org/wiki/ANSI_escape_code#Non-CSI_codes
 function pkgbox_title()
 {
-	local osc='\e]' m=${2:-0} text=$1 bel='\a'
+	# only set icon name / window title if stderr is a tty
+	[[ -t 2 ]] || return 0
 	
-	echo -n -e "${osc}${m};${text}${bel}"
+	# check for compatible terminal
+	case $TERM in
+	*term | xterm-color | rxvt | vt100 | gnome* )
+		local osc='\e]' m=${2:-0} text=$1 bel='\a'
+		echo -n -e "${osc}${m};${text}${bel}" >&2
+		;;
+	*)	# unknown terminal, better don't mess with it
+		;;
+	esac
 }
 
 # Echo function for text output (uses _sgr() to reset SGR afterwards)
