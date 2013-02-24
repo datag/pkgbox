@@ -320,12 +320,16 @@ function pkgbox_action_info()
 
 function pkgVer()
 {
-	[[ ${PV-} ]] && return 0		# default has been overridden
+	local str="Using default version"
 	
-	PV=$1
-	P="$PN-$PV"
+	if [[ ${PV-} ]]; then
+		str="Using version override"
+	else
+		PV=$1
+		P="$PN-$PV"
+	fi
 	
-	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
+	pkgbox_msg info "$str $(_sgr bold)${PV}$(_sgr) for package $(_sgr bold)${PN}$(_sgr)"
 }
 
 # @see: http://www.gnu.org/prep/standards/html_node/Configuration.html
