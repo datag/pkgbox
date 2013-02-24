@@ -124,6 +124,22 @@ function _sgr()
 	echo -n -e "${csi}${sgr}${term}"
 }
 
+# Sets the icon name and/or window title of the terminal emulator (xterm and similar)
+#
+# @param string Text to set as icon name and/or window title
+# @param [int=0*|1|2] What to set:
+# 			0: Icon name and window title (default)
+# 			1: Icon name only
+# 			2: Window title only
+# @see http://www.faqs.org/docs/Linux-mini/Xterm-Title.html#s3
+# @see http://en.wikipedia.org/wiki/ANSI_escape_code#Non-CSI_codes
+function pkgbox_title()
+{
+	local osc='\e]' m=${2:-0} text=$1 bel='\a'
+	
+	echo -n -e "${osc}${m};${text}${bel}"
+}
+
 # Echo function for text output (uses _sgr() to reset SGR afterwards)
 # @param [string...] text to output
 function pkgbox_echo()

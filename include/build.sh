@@ -41,7 +41,9 @@ function pkgbox_action()
 	n=${#actions[@]}
 	for (( i = n - 1; i >= 0; --i )); do
 		curaction=${actions[$i]}
-		pkgbox_msg notice "Action #$((n - i)): $curaction"
+		
+		pkgbox_title "$P <#$((n - i)) $curaction> - pkgbox"
+		pkgbox_msg debug "Action #$((n - i)) $curaction"
 		
 		# already done?
 		if [[ -f "$S/.pkgbox_$curaction" ]]; then
