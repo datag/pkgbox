@@ -38,10 +38,10 @@ declare -A PKGBOX_OPTS_USR
 while getopts ":vqD:V:Th" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
-		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY + 1))
+		(( ++PKGBOX_VERBOSITY )) || :
 		;;
 	q)	# be quiet; each -q decreases the verbosity level
-		PKGBOX_VERBOSITY=$((PKGBOX_VERBOSITY - 1))
+		(( --PKGBOX_VERBOSITY )) || :
 		;;
 	V)	# override package version
 		PV=$OPTARG
