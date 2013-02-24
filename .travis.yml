@@ -3,14 +3,15 @@ language: cpp
 # Set gcc as compiler for the demo program GNU "Hello world!".
 compiler: gcc
 
-# 1) Include pkgbox script in executable path.
-# 2) Set $TERM to "linux" to prevent pkgbox from setting the terminal
-#    window title, as the "xterm" emulation seems not to work with it.
-env: PATH=$PWD:$PATH TERM=linux
+# Set $TERM to "linux" to prevent pkgbox from setting the terminal
+# window title, as the "xterm" emulation seems not to work with it.
+env: TERM=linux
 
-# Display bash version info and clone the pkgbox configuration.
+# Display bash version info, include pkgbox script in executable path
+# and clone the pkgbox configuration.
 before_script:
     - "bash --version | head -n 1"
+    - "export PATH=$PWD:$PATH"
     - "mkdir ~/.pkgbox && cp -v conf.sample ~/.pkgbox/conf"
 
 # Tests:
