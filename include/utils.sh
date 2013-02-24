@@ -57,7 +57,7 @@ function pkgbox_download()
 
 function pkgbox_unpack()
 {
-	local lfile=$1 ldir=${2-$WORKDIR}
+	local lfile=$1 ldir=${2:-$WORKDIR}
 	
 	pkgbox_msg debug "Unpacking $lfile"
 	

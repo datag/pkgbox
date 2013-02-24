@@ -88,7 +88,7 @@ function pkgbox_is_int()
 # @FIXME: "no-color"-mode and/or terminal
 function _sgr()
 {
-	local csi='\e[' term='m' arg sgr opt m
+	local csi='\e[' term='m' arg sgr= opt m
 	
 	for arg in $*; do
 		opt=${arg%%=*}
@@ -113,10 +113,10 @@ function _sgr()
 		*) m=0 ;;  # reset/normal
 		esac
 		
-		sgr="${sgr}${m};"
+		sgr="${sgr-}${m};"
 	done
 	
-	[[ -z "$sgr" ]] && sgr="0" || sgr=${sgr%;}	# remove superfluous trailing ";"
+	[[ ! ${sgr} ]] && sgr="0" || sgr=${sgr%;}	# remove superfluous trailing ";"
 	
 	echo -n -e "${csi}${sgr}${term}"
 }
@@ -153,9 +153,9 @@ function pkgbox_msg()
 # @param string... Name of variable (resolved via indirection)
 function pkgbox_debug_vars()
 {
-	local str i
+	local str= i
 	for i in $@; do
-		str="$str"$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$i")$(_sgr) = $(_sgr underline)${!i}$(_sgr)"
+		str="$str"$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$i")$(_sgr) = $(_sgr underline)${!i-}$(_sgr)"
 	done
 	pkgbox_msg debug "Vars:$str"
 }
@@ -187,7 +187,7 @@ function pkgbox_rndstr()
 # @see http://stackoverflow.com/questions/12985178/bash-quoted-array-expansion
 function pkgbox_print_quoted_args()
 {
-	local i arg argstr
+	local i arg argstr=
 	for i in "$@"; do
 		if [[ $i =~ \  ]]; then
 			i=${i/\'/\'\\\'\'}
@@ -232,9 +232,8 @@ function pkgbox_trim()
 # @return string Parts separated by space: "name-version name version"
 function pkgbox_package_version_parts()
 {
-	local p=${1##*/} pn pv=$2	# strip dirname from package, if any
-	
-	p=${p%.pkgbox}				# strip extension, if set
+	local p=${1##*/} pn pv=${2-}	# strip dirname from package, if any
+	p=${p%.pkgbox}					# strip extension, if set
 	
 	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
 	if [[ $p =~ $regex ]]; then

@@ -6,7 +6,7 @@
 # License: GPLv3 (see file LICENSE)
 ################################################################################
 
-set -o errexit -o errtrace -o pipefail #-o nounset
+set -o errexit -o errtrace -o pipefail -o nounset
 
 # unset all aliases
 unalias -a
@@ -74,7 +74,7 @@ shift $((OPTIND-1))
 unset opt OPTIND
 
 # the package and action are required arguments (in non-test mode)
-if [[ ! $PKGBOX_TEST ]]; then
+if [[ ! ${PKGBOX_TEST-} ]]; then
 	if (( $# < 2 )); then
 		pkgbox_usage >&2
 		exit 1
@@ -88,7 +88,7 @@ declare -A PKGBOX_DIR
 
 ################################################################################
 # include config(s)
-for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]}"; do
+for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]-}"; do
 	if [[ -f $c ]]; then
 		pkgbox_msg info "Using config '$c'"
 		source "$c"
@@ -96,17 +96,16 @@ for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_
 done
 unset c
 
-# merge user provided options with config array (override config with user options)
-if (( ${#PKGBOX_OPTS_USR[@]} > 0 )); then
-	for o in "${!PKGBOX_OPTS_USR[@]}"; do
-		pkgbox_msg debug "Overriding option $o"
-		PKGBOX_OPTS[$o]=${PKGBOX_OPTS_USR[$o]}
-	done
-fi
+# override config options with user-provided options (via option -D)
+for o in "${!PKGBOX_OPTS_USR[@]}"; do
+	pkgbox_msg debug "Overriding option $o"
+	PKGBOX_OPTS[$o]=${PKGBOX_OPTS_USR[$o]}
+done
 unset PKGBOX_OPTS_USR
 
 # debug output all options
 if (( ${#PKGBOX_OPTS[@]} > 0 )); then
+	# FIXME: try using pkgbox_debug_vars()
 	for o in "${!PKGBOX_OPTS[@]}"; do
 		pkgbox_msg debug "OPTION: $(printf '% 15s' "$o") = '${PKGBOX_OPTS[$o]}'"
 	done
@@ -117,7 +116,7 @@ unset o
 # general setup: pkgbox directories
 
 # allow override base-dir via option
-[[ ${PKGBOX_OPTS[base]} ]] && PKGBOX_DIR[base]="${PKGBOX_OPTS[base]}"
+[[ ${PKGBOX_OPTS[base]-} ]] && PKGBOX_DIR[base]="${PKGBOX_OPTS[base]}"
 
 # pkgbox main directories
 : ${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
@@ -145,7 +144,7 @@ pkgbox_include "include/utils.sh"
 
 ################################################################################
 # main
-if [[ ! $PKGBOX_TEST ]]; then
+if [[ ! ${PKGBOX_TEST-} ]]; then
 	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
 	
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"

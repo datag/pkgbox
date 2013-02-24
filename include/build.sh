@@ -45,7 +45,7 @@ function pkgbox_action()
 		
 		# already done?
 		if [[ -f "$S/.pkgbox_$curaction" ]]; then
-			if [[ $curaction == $action && ${PKGBOX_OPTS[force]} ]]; then
+			if [[ $curaction == $action && ${PKGBOX_OPTS[force]-} ]]; then
 				pkgbox_msg info "Action '$curaction' forced"
 			else
 				pkgbox_msg info "Action '$curaction' already completed, skipping..."
@@ -63,10 +63,10 @@ function pkgbox_action_init()
 	local pkg_file i
 	
 	# find package file
-	pkg_file=$(pkgbox_find_package "$PKGBOX_PACKAGE" "$PV") || pkgbox_die "Package file for $PKGBOX_PACKAGE not found"
+	pkg_file=$(pkgbox_find_package "$PKGBOX_PACKAGE" "${PV-}") || pkgbox_die "Package file for $PKGBOX_PACKAGE not found"
 	
 	# determine package string, name and version
-	read P PN PV <<<"$(pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")"
+	read P PN PV <<<"$(pkgbox_package_version_parts "$PKGBOX_PACKAGE" "${PV-}")"
 	
 	# If no package version override provided, leave package and version string
 	# empty for later assignment via pkgVer and/or manual assignment in package.
@@ -75,16 +75,19 @@ function pkgbox_action_init()
 	fi
 	
 	
-	# globals: directories
+	# globals
 	T="${PKGBOX_DIR[tmp]}/temp"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
 	INSTALLDIR=${PKGBOX_OPTS[prefix]}
 	FILESDIR="${pkg_file%/*}/files"
+	SRC_URI=()
+	
 	
 	# FIXME: prepare directories somewhere else
 	for i in "$T" "$WORKDIR"; do
 		[[ ! -d $i ]] && mkdir "$i"
 	done
+	
 	
 	# debug: global vars
 	pkgbox_debug_vars FILESDIR WORKDIR T P PN PV
@@ -102,15 +105,18 @@ function pkgbox_action_init()
 	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')" || true)"
 	
 	
-	# prepare some more globals
-	: ${S:="$WORKDIR/$P"}	# set source directory, if not set
-	A=()	# URIs for download
+	# set source directory, if not set by package
+	: ${S:="$WORKDIR/$P"}
+	
+	# determine list of files by URIs
+	A=()
 	for i in "${SRC_URI[@]}"; do
 		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
 	
+	
 	# debug: global vars
-	pkgbox_debug_vars P PN PV A S
+	pkgbox_debug_vars P PN PV S SRC_URI A
 	
 	# declare default functions
 	if ! pkgbox_is_function "src_fetch"; then
@@ -194,7 +200,7 @@ function pkgbox_find_package()
 		f=$p
 	else
 		# no explicit pkgbox-file given? try some default paths...
-		local category=${p%/*} pv=$2 l_p l_pn l_pv found=0
+		local category=${p%/*} pv=${2-} l_p l_pn l_pv found=0
 		
 		read l_p l_pn l_pv <<<"$(pkgbox_package_version_parts "$p" "$pv")"
 	
@@ -311,7 +317,7 @@ function pkgbox_action_info()
 
 function pkgVer()
 {
-	[[ $PV ]] && return 0		# default has been overridden
+	[[ ${PV-} ]] && return 0		# default has been overridden
 	
 	PV=$1
 	P="$PN-$PV"
@@ -327,20 +333,20 @@ function pkgConfigure()
 		${CONFIGURE_SCRIPT:-"./configure"} \
 			--prefix="$INSTALLDIR" \
 			"$@" \
-			CFLAGS="${PKGBOX_OPTS[CFLAGS]}" \
-			CXXFLAGS="${PKGBOX_OPTS[CXXFLAGS]}" \
-			CPPFLAGS="${PKGBOX_OPTS[CPPFLAGS]}" \
-			LDFLAGS="${PKGBOX_OPTS[LDFLAGS]}" \
-			EXTRA_LDFLAGS_PROGRAM="${PKGBOX_OPTS[EXTRA_LDFLAGS_PROGRAM]}" \
-			LIBS="${PKGBOX_OPTS[LIBS]}" \
-			CC="${PKGBOX_OPTS[CC]}" \
-			CXX="${PKGBOX_OPTS[CXX]}"
+			CFLAGS="${PKGBOX_OPTS[CFLAGS]-}" \
+			CXXFLAGS="${PKGBOX_OPTS[CXXFLAGS]-}" \
+			CPPFLAGS="${PKGBOX_OPTS[CPPFLAGS]-}" \
+			LDFLAGS="${PKGBOX_OPTS[LDFLAGS]-}" \
+			EXTRA_LDFLAGS_PROGRAM="${PKGBOX_OPTS[EXTRA_LDFLAGS_PROGRAM]-}" \
+			LIBS="${PKGBOX_OPTS[LIBS]-}" \
+			CC="${PKGBOX_OPTS[CC]-}" \
+			CXX="${PKGBOX_OPTS[CXX]-}"
 }
 
 # @see: http://www.gnu.org/software/make/manual/make.html
 function pkgMake()
 {
-	local make_opts=${PKGBOX_OPTS[make_opts]}
+	local make_opts=${PKGBOX_OPTS[make_opts]-}
 	
 	# target "install" may cause problems with parallel execution (-jX)
 	make_opts=$(sed -e 's/-j[0-9]\+//g' <<<"$make_opts")

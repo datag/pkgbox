@@ -8,7 +8,7 @@
 # @param [string] The expected output of stdout (bash regex)
 function _t()
 {
-	local exp=$1 cmd=$2 exp_stdout=$3
+	local exp=$1 cmd=$2 exp_stdout=${3-}
 	local code=0 out out_test=0 out_color=blue text
 	
 	#set -x
@@ -184,7 +184,7 @@ _test_pkgbox_rndstr()
 ################################################################################
 _test_pkgbox_trim()
 {
-	_t 0 "pkgbox_trim"								''
+	_t !0 "pkgbox_trim"								''
 	_t 0 "pkgbox_trim foo"							'foo'
 	_t 0 "pkgbox_trim '  foo  '"					'foo'
 	_t 0 "pkgbox_trim 'foo  '"						'foo'
@@ -199,7 +199,7 @@ _test_pkgbox_trim()
 ################################################################################
 _test_pkgbox_package_version_parts()
 {
-	_t 0 "pkgbox_package_version_parts"									'  '
+	_t !0 "pkgbox_package_version_parts"								''
 	_t 0 "pkgbox_package_version_parts hello"							'hello hello '
 	_t 0 "pkgbox_package_version_parts app-misc/hello"					'hello hello '
 	_t 0 "pkgbox_package_version_parts app-misc/hello-2.7"				'hello-2.7 hello 2.7'
@@ -223,7 +223,7 @@ _test_pkgbox_print_quoted_args()
 ################################################################################
 _test_pkgbox_exec()
 {
-	_t 0 "pkgbox_exec"
+	_t !0 "pkgbox_exec"
 	_t 0 "pkgbox_exec date"
 	_t 0 "pkgbox_exec date --rfc-2822"
 	_t 0 "pkgbox_exec date +'%Y-%m-%d   %H:%M:%S'"
