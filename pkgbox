@@ -75,13 +75,13 @@ unset opt OPTIND
 
 # the package and action are required arguments (in non-test mode)
 if [[ ! ${PKGBOX_TEST-} ]]; then
-	if (( $# < 2 )); then
+	if (( $# < 1 || $# > 2 )); then
 		pkgbox_usage >&2
 		exit 1
 	fi
 
 	declare -r PKGBOX_PACKAGE=$1
-	declare -r PKGBOX_ACTION=$2
+	declare -r PKGBOX_ACTION=${2:-info}
 fi
 
 declare -A PKGBOX_DIR

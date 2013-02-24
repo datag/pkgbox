@@ -2,8 +2,8 @@
 function pkgbox_usage()
 {
 	cat <<-EOT
-		Usage: ${0##*/} [OPTION]... <package-file> <action>
-		       ${0##*/} [OPTION]... <package-string> <action>
+		Usage: ${0##*/} [OPTION]... <package-file> [<action>]
+		       ${0##*/} [OPTION]... <package-string> [<action>]
 		       ${0##*/} [OPTION]... -T
 		       ${0##*/} [OPTION]... -h
 		
@@ -22,7 +22,7 @@ function pkgbox_usage()
 		
 		Actions:
 		    fetch, unpack, prepare, configure, compile, install,
-		    info, clean
+		    info (default action), clean
 	EOT
 }
 
