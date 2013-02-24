@@ -57,16 +57,19 @@ function pkgbox_action()
 	done
 }
 
+# Variable naming are somewhat borrowed from Portage ebuild (http://devmanual.gentoo.org/ebuild-writing/variables/index.html)
 function pkgbox_action_init()
 {
-	# imitate ebuild variables: http://devmanual.gentoo.org/ebuild-writing/variables/index.html
-	local pkg_canonical=$(readlink -f $PKGBOX_PACKAGE) i
-	local pkg_path=${pkg_canonical%/*}
+	local pkg_file i
 	
+	# find package file
+	pkg_file=$(pkgbox_find_package "$PKGBOX_PACKAGE" "$PV") || pkgbox_die "Package file for $PKGBOX_PACKAGE not found"
 	
-	# package string, name and version
+	# determine package string, name and version
 	read P PN PV <<<"$(pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")"
 	
+	# If no package version override provided, leave package and version string
+	# empty for later assignment via pkgVer and/or manual assignment in package.
 	if [[ ! $PV ]]; then
 		unset P PV
 	fi
@@ -76,7 +79,7 @@ function pkgbox_action_init()
 	T="${PKGBOX_DIR[tmp]}/temp"
 	WORKDIR="${PKGBOX_DIR[tmp]}/work"
 	INSTALLDIR=${PKGBOX_OPTS[prefix]}
-	FILESDIR="${pkg_path}/files"
+	FILESDIR="${pkg_file%/*}/files"
 	
 	# FIXME: prepare directories somewhere else
 	for i in "$T" "$WORKDIR"; do
@@ -91,8 +94,8 @@ function pkgbox_action_init()
 	local vars_before=$(set -o posix; set)
 	
 	# include script
-	pkgbox_msg debug "Sourcing $PKGBOX_PACKAGE"
-	source "$PKGBOX_PACKAGE" || pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
+	pkgbox_msg debug "Sourcing $pkg_file"
+	source "$pkg_file" || pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
 	
 	# debug: print variables/functions declared by the package script
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
@@ -180,6 +183,44 @@ function pkgbox_action_init()
 			pkgMake install
 		}
 	fi
+}
+
+function pkgbox_find_package()
+{
+	local p=$1 f
+	
+	if [[ -f $p ]]; then
+		# provided package name is already an existing file
+		f=$p
+	else
+		# no explicit pkgbox-file given? try some default paths...
+		local category=${p%/*} pv=$2 l_p l_pn l_pv found=0
+		
+		read l_p l_pn l_pv <<<"$(pkgbox_package_version_parts "$p" "$pv")"
+	
+		declare -a locations=(
+			"${PKGBOX_DIR[packages]}/${category}/${l_pn}/${l_p}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${category}/${l_pn}/${l_pn}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${l_pn}/${l_p}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${l_pn}/${l_pn}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${l_p}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${l_pn}.pkgbox"
+		)
+	
+		for f in "${locations[@]}"; do
+			pkgbox_msg debug "Looking for package at $f"
+			if [[ -f $f ]]; then
+				found=1
+				break
+			fi
+		done
+		
+		if (( ! found )); then
+			return 1
+		fi
+	fi
+	
+	readlink -e "$f"
 }
 
 function pkgbox_action_fetch()

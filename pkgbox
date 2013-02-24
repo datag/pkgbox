@@ -81,7 +81,7 @@ if [[ ! $PKGBOX_TEST ]]; then
 		exit 1
 	fi
 
-	declare PKGBOX_PACKAGE=$1
+	declare -r PKGBOX_PACKAGE=$1
 	declare -r PKGBOX_ACTION=$2
 fi
 
@@ -148,28 +148,6 @@ pkgbox_include "include/utils.sh"
 # main
 if [[ ! $PKGBOX_TEST ]]; then
 	pkgbox_msg info  "Performing action '$PKGBOX_ACTION' on package '$PKGBOX_PACKAGE'"
-	
-	# no explicit pkgbox-file given? try some default paths...
-	if [[ ! -f $PKGBOX_PACKAGE ]]; then
-		read l_p l_pn l_pv <<<"$(pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")"
-		
-		for f in \
-			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE%/*}/${l_pn}/${l_p}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${PKGBOX_PACKAGE%/*}/${l_pn}/${l_pn}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${l_pn}/${l_p}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${l_pn}/${l_pn}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${l_p}.pkgbox" \
-			"${PKGBOX_DIR[packages]}/${l_pn}.pkgbox"
-		do
-			pkgbox_msg debug "Trying file $f"
-			if [[ -f $f ]]; then
-				PKGBOX_PACKAGE=$f
-				pkgbox_msg debug "Found package file at $PKGBOX_PACKAGE"
-				break
-			fi
-		done
-		unset l_p l_pn l_pv f
-	fi
 	
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"
 else
