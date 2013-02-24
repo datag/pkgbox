@@ -2,12 +2,14 @@
 function pkgbox_usage()
 {
 	cat <<-EOT
-		Usage: ${0##*/} [OPTION...] <PKGFILE> <ACTION>
-		       ${0##*/} -T
+		Usage: ${0##*/} [OPTION]... <package-file> <action>
+		       ${0##*/} [OPTION]... <package-string> <action>
+		       ${0##*/} [OPTION]... -T
+		       ${0##*/} [OPTION]... -h
 		
 		Options:
-		    -v	Be verbose (given multiple times increases verbosity level)
-		    -q	Be quiet (given multiple times decreases verbosity level)
+		    -v	Be verbose; Given multiple times verbosity level (default=1) increases
+		    -q	Be quiet;   Given multiple times verbosity level (default=1) decreases
 		    -V <version>	Override package default version
 		    -D <key>[=<value>]
 		        Define a setting; available settings:
@@ -16,6 +18,7 @@ function pkgbox_usage()
 		        * prefix   Install prefix (default: /usr/local)
 		        * force    Force re-running action
 		    -T  Run test suite
+		    -h  Display this help message and exit
 		
 		Actions:
 		    fetch, unpack, prepare, configure, compile, install,
