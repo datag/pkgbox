@@ -13,7 +13,7 @@ function pkgbox_download()
 	
 	if [[ $lname == "-" ]]; then  # stdout
 		lfile="-"
-	elif [[ -f "$lfile" ]]; then
+	elif [[ -f $lfile ]]; then
 		pkgbox_msg info "Skipping download of file '${lname}' (already exists)"
 		return 0
 	else
@@ -38,16 +38,16 @@ function pkgbox_download()
 		# --continue -P "$ldir" [--trust-server-names|--content-disposition]
 		args+=("-O" "$lfile" "$rfile")
 	else
-		pkgbox_msg error "$FUNCNAME: No program for file download found"
+		pkgbox_msg error "No program for file download found"
 		return 2
 	fi
 	
 	pkgbox_exec "$cmd" "${args[@]}"
 	errcode=$?
 	
-	if [[ $errcode != 0 ]]; then
+	if (( errcode )); then
 		pkgbox_msg error "Download of '$lname' failed (code:$errcode)"
-		if [[ -f "$lfile" ]]; then
+		if [[ -f $lfile ]]; then
 			pkgbox_msg notice "Removing incomplete file '${lfile}'"
 			rm "$lfile" 2>/dev/null
 		fi
@@ -72,11 +72,11 @@ function pkgbox_unpack()
 		unzip -qq "$lfile" -d "$ldir"
 		;;
 	"7z")
-		pkgbox_msg error "$FUNCNAME 7z yet not implemented"
+		pkgbox_msg error "7z not yet implemented"
 		return 1
 		;;
 	*)
-		pkgbox_msg error "$FUNCNAME: Unknown file type"
+		pkgbox_msg error "Unknown file type"
 		return 1
 		;;
 	esac

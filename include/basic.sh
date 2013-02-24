@@ -31,12 +31,12 @@ function pkgbox_die()
 	local exitcode=1 msg=$@ frame=0 subcall
 	
 	# use last argument as exit code if it is an integer
-	pkgbox_is_int "${@:$#}" && msg="${@:1:$# - 1}" exitcode="${@:$#}"
+	pkgbox_is_int "${@:$#}" && msg=${@:1:$# - 1} exitcode=${@:$#}
 	
 	pkgbox_msg fatal "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
 	
 	# print stacktrace
-	while subcall="$(caller $frame)"; do
+	while subcall=$(caller $frame); do
 		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $subcall" >&2
 		((++frame))
 	done
@@ -49,9 +49,9 @@ function pkgbox_die()
 function pkgbox_include()
 {
 	local file="$PKGBOX_PATH/$1"
-	[[ -r $file && -f $file ]] || { pkgbox_msg error "$FUNCNAME: Include '$file' not found or not readable"; return 2; }
+	[[ -f $file ]] || { pkgbox_msg error "Library '$file' not found"; return 2; }
 	
-	source "$file" || { pkgbox_msg error "$FUNCNAME: Include '$file' cannot be sourced"; return 2; }
+	source "$file" || { pkgbox_msg error "Library '$file' cannot be loaded"; return 2; }
 }
 
 # Tests whether function exists
@@ -75,7 +75,7 @@ function pkgbox_is_command()
 # @return int non-zero if value is not an integer
 function pkgbox_is_int()
 {
-	egrep '^-?[0-9]+$' <<<$1 &>/dev/null
+	egrep '^-?[0-9]+$' <<<"$1" &>/dev/null
 }
 
 # Set SGR (Select Graphic Rendition) parameters
@@ -133,20 +133,20 @@ function pkgbox_echo()
 # @param [string]... message text
 function pkgbox_msg()
 {
-	local t=${1:-'??????'} threshold=0 c=black
+	local t=${1:-'??????'} threshold=0 c="black"
 	shift
 	
 	case $t in
-	"debug")  threshold=3 c=blue ;;
-	"info")   threshold=2 c=green ;;
-	"notice") threshold=1 c=cyan ;;
-	"warn")   c=yellow ;;
-	"error" | "fatal") c=red ;;
+	"debug")  threshold=3 c="blue" ;;
+	"info")   threshold=2 c="green" ;;
+	"notice") threshold=1 c="cyan" ;;
+	"warn")               c="yellow" ;;
+	"error" | "fatal")    c="red" ;;
 	esac
 	
 	(( PKGBOX_VERBOSITY >= threshold )) && \
 		pkgbox_echo "$(_sgr fg=$c reverse)[$(printf '% 6s' "${t^^}")]$(_sgr) $@" >&2 || \
-		true   # set function return value to 0
+		true	# success exit code so this function always returns success, too
 }
 
 # Outputs variables for debugging purpose
@@ -175,7 +175,7 @@ function pkgbox_byteshuman()
 function pkgbox_rndstr()
 {
 	tr -dc "${2:-A-Za-z0-9}" </dev/urandom | head -c "${1:-32}" 2>/dev/null
-	if [[ $? != 0 && $? != 141 ]]; then		# pipe closed is ok
+	if [[ $? != 0 && $? != 141 ]]; then		# assume closed pipe (code 141) is ok
 		pkgbox_msg error "Cannot generate random string"
 		return 2
 	fi
@@ -232,17 +232,17 @@ function pkgbox_trim()
 # @return string Parts separated by space: "name-version name version"
 function pkgbox_package_version_parts()
 {
-	local pn pv=$2
-	local p=${1##*/}	# strip path, if any
-	p=${p%.pkgbox}		# strip extension, if set
+	local p=${1##*/} pn pv=$2	# strip dirname from package, if any
+	
+	p=${p%.pkgbox}				# strip extension, if set
 	
 	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
 	if [[ $p =~ $regex ]]; then
 		pn=${BASH_REMATCH[1]}
 		
-		if [[ -z $pv ]]; then		# version override
+		if [[ ! $pv ]]; then		# version override
 			pv=${BASH_REMATCH[2]}
-			pv=${pv:1}		# cut off first dash
+			pv=${pv:1}				# cut off first dash
 		fi
 		
 		p="$pn-$pv"
@@ -250,7 +250,7 @@ function pkgbox_package_version_parts()
 		pn=$p
 	fi
 	
-	if [[ -n "$pv" ]]; then
+	if [[ $pv ]]; then
 		p="$pn-$pv"
 	fi
 	

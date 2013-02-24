@@ -45,7 +45,7 @@ function pkgbox_action()
 		
 		# already done?
 		if [[ -f "$S/.pkgbox_$curaction" ]]; then
-			if [[ $curaction == $action && -n "${PKGBOX_OPTS[force]}" ]]; then
+			if [[ $curaction == $action && ${PKGBOX_OPTS[force]} ]]; then
 				pkgbox_msg info "Action '$curaction' forced"
 			else
 				pkgbox_msg info "Action '$curaction' already completed, skipping..."
@@ -65,9 +65,9 @@ function pkgbox_action_init()
 	
 	
 	# package string, name and version
-	read P PN PV <<<$(IFS=";" && pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")
+	read P PN PV <<<"$(pkgbox_package_version_parts "$PKGBOX_PACKAGE" "$PV")"
 	
-	if [[ -z $PV ]]; then
+	if [[ ! $PV ]]; then
 		unset P PV
 	fi
 	
@@ -80,7 +80,7 @@ function pkgbox_action_init()
 	
 	# FIXME: prepare directories somewhere else
 	for i in "$T" "$WORKDIR"; do
-		[[ ! -d "$i" ]] && mkdir "$i"
+		[[ ! -d $i ]] && mkdir "$i"
 	done
 	
 	# debug: global vars
@@ -237,7 +237,7 @@ function pkgbox_action_install()
 	pkgbox_msg debug "Changing current working directory to $S"
 	cd "$S"
 	
-	[[ ! -d "$INSTALLDIR" ]] && mkdir -p "$INSTALLDIR"
+	[[ ! -d $INSTALLDIR ]] && mkdir -p "$INSTALLDIR"
 	src_install
 	touch "$S/.pkgbox_install"
 }
@@ -249,14 +249,8 @@ function pkgbox_action_clean()
 	pkgbox_msg info "clean()"
 	
 	pkgbox_msg notice "Removing '$PN' working directory"
-	[[ "${S:0:${#WORKDIR}}" == "$WORKDIR" ]] || pkgbox_die "Invalid working directory '$S'"
+	[[ ${S:0:${#WORKDIR}} == $WORKDIR ]] || pkgbox_die "Invalid working directory '$S'"
 	rm -rf "$S" &>/dev/null
-	
-	# remove downloaded files
-	#for filename in "${A[@]}"; do
-	#	pkgbox_msg notice "Removing '$PN' download file"
-	#	rm -f "$filename" &>/dev/null
-	#done
 }
 
 function pkgbox_action_info()
@@ -276,10 +270,10 @@ function pkgbox_action_info()
 
 function pkgVer()
 {
-	[[ -n "$PV" ]] && return 0		# default is overridden
+	[[ $PV ]] && return 0		# default has been overridden
 	
 	PV=$1
-	P=$PN-$PV
+	P="$PN-$PV"
 	
 	pkgbox_msg debug "Using default version '$PV' for package '$PN'"
 }
