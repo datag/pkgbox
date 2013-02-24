@@ -26,15 +26,15 @@ declare -r PKGBOX_PATH=$(dirname "$(readlink -f "$BASH_SOURCE")")
 # include basic lib
 source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2; exit 1; }
 
-# trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR + EXIT
-trap 'pkgbox_die "TRAP ${BASH_SOURCE##*/}@${LINENO} ${FUNCNAME+" (function ${FUNCNAME}()@${BASH_LINENO[@]-"?"})"}: ${BASH_COMMAND-"no-command"}" ${?-99}' \
-	HUP INT QUIT TERM ERR EXIT
-
-
+# core variables
 declare -i PKGBOX_VERBOSITY=1
 declare -A PKGBOX_OPTS
 declare -A PKGBOX_OPTS_USR
+declare -A PKGBOX_DIR
 
+
+# trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR (and later EXIT)
+trap "$ERR_HANDLER" HUP INT QUIT TERM ERR
 
 ################################################################################
 # parse options
@@ -87,7 +87,9 @@ if [[ ! ${PKGBOX_TEST-} ]]; then
 	declare -r PKGBOX_ACTION=${2:-info}
 fi
 
-declare -A PKGBOX_DIR
+################################################################################
+# add trap for regular EXIT signal
+trap "$ERR_HANDLER" EXIT
 
 ################################################################################
 # include config(s)
@@ -164,9 +166,4 @@ if (( PKGBOX_VERBOSITY > 3 )); then
 	pkgbox_msg debug "Variables defined by this script:"
 	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
 fi
-
-################################################################################
-# remove EXIT-trap and exit with success
-trap - EXIT
-exit 0
 

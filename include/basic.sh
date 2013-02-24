@@ -1,3 +1,14 @@
+
+# Error handler as string
+# In case of regular exit, remove EXIT-trap and exit with success.
+# In case of an error (e.g. "nounset" error kicking in) call pkgbox_die().
+ERR_HANDLER='\
+	rc=${?-99}; cmd="$BASH_COMMAND"; \
+	(( ! rc )) \
+		&& { trap - EXIT; exit 0; } \
+		|| pkgbox_die "[TRAP] ${BASH_SOURCE##*/}@${LINENO}: $(_sgr reverse)${cmd}$(_sgr)" $rc'
+
+
 # Prints usage (stdout)
 function pkgbox_usage()
 {
@@ -31,25 +42,23 @@ function pkgbox_usage()
 # @param [int=1] exitcode
 function pkgbox_die()
 {
-	local exitcode=1 msg=$@ frame=0 subcall errtype=fatal errcolor=red
+	local exitcode=1 msg=$@ frame=0 subcall
 	
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg=${@:1:$# - 1} exitcode=${@:$#}
 	
-	# not an error? use warning instead
-	(( ! exitcode )) && errtype=warn errcolor=yellow
-	
-	pkgbox_msg $errtype "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
+	pkgbox_msg fatal "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
 	
 	# print stacktrace
 	while subcall=$(caller $frame); do
-		pkgbox_echo "  $(_sgr fg=$errcolor)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $subcall" >&2
+		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $subcall" >&2
 		((++frame))
 	done
 	
 	# remove all traps
 	trap - HUP INT QUIT TERM ERR EXIT
 	
+	# exit with error
 	exit $exitcode
 }
 
