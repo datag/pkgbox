@@ -6,8 +6,7 @@
 # License: GPLv3 (see file LICENSE)
 ################################################################################
 
-set -eE  #x
-set -o pipefail
+set -o errexit -o errtrace -o pipefail #-o nounset
 
 # unset all aliases
 unalias -a
