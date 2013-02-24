@@ -78,21 +78,15 @@ function pkgbox_action_init()
 	
 	
 	# globals
-	T="${PKGBOX_DIR[tmp]}/temp"
-	WORKDIR="${PKGBOX_DIR[tmp]}/work"
-	INSTALLDIR=${PKGBOX_OPTS[prefix]}
 	FILESDIR="${pkg_file%/*}/files"
+	WORKDIR=${PKGBOX_DIR[work]}
+	T=${PKGBOX_DIR[temp]}
+	INSTALLDIR=${PKGBOX_OPTS[prefix]}
 	SRC_URI=()
 	
 	
-	# FIXME: prepare directories somewhere else
-	for i in "$T" "$WORKDIR"; do
-		[[ ! -d $i ]] && mkdir "$i"
-	done
-	
-	
 	# debug: global vars
-	pkgbox_debug_vars FILESDIR WORKDIR T P PN PV
+	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV
 	
 	# debug: remember all variables/functions
 	local funcs_before=$(declare -F | cut -f3- -d' ')
@@ -118,7 +112,7 @@ function pkgbox_action_init()
 	
 	
 	# debug: global vars
-	pkgbox_debug_vars P PN PV S SRC_URI A
+	pkgbox_debug_vars S SRC_URI A INSTALLDIR P PN PV
 	
 	# declare default functions
 	if ! pkgbox_is_function "src_fetch"; then

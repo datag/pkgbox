@@ -90,7 +90,7 @@ declare -A PKGBOX_DIR
 # include config(s)
 for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]-}"; do
 	if [[ -f $c ]]; then
-		pkgbox_msg info "Using config '$c'"
+		pkgbox_msg info "Including config '$c'"
 		source "$c"
 	fi
 done
@@ -113,16 +113,17 @@ fi
 unset o
 
 ################################################################################
-# general setup: pkgbox directories
+# general setup
 
 # allow override base-dir via option
 [[ ${PKGBOX_OPTS[base]-} ]] && PKGBOX_DIR[base]="${PKGBOX_OPTS[base]}"
 
-# pkgbox main directories
+# pkgbox directories
 : ${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
-: ${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
-: ${PKGBOX_DIR[tmp]:="${PKGBOX_DIR[base]}/tmp"}
 : ${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
+: ${PKGBOX_DIR[work]:="${PKGBOX_DIR[base]}/work"}
+: ${PKGBOX_DIR[temp]:="${PKGBOX_DIR[base]}/temp"}
+: ${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
 
 # create directories
 for d in "${PKGBOX_DIR[@]}"; do
