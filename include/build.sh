@@ -303,16 +303,17 @@ function pkgbox_action_clean()
 function pkgbox_action_info()
 {
 	local str=$(cat <<-EOT
-		Package information (API version: $PKGBOX_API)
-		    Package:     $PN
-		    Version:     $PV
+		pkgbox package $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
+		
+		    Package:     $(_sgr bold)${PN}$(_sgr)
+		    Version:     $(_sgr bold)${PV}$(_sgr)
 		    Description: ${DESCRIPTION:-"n/a"}
 		    Homepage:    ${HOMEPAGE:-"n/a"}
 		    Source URIs: ${SRC_URI[@]:-"n/a"}
 	EOT
 	)
 	
-	pkgbox_msg notice "$str"
+	pkgbox_echo "$str" >&2
 }
 
 function pkgVer()
