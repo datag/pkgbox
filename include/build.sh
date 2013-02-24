@@ -267,8 +267,7 @@ function pkgbox_action_info()
 		    Version:     $PV
 		    Description: $DESCRIPTION
 		    Homepage:    $HOMEPAGE
-		    Source URIs: ${SRC_URI[@]}
-		    USE flags:   $IUSE
+		    Source URIs: ${SRC_URI[@]:-"n/a"}
 	EOT
 	)
 	
