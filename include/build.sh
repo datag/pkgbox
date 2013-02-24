@@ -98,11 +98,10 @@ function pkgbox_action_init()
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
 	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')" || true)"
 	
-	# TODO: check global variables
 	
-	# prepare some more global variables
-	S=${S:="$WORKDIR/$P"}
-	A=()
+	# prepare some more globals
+	: ${S:="$WORKDIR/$P"}	# set source directory, if not set
+	A=()	# URIs for download
 	for i in "${SRC_URI[@]}"; do
 		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
