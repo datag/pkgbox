@@ -106,7 +106,7 @@ function _run_tests()
 _test_pkgbox_include()
 {
 	_t !0 "pkgbox_include"
-	for i in !0:'' 0:'include/basic.sh' !0:'foobar'; do
+	for i in !0:'' 0:'include/core.sh' !0:'foobar'; do
 		_expval "$i"
 		_t $e "pkgbox_include '$v'"
 	done
