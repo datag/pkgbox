@@ -7,12 +7,13 @@ compiler: gcc
 # window title, as the "xterm" emulation seems not to work with it.
 env: TERM=linux
 
-# Display bash version info, include pkgbox script in executable path
-# and clone the pkgbox configuration.
+# Display bash version info, include pkgbox script in executable path,
+# clone the pkgbox configuration and change the option "prefix".
 before_script:
     - "bash --version | head -n 1"
     - "export PATH=$PWD:$PATH"
-    - "mkdir ~/.pkgbox && cp -v conf.sample ~/.pkgbox/conf"
+    - "mkdir ~/.pkgbox"
+    - "sed 's/#O\\[prefix\\]=.*/O\\[prefix\\]=\"$HOME\\/local\"/' conf.sample >~/.pkgbox/conf"
 
 # Tests:
 # 1) Usage/Synopsis/Help
