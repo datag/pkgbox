@@ -1,4 +1,13 @@
-# Prints usage (stdout)
+################################################################################
+# pkgbox - The build toolbox
+# 
+# Core library - basic functionality
+# 
+# Copyright 2012, 2013  Dominik D. Geyer <dominik.geyer@gmail.com>
+# License: GPLv3 (see file LICENSE)
+################################################################################
+
+# Prints usage message
 function pkgbox_usage()
 {
 	cat <<-EOT

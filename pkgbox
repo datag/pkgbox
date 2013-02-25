@@ -23,8 +23,8 @@ __VARS=$(set -o posix; set)
 # determine absolute location of script
 declare -r PKGBOX_PATH=$(dirname "$(readlink -f "$BASH_SOURCE")")
 
-# include basic lib
-source "$PKGBOX_PATH/include/basic.sh" || { echo "Fatal error: Cannot find basic helpers" >&2; exit 1; }
+# include core lib
+source "$PKGBOX_PATH/include/core.sh" || { echo "Fatal error: Cannot include core library." >&2; exit 1; }
 
 # core variables
 declare -i PKGBOX_VERBOSITY=1
