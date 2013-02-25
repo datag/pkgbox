@@ -21,14 +21,17 @@ function pkgbox_usage()
 		    -q	Be quiet;   Given multiple times verbosity level (default=1) decreases
 		    -V <version>	Override package default version
 		    -D <key>[=<value>]
-		        Define a setting; available settings:
-		        * base       Base directory of pkgbox (default: \$HOME/.pkgbox)
-		        * config     Additional config to include
+		        Define a setting. Available settings:
+		        * config     Additional configuration file to include
+		        * base       User directory of pkgbox (default: \$HOME/.pkgbox)
+		        * packages   Packages directory (default: {pkgbox-root}/pkg)
+		        * download   Directory for downloaded files (default: {base}/download)
+		        * build      Build directory (default: {base}/build)
 		        * prefix     Install prefix (default: /usr/local)
-		        * force      Force re-running action
-		        * make_opts  Options for Make (pkgMake helper)
 		        * CFLAGS CXXFLAGS CPPFLAGS LDFLAGS EXTRA_LDFLAGS_PROGRAM LIBS CC CXX
 		                     Options for Configure (pkgConfigure helper)
+		        * make_opts  Options for Make (pkgMake helper)
+		        * force      Force re-running action
 		    -T  Run test suite
 		    -h  Display this help message and exit
 		
