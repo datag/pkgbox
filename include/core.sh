@@ -47,7 +47,7 @@ function pkgbox_trap_handler()
 	local rc=$1 cmd=$2 srcfile=$3 srcline=$4
 	local msg="${srcfile##*/}@${srcline}: $(_sgr underline)${cmd}$(_sgr)"
 	
-	pkgbox_msg fatal "$(echo >&2)$(_sgr fg=red bold)(TRAP $rc)$(_sgr) $msg" >&2
+	pkgbox_msg fatal "$(echo >&2)$(_sgr fg=red bold)(TRAP: $rc)$(_sgr) $msg" >&2
 	pkgbox_stacktrace 1
 
 	pkgbox_exit $rc
@@ -64,7 +64,7 @@ function pkgbox_die()
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg=${@:1:$# - 1} exitcode=${@:$#}
 	
-	pkgbox_msg fatal "$(_sgr fg=red bold)(DIE $exitcode)$(_sgr) $msg" >&2
+	pkgbox_msg fatal "$(_sgr fg=red bold)(DIE: $exitcode)$(_sgr) $msg" >&2
 	pkgbox_stacktrace 1
 	
 	pkgbox_exit $exitcode
@@ -79,7 +79,7 @@ function pkgbox_stacktrace()
 	# print stacktrace
 	while subcall=$(caller $frame); do
 		read sc_l sc_s sc_f <<<"$subcall"
-		sc_str=$(printf "%03d  % 25s  %s" "$sc_l" "$sc_s" "...${sc_f:${#sc_f}-20}")
+		sc_str=$(printf "%03d  % 25s  % 30s" "$sc_l" "$sc_s" "${sc_f/#$PKGBOX_PATH/(BASEDIR)}")
 		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $sc_str" >&2
 		
 		((++frame))
