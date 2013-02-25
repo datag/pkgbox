@@ -28,17 +28,16 @@ source "$PKGBOX_PATH/include/core.sh" || { echo "Fatal error: Cannot include cor
 
 # core variables
 declare -i PKGBOX_VERBOSITY=1
-declare -A PKGBOX_OPTS
-declare -A PKGBOX_OPTS_USR
+declare -A O
 declare -A PKGBOX_DIR
-
 
 # trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR and EXIT
 trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO-}"' HUP INT QUIT TERM ERR EXIT
 
-
 ################################################################################
 # parse options
+declare -A O_USR		# option override
+
 while getopts ":vqD:V:Th" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
@@ -51,7 +50,7 @@ while getopts ":vqD:V:Th" opt; do
 		PV=$OPTARG
 		;;
 	D)	# defines a special config variable
-		PKGBOX_OPTS_USR[${OPTARG%%=*}]=${OPTARG#*=}
+		O_USR[${OPTARG%%=*}]=${OPTARG#*=}
 		;;
 	T)	# mark for running test suite
 		PKGBOX_TEST=1
@@ -90,7 +89,7 @@ fi
 
 ################################################################################
 # include config(s)
-for c in /etc/pkgbox "${PKGBOX_OPTS_USR[base]:-"$HOME/.pkgbox"}/conf" "${PKGBOX_OPTS_USR[config]-}"; do
+for c in /etc/pkgbox "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${O_USR[config]-}"; do
 	if [[ -f $c ]]; then
 		pkgbox_msg info "Including config '$c'"
 		source "$c"
@@ -99,17 +98,17 @@ done
 unset c
 
 # override config options with user-provided options (via option -D)
-for o in "${!PKGBOX_OPTS_USR[@]}"; do
+for o in "${!O_USR[@]}"; do
 	pkgbox_msg debug "Overriding option $o"
-	PKGBOX_OPTS[$o]=${PKGBOX_OPTS_USR[$o]}
+	O[$o]=${O_USR[$o]}
 done
-unset PKGBOX_OPTS_USR
+unset O_USR
 
 # debug output all options
-if (( ${#PKGBOX_OPTS[@]} > 0 )); then
+if (( ${#O[@]} > 0 )); then
 	# FIXME: try using pkgbox_debug_vars()
-	for o in "${!PKGBOX_OPTS[@]}"; do
-		pkgbox_msg debug "OPTION: $(printf '% 15s' "$o") = '${PKGBOX_OPTS[$o]}'"
+	for o in "${!O[@]}"; do
+		pkgbox_msg debug "OPTION: $(printf '% 15s' "$o") = '${O[$o]}'"
 	done
 fi
 unset o
@@ -117,28 +116,25 @@ unset o
 ################################################################################
 # general setup
 
-# allow override base-dir via option
-[[ ${PKGBOX_OPTS[base]-} ]] && PKGBOX_DIR[base]="${PKGBOX_OPTS[base]}"
+# pkgbox directories (allow override via option)
+PKGBOX_DIR[base]=${O[base]:-"$HOME/.pkgbox"}
+PKGBOX_DIR[packages]=${O[packages]:-"$PKGBOX_PATH/pkg"}
+PKGBOX_DIR[download]=${O[download]:-"${PKGBOX_DIR[base]}/download"}
+PKGBOX_DIR[build]=${O[build]:-"${PKGBOX_DIR[base]}/build"}
 
-# pkgbox directories
-: ${PKGBOX_DIR[base]:="$HOME/.pkgbox"}
-: ${PKGBOX_DIR[download]:="${PKGBOX_DIR[base]}/download"}
-: ${PKGBOX_DIR[work]:="${PKGBOX_DIR[base]}/work"}
-: ${PKGBOX_DIR[temp]:="${PKGBOX_DIR[base]}/temp"}
-: ${PKGBOX_DIR[packages]:="$PKGBOX_PATH/pkg"}
 
 # create directories
 for d in "${PKGBOX_DIR[@]}"; do
 	if [[ ! -d $d ]]; then
 		pkgbox_msg info "Creating pkgbox directory '$d'"
-		mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'" 2
+		mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'"
 	fi
 done
 unset d
 
 
 # set default install-prefix, if not already set or empty via option
-: ${PKGBOX_OPTS[prefix]:="/usr/local"}
+: ${O[prefix]:="/usr/local"}
 
 ################################################################################
 # include required libraries

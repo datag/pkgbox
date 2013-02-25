@@ -1,19 +1,28 @@
 # pkgbox example configuration
 ################################################################################
 
+# user directory of pkgbox
+#O[base]="$HOME/.pkgbox"
+#O[packages]="$PKGBOX_PATH/pkg"
+#O[download]="${O[base]}/download"
+#O[build]="${O[base]}/build"
+
+
 # installation directory
-PKGBOX_OPTS[prefix]="$HOME/local"
+#O[prefix]="/usr/local"
+
 
 # variables for Configure scripts
-PKGBOX_OPTS[CFLAGS]="-march=native -O2 -pipe"
-PKGBOX_OPTS[CXXFLAGS]="${PKGBOX_OPTS[CFLAGS]}"
-PKGBOX_OPTS[CPPFLAGS]="-I${PKGBOX_OPTS[prefix]}/include"
-PKGBOX_OPTS[LDFLAGS]="-L${PKGBOX_OPTS[prefix]}/lib"
-PKGBOX_OPTS[EXTRA_LDFLAGS_PROGRAM]=
-PKGBOX_OPTS[LIBS]=
-PKGBOX_OPTS[CC]=
-PKGBOX_OPTS[CXX]=${PKGBOX_OPTS[CC]}
+O[CFLAGS]="-march=native -O2 -pipe"
+O[CXXFLAGS]="${O[CFLAGS]}"
+O[CPPFLAGS]="-I${O[prefix]}/include"
+O[LDFLAGS]="-L${O[prefix]}/lib"
+O[EXTRA_LDFLAGS_PROGRAM]=
+O[LIBS]=
+O[CC]=
+O[CXX]=${O[CC]}
+
 
 # options for Make
-PKGBOX_OPTS[make_opts]="-j3"
+O[make_opts]="-j3"
 

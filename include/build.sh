@@ -47,7 +47,7 @@ function pkgbox_action()
 		
 		# already done?
 		if [[ -f "$S/.pkgbox_$curaction" ]]; then
-			if [[ $curaction == $action && ${PKGBOX_OPTS[force]-} ]]; then
+			if [[ $curaction == $action && ${O[force]-} ]]; then
 				pkgbox_msg info "Action '$curaction' forced"
 			else
 				pkgbox_msg info "Action '$curaction' already completed, skipping..."
@@ -76,14 +76,15 @@ function pkgbox_action_init()
 		unset P PV
 	fi
 	
-	
 	# globals
 	FILESDIR="${pkg_file%/*}/files"
-	WORKDIR=${PKGBOX_DIR[work]}
-	T=${PKGBOX_DIR[temp]}
-	INSTALLDIR=${PKGBOX_OPTS[prefix]}
+	WORKDIR="${PKGBOX_DIR[build]}/work"
+	T="${PKGBOX_DIR[build]}/temp"
+	INSTALLDIR=${O[prefix]}
 	SRC_URI=()
 	
+	# create directories used by build process
+	mkdir -p "$WORKDIR" "$T"
 	
 	# debug: global vars
 	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV
@@ -334,20 +335,20 @@ function pkgConfigure()
 		${CONFIGURE_SCRIPT:-"./configure"} \
 			--prefix="$INSTALLDIR" \
 			"$@" \
-			CFLAGS="${PKGBOX_OPTS[CFLAGS]-}" \
-			CXXFLAGS="${PKGBOX_OPTS[CXXFLAGS]-}" \
-			CPPFLAGS="${PKGBOX_OPTS[CPPFLAGS]-}" \
-			LDFLAGS="${PKGBOX_OPTS[LDFLAGS]-}" \
-			EXTRA_LDFLAGS_PROGRAM="${PKGBOX_OPTS[EXTRA_LDFLAGS_PROGRAM]-}" \
-			LIBS="${PKGBOX_OPTS[LIBS]-}" \
-			CC="${PKGBOX_OPTS[CC]-}" \
-			CXX="${PKGBOX_OPTS[CXX]-}"
+			CFLAGS="${O[CFLAGS]-}" \
+			CXXFLAGS="${O[CXXFLAGS]-}" \
+			CPPFLAGS="${O[CPPFLAGS]-}" \
+			LDFLAGS="${O[LDFLAGS]-}" \
+			EXTRA_LDFLAGS_PROGRAM="${O[EXTRA_LDFLAGS_PROGRAM]-}" \
+			LIBS="${O[LIBS]-}" \
+			CC="${O[CC]-}" \
+			CXX="${O[CXX]-}"
 }
 
 # @see: http://www.gnu.org/software/make/manual/make.html
 function pkgMake()
 {
-	local make_opts=${PKGBOX_OPTS[make_opts]-}
+	local make_opts=${O[make_opts]-}
 	
 	# target "install" may cause problems with parallel execution (-jX)
 	make_opts=$(sed -e 's/-j[0-9]\+//g' <<<"$make_opts")
