@@ -94,7 +94,7 @@ function pkgbox_action_init()
 	
 	# include script
 	pkgbox_msg debug "Sourcing $pkg_file"
-	source "$pkg_file" || pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
+	source "$pkg_file" #|| pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
 	
 	# debug: print variables/functions declared by the package script
 	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"

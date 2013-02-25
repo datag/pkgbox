@@ -33,8 +33,9 @@ declare -A PKGBOX_OPTS_USR
 declare -A PKGBOX_DIR
 
 
-# trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR (and later EXIT)
-trap "$ERR_HANDLER" HUP INT QUIT TERM ERR
+# trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR and EXIT
+trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO-}"' HUP INT QUIT TERM ERR EXIT
+
 
 ################################################################################
 # parse options
@@ -57,17 +58,17 @@ while getopts ":vqD:V:Th" opt; do
 		;;
 	h)	# just display help message and exit with success
 		pkgbox_usage >&2
-		exit 0
+		pkgbox_exit 0
 		;;
 	\?)
 		echo "Error: Invalid option -$OPTARG" >&2
 		pkgbox_usage >&2
-		exit 1
+		pkgbox_exit 1
 		;;
 	:)
 		echo "Error: Option -$OPTARG requires an argument" >&2
 		pkgbox_usage >&2
-		exit 1
+		pkgbox_exit 1
 		;;
 	esac
 done
@@ -80,16 +81,12 @@ unset opt OPTIND
 if [[ ! ${PKGBOX_TEST-} ]]; then
 	if (( $# < 1 || $# > 2 )); then
 		pkgbox_usage >&2
-		exit 1
+		pkgbox_exit 1
 	fi
 
 	declare -r PKGBOX_PACKAGE=$1
 	declare -r PKGBOX_ACTION=${2:-info}
 fi
-
-################################################################################
-# add trap for regular EXIT signal
-trap "$ERR_HANDLER" EXIT
 
 ################################################################################
 # include config(s)

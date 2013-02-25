@@ -1,14 +1,3 @@
-
-# Error handler as string
-# In case of regular exit, remove EXIT-trap and exit with success.
-# In case of an error (e.g. "nounset" error kicking in) call pkgbox_die().
-ERR_HANDLER='\
-	rc=${?-99}; cmd="$BASH_COMMAND"; \
-	(( ! rc )) \
-		&& { trap - EXIT; exit 0; } \
-		|| pkgbox_die "[TRAP] ${BASH_SOURCE##*/}@${LINENO}: $(_sgr reverse)${cmd}$(_sgr)" $rc'
-
-
 # Prints usage (stdout)
 function pkgbox_usage()
 {
@@ -37,30 +26,67 @@ function pkgbox_usage()
 	EOT
 }
 
+# Trap handler for signals HUP, INT, QUIT, TERM, ERR and EXIT.
+# @param int     Return code of last command
+# @param string  Last command
+# @param string  Source file
+# @param int     Source line number
+# @calls pkgbox_exit($rc)
+# @see http://wiki.bash-hackers.org/commands/builtin/caller
+function pkgbox_trap_handler()
+{
+	local rc=$1 cmd=$2 srcfile=$3 srcline=$4
+	local msg="${srcfile##*/}@${srcline}: $(_sgr underline)${cmd}$(_sgr)"
+	
+	pkgbox_msg fatal "$(echo >&2)$(_sgr fg=red bold)(TRAP $rc)$(_sgr) $msg" >&2
+	pkgbox_stacktrace 1
+
+	pkgbox_exit $rc
+}
+
 # Prints message (stderr) and die
 # @param string... msg
 # @param [int=1] exitcode
-# @see http://wiki.bash-hackers.org/commands/builtin/caller
+# @calls pkgbox_exit($rc)
 function pkgbox_die()
 {
-	local exitcode=1 msg=$@ frame=0 subcall
+	local exitcode=1 msg=$@
 	
 	# use last argument as exit code if it is an integer
 	pkgbox_is_int "${@:$#}" && msg=${@:1:$# - 1} exitcode=${@:$#}
 	
-	pkgbox_msg fatal "$(_sgr bold)($exitcode)$(_sgr) $msg" >&2
+	pkgbox_msg fatal "$(_sgr fg=red bold)(DIE $exitcode)$(_sgr) $msg" >&2
+	pkgbox_stacktrace 1
+	
+	pkgbox_exit $exitcode
+}
+
+# Prints the current execution call stack, a stacktrace
+# @param [int=0] Frame to start
+function pkgbox_stacktrace()
+{
+	local frame=${1-0} subcall sc_l sc_s sc_f sc_str
 	
 	# print stacktrace
 	while subcall=$(caller $frame); do
-		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $subcall" >&2
+		read sc_l sc_s sc_f <<<"$subcall"
+		sc_str=$(printf "%03d  % 25s  %s" "$sc_l" "$sc_s" "...${sc_f:${#sc_f}-20}")
+		pkgbox_echo "  $(_sgr fg=red)>>$(_sgr) $(_sgr bold)[frame $frame]$(_sgr) $sc_str" >&2
+		
 		((++frame))
 	done
-	
+}
+
+# Removes all traps and exits with given exit code
+# @param int Exit code
+# @exit
+function pkgbox_exit()
+{
 	# remove all traps
 	trap - HUP INT QUIT TERM ERR EXIT
-	
+
 	# exit with error
-	exit $exitcode
+	exit $1
 }
 
 # Includes functionality by sourcing a bash script
