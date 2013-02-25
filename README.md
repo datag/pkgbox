@@ -39,12 +39,13 @@ These are the ways pkgbox can be invoked with a package:
 2. Specifying category plus package name, e.g. `app-misc/hello`. If no category directories are used, specify only the package name, e.g. `hello`.
 3. Specify as in 2), but provide the desired package version to use (e.g. `app-misc/hello-2.7`).
 
-### Example pkgbox-package for the GNU "Hello world" program ###
+### Example pkgbox-package ###
+
+This is a minimal pkgbox package for the GNU "Hello world" program. The variable
+`PKGBOX_API` and the macro `pkgVer` are mandatory.
 
 	# pkgbox: GNU Hello
 	PKGBOX_API=1
-	
-	# http://www.gnu.org/software/hello/manual/
 	
 	pkgVer 2.8
 	

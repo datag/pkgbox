@@ -22,10 +22,13 @@ function pkgbox_usage()
 		    -V <version>	Override package default version
 		    -D <key>[=<value>]
 		        Define a setting; available settings:
-		        * base     Base directory of pkgbox (default: \$HOME/.pkgbox)
-		        * config   Additional config to include
-		        * prefix   Install prefix (default: /usr/local)
-		        * force    Force re-running action
+		        * base       Base directory of pkgbox (default: \$HOME/.pkgbox)
+		        * config     Additional config to include
+		        * prefix     Install prefix (default: /usr/local)
+		        * force      Force re-running action
+		        * make_opts  Options for Make (pkgMake helper)
+		        * CFLAGS CXXFLAGS CPPFLAGS LDFLAGS EXTRA_LDFLAGS_PROGRAM LIBS CC CXX
+		                     Options for Configure (pkgConfigure helper)
 		    -T  Run test suite
 		    -h  Display this help message and exit
 		

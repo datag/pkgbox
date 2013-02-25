@@ -137,7 +137,7 @@ done
 unset d
 
 
-# set default install-prefix, if not already set via option
+# set default install-prefix, if not already set or empty via option
 : ${PKGBOX_OPTS[prefix]:="/usr/local"}
 
 ################################################################################
