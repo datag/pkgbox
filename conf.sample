@@ -1,7 +1,7 @@
 # pkgbox example configuration
 ################################################################################
 
-# user directory of pkgbox
+# pkgbox directories
 #O[base]="$HOME/.pkgbox"
 #O[packages]="$PKGBOX_PATH/pkg"
 #O[download]="${O[base]}/download"
@@ -13,16 +13,16 @@
 
 
 # variables for Configure scripts
-O[CFLAGS]="-march=native -O2 -pipe"
-O[CXXFLAGS]="${O[CFLAGS]}"
-O[CPPFLAGS]="-I${O[prefix]}/include"
-O[LDFLAGS]="-L${O[prefix]}/lib"
-O[EXTRA_LDFLAGS_PROGRAM]=
-O[LIBS]=
-O[CC]=
-O[CXX]=${O[CC]}
+#O[CFLAGS]="-march=native -O2 -pipe"
+#O[CXXFLAGS]="${O[CFLAGS]}"
+#O[CPPFLAGS]="-I${O[prefix]}/include"
+#O[LDFLAGS]="-L${O[prefix]}/lib"
+#O[EXTRA_LDFLAGS_PROGRAM]=
+#O[LIBS]=
+#O[CC]=
+#O[CXX]=${O[CC]}
 
 
 # options for Make
-O[make_opts]="-j3"
+#O[make_opts]="-j3"
 
