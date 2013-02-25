@@ -164,3 +164,7 @@ if (( PKGBOX_VERBOSITY > 3 )); then
 	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
 fi
 
+################################################################################
+# exit with success (turns off EXIT trap)
+pkgbox_exit
+

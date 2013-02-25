@@ -86,7 +86,7 @@ function pkgbox_exit()
 	trap - HUP INT QUIT TERM ERR EXIT
 
 	# exit with error
-	exit $1
+	exit ${1-0}
 }
 
 # Includes functionality by sourcing a bash script
