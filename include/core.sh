@@ -105,7 +105,7 @@ function pkgbox_include()
 	local file="$PKGBOX_PATH/$1"
 	[[ -f $file ]] || { pkgbox_msg error "Library '$file' not found"; return 2; }
 	
-	source "$file" || { pkgbox_msg error "Library '$file' cannot be loaded"; return 2; }
+	source "$file" #|| { pkgbox_msg error "Library '$file' cannot be loaded"; return 2; }
 }
 
 # Tests whether function exists
