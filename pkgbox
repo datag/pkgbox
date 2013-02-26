@@ -102,16 +102,10 @@ for o in "${!O_USR[@]}"; do
 	pkgbox_msg debug "Overriding option $o"
 	O[$o]=${O_USR[$o]}
 done
-unset O_USR
+unset o O_USR
 
 # debug output all options
-if (( ${#O[@]} > 0 )); then
-	# FIXME: try using pkgbox_debug_vars()
-	for o in "${!O[@]}"; do
-		pkgbox_msg debug "OPTION: $(printf '% 15s' "$o") = '${O[$o]}'"
-	done
-fi
-unset o
+pkgbox_debug_vars O
 
 ################################################################################
 # general setup

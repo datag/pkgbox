@@ -64,6 +64,7 @@ function _run_tests()
 		pkgbox_msg
 		pkgbox_int
 		pkgbox_is_function
+		pkgbox_is_array
 		pkgbox_is_command
 		pkgbox_byteshuman
 		pkgbox_rndstr
@@ -139,6 +140,16 @@ _test_pkgbox_is_function()
 	for i in !0:'' 0:'pkgbox_echo' !0:'_nonexist_function'; do
 		_expval "$i"
 		_t $e "pkgbox_is_function '$v'"
+	done
+}
+
+################################################################################
+_test_pkgbox_is_array()
+{
+	_t !0 "pkgbox_is_array"
+	for i in !0:'' 0:'PKGBOX_DIR' !0:'_nonexist_array'; do
+		_expval "$i"
+		_t $e "pkgbox_is_array '$v'"
 	done
 }
 

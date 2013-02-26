@@ -31,7 +31,7 @@ function pkgbox_usage()
 		        * CFLAGS CXXFLAGS CPPFLAGS LDFLAGS EXTRA_LDFLAGS_PROGRAM LIBS CC CXX
 		                     Options for Configure (pkgConfigure helper)
 		        * make_opts  Options for Make (pkgMake helper)
-		        * force      Force re-running action
+		        * force      If set, force re-running action
 		    -T  Run test suite
 		    -h  Display this help message and exit
 		
@@ -128,6 +128,15 @@ function pkgbox_is_function()
 function pkgbox_is_command()
 {
 	type -p "$1" &>/dev/null	# -P
+}
+
+# Tests whether variable name is defined as an indexed or associative array
+# @param string name of variable
+# @return int non-zero if variable is not an array
+# @see http://fvue.nl/wiki/Bash:_Detect_if_variable_is_an_array
+function pkgbox_is_array()
+{
+	declare -p "$1" 2>/dev/null | grep -q '^declare -[aA]'
 }
 
 # Tests whether value is an integer (may be negative)
@@ -234,13 +243,29 @@ function pkgbox_msg()
 		true	# success exit code so this function always returns success, too
 }
 
-# Outputs variables for debugging purpose
-# @param string... Name of variable (resolved via indirection)
+# Outputs variables/arrays/functions for debugging purpose
+# @param string... Name of variable (resolved via indirection or eval)
+# @FIXME: Can eval be avoided for printing array?
 function pkgbox_debug_vars()
 {
-	local str= i
-	for i in $@; do
-		str="$str"$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$i")$(_sgr) = $(_sgr underline)${!i-}$(_sgr)"
+	(( PKGBOX_VERBOSITY < 3 )) && return	# return early
+	
+	local str= var key ivar val func
+	for var in "$@"; do
+		if pkgbox_is_array "$var"; then
+			str+=$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$var")$(_sgr) ="
+			
+			while read -r key; do
+				ivar="\${$var['$key']}"
+				val=$(eval "echo -n \"$ivar\"")
+				str+=$'\n'"$(_sgr fg=green bold)$(printf "% 14s" "[$key]")$(_sgr) = $(_sgr underline)${val}$(_sgr)"
+			done < <(eval 'for i in "${!'$var'[@]}"; do echo "$i"; done')
+		elif pkgbox_is_function "$var"; then
+			func=$(declare -f "$var")
+			str+=$'\n'"$(_sgr fg=red bold)$(printf "% 10s" "$var()")$(_sgr) = ${func#"$var ()"}"
+		else
+			str+=$'\n'"$(_sgr fg=blue bold)$(printf "% 10s" "$var")$(_sgr) = $(_sgr underline)${!var-}$(_sgr)"
+		fi
 	done
 	pkgbox_msg debug "Vars:$str"
 }
