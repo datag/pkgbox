@@ -107,7 +107,7 @@ function pkgbox_action_init()
 	
 	# determine list of files by URIs
 	A=()
-	for i in "${SRC_URI[@]}"; do
+	for i in "${SRC_URI[@]-}"; do
 		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
 	
@@ -124,7 +124,7 @@ function pkgbox_action_init()
 			local uri filename
 			pkgbox_msg debug "Default src_fetch()"
 			
-			for uri in "${SRC_URI[@]}"; do
+			for uri in "${SRC_URI[@]-}"; do
 				filename=${uri##*/}
 				pkgbox_download "$uri" "$filename"
 			done
@@ -139,7 +139,7 @@ function pkgbox_action_init()
 			local filename
 			pkgbox_msg debug "Default src_unpack()"
 			
-			for filename in "${A[@]}"; do
+			for filename in "${A[@]-}"; do
 				pkgbox_unpack "$filename"
 			done
 		}
