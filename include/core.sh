@@ -35,9 +35,9 @@ function pkgbox_usage()
 		    -T  Run test suite
 		    -h  Display this help message and exit
 		
-		Actions:
+		Actions (default: info):
 		    fetch, unpack, prepare, configure, compile, install,
-		    info (default action), clean
+		    info, clean
 	EOT
 }
 
