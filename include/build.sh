@@ -117,8 +117,6 @@ function pkgbox_action_init()
 	
 	# declare default functions
 	if ! pkgbox_is_function "src_fetch"; then
-		pkgbox_msg debug "Defining default src_fetch()"
-		
 		function src_fetch()
 		{
 			local uri filename
@@ -132,8 +130,6 @@ function pkgbox_action_init()
 	fi	
 	
 	if ! pkgbox_is_function "src_unpack"; then
-		pkgbox_msg debug "Defining default src_unpack()"
-		
 		function src_unpack()
 		{
 			local filename
@@ -146,8 +142,6 @@ function pkgbox_action_init()
 	fi
 	
 	if ! pkgbox_is_function "src_prepare"; then
-		pkgbox_msg debug "Defining default src_prepare()"
-		
 		function src_prepare()
 		{
 			pkgbox_msg debug "Default src_prepare()"
@@ -155,8 +149,6 @@ function pkgbox_action_init()
 	fi
 	
 	if ! pkgbox_is_function "src_configure"; then
-		pkgbox_msg debug "Defining default src_configure()"
-		
 		function src_configure()
 		{
 			pkgbox_msg debug "Default src_configure()"
@@ -166,8 +158,6 @@ function pkgbox_action_init()
 	fi
 	
 	if ! pkgbox_is_function "src_compile"; then
-		pkgbox_msg debug "Defining default src_compile()"
-		
 		function src_compile()
 		{
 			pkgbox_msg debug "Default src_compile()"
@@ -177,8 +167,6 @@ function pkgbox_action_init()
 	fi
 	
 	if ! pkgbox_is_function "src_install"; then
-		pkgbox_msg debug "Defining default src_install()"
-		
 		function src_install()
 		{
 			pkgbox_msg debug "Default src_install()"
