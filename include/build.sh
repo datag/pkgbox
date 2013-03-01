@@ -146,6 +146,7 @@ function pkgbox_action_init()
 			
 			# whether to extract or locally copy the SCM repository
 			if ! pkgUseScm; then
+				local filename
 				for filename in "${A[@]-}"; do
 					pkgbox_unpack "$filename"
 				done
