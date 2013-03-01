@@ -115,92 +115,8 @@ function pkgbox_action_init()
 	# debug: global vars
 	pkgbox_debug_vars S SRC_URI A INSTALLDIR P PN PV
 	
-	# declare default functions
-	if ! pkgbox_is_function "src_fetch"; then
-		function src_fetch()
-		{
-			local uri filename
-			pkgbox_msg debug "Default src_fetch()"
-			
-			# whether to download files or checkout repository
-			if ! pkgUseScm; then
-				# regular download
-				for uri in "${SRC_URI[@]-}"; do
-					filename=${uri##*/}
-					pkgbox_download "$uri" "$filename"
-				done
-			else
-				# SCM repository
-				pkgbox_scm_checkout "$SCM_URI" $PV $PN
-				
-				# need to synchronize repository copy
-				rm -f "$S/.pkgbox_unpack"
-			fi
-		}
-	fi	
-	
-	if ! pkgbox_is_function "src_unpack"; then
-		function src_unpack()
-		{
-			pkgbox_msg debug "Default src_unpack()"
-			
-			# whether to extract or locally copy the SCM repository
-			if ! pkgUseScm; then
-				local filename
-				for filename in "${A[@]-}"; do
-					pkgbox_unpack "$filename"
-				done
-			else
-				# synchronize repository copy with that of in PKGBOX_DIR[download]
-				local v=
-				(( PKGBOX_VERBOSITY > 1 )) && v="-v"
-				
-				if pkgbox_is_command rsync; then
-					rsync -a $v "${PKGBOX_DIR[download]}/$PN/" "$S"
-				else
-					# use plain copy if rsync is not available
-					(
-						cd "${PKGBOX_DIR[download]}/$PN"
-						mkdir -p "$S" && cp $v -rfu -t "$S" .
-					)
-				fi
-			fi
-		}
-	fi
-	
-	if ! pkgbox_is_function "src_prepare"; then
-		function src_prepare()
-		{
-			pkgbox_msg debug "Default src_prepare()"
-		}
-	fi
-	
-	if ! pkgbox_is_function "src_configure"; then
-		function src_configure()
-		{
-			pkgbox_msg debug "Default src_configure()"
-			
-			pkgConfigure
-		}
-	fi
-	
-	if ! pkgbox_is_function "src_compile"; then
-		function src_compile()
-		{
-			pkgbox_msg debug "Default src_compile()"
-			
-			pkgMake
-		}
-	fi
-	
-	if ! pkgbox_is_function "src_install"; then
-		function src_install()
-		{
-			pkgbox_msg debug "Default src_install()"
-			
-			pkgMake install
-		}
-	fi
+	# declare default package actions
+	pkgbox_declare_default_actions
 }
 
 function pkgbox_find_package()
@@ -239,6 +155,104 @@ function pkgbox_find_package()
 	fi
 	
 	readlink -e "$f"
+}
+
+# Declare default package actions
+function pkgbox_declare_default_actions()
+{
+	# src_fetch(): Download source package or checkout SCM repository
+	if ! pkgbox_is_function "src_fetch"; then
+		function src_fetch()
+		{
+			local uri filename
+			pkgbox_msg debug "Default src_fetch()"
+			
+			# whether to download files or checkout repository
+			if ! pkgUseScm; then
+				# regular download
+				for uri in "${SRC_URI[@]-}"; do
+					filename=${uri##*/}
+					pkgbox_download "$uri" "$filename"
+				done
+			else
+				# SCM repository
+				pkgbox_scm_checkout "$SCM_URI" $PV $PN
+				
+				# need to synchronize repository copy
+				rm -f "$S/.pkgbox_unpack"
+			fi
+		}
+	fi	
+	
+	# src_unpack(): Extract source package or copy SCM repository
+	if ! pkgbox_is_function "src_unpack"; then
+		function src_unpack()
+		{
+			pkgbox_msg debug "Default src_unpack()"
+			
+			# whether to extract or locally copy the SCM repository
+			if ! pkgUseScm; then
+				local filename
+				for filename in "${A[@]-}"; do
+					pkgbox_unpack "$filename"
+				done
+			else
+				# synchronize repository copy with that of in PKGBOX_DIR[download]
+				local v=
+				(( PKGBOX_VERBOSITY > 1 )) && v="-v"
+				
+				if pkgbox_is_command rsync; then
+					rsync -a $v "${PKGBOX_DIR[download]}/$PN/" "$S"
+				else
+					# use plain copy if rsync is not available
+					(
+						cd "${PKGBOX_DIR[download]}/$PN"
+						mkdir -p "$S" && cp $v -rfu -t "$S" .
+					)
+				fi
+			fi
+		}
+	fi
+	
+	# src_prepare(): Does nothing
+	if ! pkgbox_is_function "src_prepare"; then
+		function src_prepare()
+		{
+			pkgbox_msg debug "Default src_prepare()"
+		}
+	fi
+	
+	# src_configure(): Executes "configure"
+	if ! pkgbox_is_function "src_configure"; then
+		function src_configure()
+		{
+			pkgbox_msg debug "Default src_configure()"
+			
+			pkgConfigure
+		}
+	fi
+	
+	# src_compile(): Executes "make"
+	if ! pkgbox_is_function "src_compile"; then
+		function src_compile()
+		{
+			pkgbox_msg debug "Default src_compile()"
+			
+			pkgMake
+		}
+	fi
+	
+	# src_install(): Executes "make install"
+	if ! pkgbox_is_function "src_install"; then
+		function src_install()
+		{
+			pkgbox_msg debug "Default src_install()"
+			
+			pkgMake install
+		}
+	fi
+	
+	return 0
 }
 
 function pkgbox_action_fetch()
