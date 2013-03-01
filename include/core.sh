@@ -336,7 +336,7 @@ function pkgbox_trim()
 	fi
 }
 
-# Splits a package string into it's parts
+# Returns package version parts ($P $PN $PV) by package string considering default version
 # @param string Package string, e.g. app-misc/hello-2.8
 # @param [string] Override version
 # @return string Parts separated by space: "name-version name version"
