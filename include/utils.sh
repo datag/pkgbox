@@ -96,7 +96,7 @@ function pkgbox_scm_checkout()
 			git clone $v "$repo_uri" "$lpath"  #--depth=100
 			(
 				cd "$lpath"
-				git checkout $v -f "$PV"
+				git checkout $v -f "$version"
 				#git submodule $v init
 				#git submodule $v update
 			)
@@ -104,12 +104,22 @@ function pkgbox_scm_checkout()
 			(
 				cd "$lpath"
 				#git clean $v -d -f -x
-				git checkout $v -f "$PV"
-				git pull $v "$repo_uri" "$PV"
+				git checkout $v -f "$version"
+				git pull $v "$repo_uri" "$version"
 				#git submodule $v update
 			)
 		fi
-	#elif [[ $repo_uri == *svn* ]]; then
+	elif [[ $repo_uri == *svn* ]]; then
+		# Subversion repository
+		
+		(( PKGBOX_VERBOSITY == 0 )) && v="-q"
+		
+		if [[ ! -d $lpath ]]; then
+			svn checkout $v "$repo_uri/$version" "$lpath"
+		else
+			#svn revert $v -R "$lpath"
+			svn switch $v "$repo_uri/$version" "$lpath"
+		fi
 	#elif [[ $repo_uri == *cvs* ]]; then
 	else
 		pkgbox_msg error "Unknown SCM repository: $repo_uri"

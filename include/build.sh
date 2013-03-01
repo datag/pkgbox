@@ -202,6 +202,7 @@ function pkgbox_declare_default_actions()
 				(( PKGBOX_VERBOSITY > 1 )) && v="-v"
 				
 				if pkgbox_is_command rsync; then
+					mkdir -p "$S"		# needed when using package versions like "tags/release-1.0.0"
 					rsync -a $v "${PKGBOX_DIR[download]}/$PN/" "$S"
 				else
 					# use plain copy if rsync is not available

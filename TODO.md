@@ -23,6 +23,7 @@
 - functions
   - version (extracting and comparing major, minor, revision, extra parts)
   - patch
+  - unpack: 7z
 - package inheritance?
 - make pkgbox-files even more like Portage ebuilds
   - http://devmanual.gentoo.org/quickstart/index.html
@@ -59,4 +60,4 @@
 - cleanup-handler
 - use explicit "unset -v" / "unset -f"
 - fix   var="${var}additional" to var+="additional"
-
+- info: show either SRC_URI _or_ SCM_URI ?
