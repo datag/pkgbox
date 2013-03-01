@@ -122,22 +122,48 @@ function pkgbox_action_init()
 			local uri filename
 			pkgbox_msg debug "Default src_fetch()"
 			
-			for uri in "${SRC_URI[@]-}"; do
-				filename=${uri##*/}
-				pkgbox_download "$uri" "$filename"
-			done
+			# whether to download files or checkout repository
+			if ! pkgUseScm; then
+				# regular download
+				for uri in "${SRC_URI[@]-}"; do
+					filename=${uri##*/}
+					pkgbox_download "$uri" "$filename"
+				done
+			else
+				# SCM repository
+				pkgbox_scm_checkout "$SCM_URI" $PV $PN
+				
+				# need to synchronize repository copy
+				rm -f "$S/.pkgbox_unpack"
+			fi
 		}
 	fi	
 	
 	if ! pkgbox_is_function "src_unpack"; then
 		function src_unpack()
 		{
-			local filename
 			pkgbox_msg debug "Default src_unpack()"
 			
-			for filename in "${A[@]-}"; do
-				pkgbox_unpack "$filename"
-			done
+			# whether to extract or locally copy the SCM repository
+			if ! pkgUseScm; then
+				for filename in "${A[@]-}"; do
+					pkgbox_unpack "$filename"
+				done
+			else
+				# synchronize repository copy with that of in PKGBOX_DIR[download]
+				local v=
+				(( PKGBOX_VERBOSITY > 1 )) && v="-v"
+				
+				if pkgbox_is_command rsync; then
+					rsync -a $v "${PKGBOX_DIR[download]}/$PN/" "$S"
+				else
+					# use plain copy if rsync is not available
+					(
+						cd "${PKGBOX_DIR[download]}/$PN"
+						mkdir -p "$S" && cp $v -rfu -t "$S" .
+					)
+				fi
+			fi
 		}
 	fi
 	
@@ -291,10 +317,11 @@ function pkgbox_action_info()
 		pkgbox package $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
 		
 		    Package:     $(_sgr bold)${PN}$(_sgr)
-		    Version:     $(_sgr bold)${PV}$(_sgr)
+		    Version:     $(_sgr bold)${PV}$(_sgr)    $(pkgUseScm && echo "(using SCM)")
 		    Description: ${DESCRIPTION:-"n/a"}
 		    Homepage:    ${HOMEPAGE:-"n/a"}
 		    Source URIs: ${SRC_URI[@]:-"n/a"}
+		    SCM URI:     ${SCM_URI:-"n/a"}
 	EOT
 	)
 	
@@ -313,6 +340,15 @@ function pkgVer()
 	fi
 	
 	pkgbox_msg info "$str $(_sgr bold)${PV}$(_sgr) for package $(_sgr bold)${PN}$(_sgr)"
+}
+
+function pkgUseScm()
+{
+	if [[ ${SCM_URI-} ]] && ! pkgbox_is_int "${PV:0:1}"; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 # @see: http://www.gnu.org/prep/standards/html_node/Configuration.html

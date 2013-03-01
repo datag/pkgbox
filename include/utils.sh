@@ -76,9 +76,44 @@ function pkgbox_unpack()
 		return 1
 		;;
 	*)
-		pkgbox_msg error "Unknown file type"
+		pkgbox_msg error "Unknown file type: $lfile"
 		return 1
 		;;
 	esac
+}
+
+function pkgbox_scm_checkout()
+{
+	local repo_uri=$1 version=${2-} lname=${3} ldir=${4-${PKGBOX_DIR[download]}}
+	local lpath="$ldir/$lname" v=
+	
+	if [[ $repo_uri == *git* ]]; then
+		# Git repository
+		
+		(( PKGBOX_VERBOSITY == 0 )) && v="-q"
+		
+		if [[ ! -d $lpath ]]; then
+			git clone $v "$repo_uri" "$lpath"  #--depth=100
+			(
+				cd "$lpath"
+				git checkout $v -f "$PV"
+				#git submodule $v init
+				#git submodule $v update
+			)
+		else
+			(
+				cd "$lpath"
+				#git clean $v -d -f -x
+				git checkout $v -f "$PV"
+				git pull $v "$repo_uri" "$PV"
+				#git submodule $v update
+			)
+		fi
+	#elif [[ $repo_uri == *svn* ]]; then
+	#elif [[ $repo_uri == *cvs* ]]; then
+	else
+		pkgbox_msg error "Unknown SCM repository: $repo_uri"
+		return 1
+	fi
 }
 
