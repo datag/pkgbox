@@ -73,7 +73,7 @@ function pkgbox_action_init()
 	# If no package version override provided, leave package and version string
 	# empty for later assignment via pkgVer and/or manual assignment in package.
 	if [[ ! $PV ]]; then
-		unset P PV
+		unset -v P PV
 	fi
 	
 	# globals
@@ -116,6 +116,7 @@ function pkgbox_action_init()
 	
 	# parse and merge features
 	pkgbox_merge_features
+	unset -v F_USR
 	
 	# debug: global vars
 	pkgbox_debug_vars S SRC_URI SCM_URI A INSTALLDIR P PN PV F

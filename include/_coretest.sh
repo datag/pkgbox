@@ -90,7 +90,7 @@ function pkgbox_testsuite()
 		$testfunc
 		
 		# unset commonly used variables
-		unset i j k  e v   # i to k = loop variables used in tests; e and v = global expected:value
+		unset -v i j k  e v   # i to k = loop variables used in tests; e and v = global expected:value
 	done
 	
 	################################################################################

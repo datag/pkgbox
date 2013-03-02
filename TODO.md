@@ -55,7 +55,6 @@
 	http://ubuntuforums.org/showthread.php?t=689289
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
-- use explicit "unset -v" / "unset -f"
 - non-debug pkgbox_debug_vars version
 - verify API-Version and exit
 

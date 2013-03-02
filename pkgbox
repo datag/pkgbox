@@ -80,7 +80,7 @@ done
 
 # shift options and unset variables used for option parsing
 shift $((OPTIND-1))
-unset opt OPTIND
+unset -v opt OPTIND
 
 ################################################################################
 # include config(s)
@@ -104,7 +104,7 @@ elif (( ${#FEATURES[@]} )); then
 	F_USR=("${FEATURES[@]}")
 fi
 
-unset O_USR FEATURES i		# unset FEATURES as its name is used in package files, too
+unset -v O_USR FEATURES i		# unset FEATURES as its name is used in package files, too
 
 # debug output all options
 pkgbox_debug_vars O F_USR 
@@ -126,7 +126,7 @@ for d in "${PKGBOX_DIR[@]}"; do
 		mkdir -p "$d" || pkgbox_die "Cannot create pkgbox directory '$d'"
 	fi
 done
-unset d
+unset -v d
 
 
 # set default install-prefix, if not already set or empty via option

@@ -114,7 +114,6 @@ function pkgbox_merge_features()
 		
 		F[$fn]=$fv
 	done
-	unset F_USR
 }
 
 pkgbox_package_info()
