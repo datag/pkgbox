@@ -38,8 +38,8 @@ trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO
 
 ################################################################################
 # parse options
-declare -A O_USR	# option override
-declare -a F_USR	# feature override
+declare -A O_USR			# option override
+declare -a F_USR FEATURES	# feature override
 
 while getopts ":vqD:F:V:Th" opt; do
 	case $opt in
@@ -104,7 +104,7 @@ elif (( ${#FEATURES[@]} )); then
 	F_USR=("${FEATURES[@]}")
 fi
 
-unset O_USR FEATURES i		# WARN: FEATURES is used as a package variable, too
+unset O_USR FEATURES i		# unset FEATURES as its name is used in package files, too
 
 # debug output all options
 pkgbox_debug_vars O F_USR 
