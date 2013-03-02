@@ -54,7 +54,7 @@ function _expval()
 	v=${1#*:}
 }
 
-function _run_tests()
+function pkgbox_testsuite()
 {
 	declare -i tests_run=0
 	declare -i tests_failed=0
@@ -107,7 +107,7 @@ function _run_tests()
 _test_pkgbox_include()
 {
 	_t !0 "pkgbox_include"
-	for i in !0:'' 0:'include/core.sh' !0:'foobar'; do
+	for i in !0:'' 0:'core' !0:'foobar'; do
 		_expval "$i"
 		_t $e "pkgbox_include '$v'"
 	done
@@ -157,7 +157,7 @@ _test_pkgbox_is_array()
 _test_pkgbox_is_command()
 {
 	_t !0 "pkgbox_is_command"
-	for i in !0:'' 0:'source' 0:'bash' !0:'include/basic.sh' !0:'_nonexist_command'; do
+	for i in !0:'' 0:'source' 0:'bash' !0:'$PKGBOX_INCLUDE/core.sh' !0:'_nonexist_command'; do
 		_expval "$i"
 		_t $e "pkgbox_is_command '$v'"
 	done

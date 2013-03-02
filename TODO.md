@@ -47,9 +47,6 @@
 - display short, relative paths (e.g. starting at ./pkg/app-misc/... for packages)
 - function-docs for build.sh and utils.sh
 - set LC_ALL=C ?
-- test suite
-	- remove jtimesched-download test
-	- support suppressing of stderr (e.g. for errors triggered by bash's "nounset" option)
 - pkgbox_action_clean(): readlink-canonicalize support?
 - bash "declare": multiple declaration of same type on same line
 - nounset error-handler?! [b2df5fc (develop)]
@@ -61,6 +58,12 @@
 - use explicit "unset -v" / "unset -f"
 - non-debug pkgbox_debug_vars version
 - verify API-Version and exit
+
+## tests ##
+
+- remove jtimesched-download test
+- support suppressing of stderr (e.g. for errors triggered by bash's "nounset" option)
+- write tests for new functions
 
 ## readme ##
 

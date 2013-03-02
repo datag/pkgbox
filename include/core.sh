@@ -111,10 +111,10 @@ function pkgbox_exit()
 # @param string pkgbox library relative to pkgbox installation
 function pkgbox_include()
 {
-	local file="$PKGBOX_PATH/$1"
-	[[ -f $file ]] || { pkgbox_msg error "Library '$file' not found"; return 2; }
+	local file="$PKGBOX_INCLUDE/${1}.sh"
+	[[ -f $file ]] || { pkgbox_msg error "Library '$file' not found."; return 2; }
 	
-	source "$file" #|| { pkgbox_msg error "Library '$file' cannot be loaded"; return 2; }
+	source "$file" || { pkgbox_msg error "Library '$file' cannot be loaded."; return 2; }
 }
 
 # Tests whether function exists

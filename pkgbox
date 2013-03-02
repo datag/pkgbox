@@ -23,8 +23,11 @@ __VARS=$(set -o posix; set)
 # determine absolute location of script
 declare -r PKGBOX_PATH=$(dirname "$(readlink -f "$BASH_SOURCE")")
 
+# NOTE: adjust this path to fit your installation layout or provide $PKGBOX_INCLUDE via environment
+declare -r PKGBOX_INCLUDE="${PKGBOX_INCLUDE-$PKGBOX_PATH/include}"
+
 # include core lib
-source "$PKGBOX_PATH/include/core.sh" || { echo "Fatal error: Cannot include core library." >&2; exit 1; }
+source "$PKGBOX_INCLUDE/core.sh" || { echo "Fatal error: Cannot include core library." >&2; exit 1; }
 
 # core variables
 declare -i PKGBOX_VERBOSITY=1
@@ -131,8 +134,8 @@ unset d
 
 ################################################################################
 # include required libraries
-pkgbox_include "include/build.sh"
-pkgbox_include "include/utils.sh"
+pkgbox_include "build"
+pkgbox_include "utils"
 
 ################################################################################
 # main
@@ -151,8 +154,8 @@ if [[ ! ${O[test]-} ]]; then
 	pkgbox_action "$PKGBOX_ACTION" "$PKGBOX_PACKAGE"
 else
 	# test mode
-	pkgbox_include "include/_coretest.sh"
-	_run_tests
+	pkgbox_include "_coretest"
+	pkgbox_testsuite
 fi
 
 ################################################################################
