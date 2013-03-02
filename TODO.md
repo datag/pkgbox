@@ -3,14 +3,22 @@
 ## core ##
 
 - tool dependency checks
+  - required by core: grep, egrep, sed, awk, ?
+  - unpack: tar (with gzip, bz2, xz, lzma, ?), unzip, ?
+  - build: make
+  - required by helpers:
+    - fetch: wget or curl
+    - SCM: git, svn, rsync(*opt)
 - bash-completion file
 - prepare pkgbox for UNIX-style system installation ("make install"?)
 - log support
+- separate file-descriptors for output/errors
+- non-color-mode (per option, for non-color-terminals and default-off for non-tty)
 - info screen: script version, bash version, directories, settings/options, ...
 - long-options? http://mywiki.wooledge.org/BashFAQ/035
 - time needed (Bash $SECONDS)
 - improve usage message
-- option to force all actions
+- option to force re-running all actions
 
 ## packages / build-related ##
 
@@ -24,7 +32,6 @@
 - functions
   - version (extracting and comparing major, minor, revision, extra parts)
   - patch
-  - unpack: 7z
 - make pkgbox-files even more like Portage ebuilds
   - http://devmanual.gentoo.org/quickstart/index.html
   - http://devmanual.gentoo.org/ebuild-writing/variables/index.html
@@ -32,13 +39,8 @@
   - http://devmanual.gentoo.org/function-reference/query-functions/index.html
   - http://devmanual.gentoo.org/ebuild-writing/eapi/index.html
 
-## misc ##
-
-- non-color-mode (per option, for non-color-terminals and default-off for non-tty)
-
 ## internals ##
 
-- separate file-descriptors for output/errors; 
 - unset "unknown" variables set by pkgbox-file? or at least make most core variables read-only
 - make extension .pkgbox configurable?
 - quoted_args: what about other whitespace?

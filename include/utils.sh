@@ -71,10 +71,6 @@ function pkgbox_unpack()
 	"zip")
 		unzip -qq "$lfile" -d "$ldir"
 		;;
-	"7z")
-		pkgbox_msg error "7z not yet implemented"
-		return 1
-		;;
 	*)
 		pkgbox_msg error "Unknown file type: $lfile"
 		return 1
@@ -120,7 +116,6 @@ function pkgbox_scm_checkout()
 			#svn revert $v -R "$lpath"
 			svn switch $v "$repo_uri/$version" "$lpath"
 		fi
-	#elif [[ $repo_uri == *cvs* ]]; then
 	else
 		pkgbox_msg error "Unknown SCM repository: $repo_uri"
 		return 1
