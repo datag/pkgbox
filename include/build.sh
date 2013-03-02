@@ -108,15 +108,17 @@ function pkgbox_action_init()
 	
 	# determine list of files by URIs
 	A=()
-	for i in "${SRC_URI[@]-}"; do
-		A+=("${PKGBOX_DIR[download]}/${i##*/}")
-	done
+	if (( ${#SRC_URI[@]} )) && ! pkgUseScm; then
+		for i in "${SRC_URI[@]}"; do
+			A+=("${PKGBOX_DIR[download]}/${i##*/}")
+		done
+	fi
 	
 	# parse and merge features
 	pkgbox_merge_features
 	
 	# debug: global vars
-	pkgbox_debug_vars S SRC_URI A INSTALLDIR P PN PV F
+	pkgbox_debug_vars S SRC_URI SCM_URI A INSTALLDIR P PN PV F
 	
 	# declare default package actions
 	pkgbox_declare_default_actions
@@ -232,10 +234,12 @@ function pkgbox_declare_default_actions()
 			# whether to download files or checkout repository
 			if ! pkgUseScm; then
 				# regular download
-				for uri in "${SRC_URI[@]-}"; do
-					filename=${uri##*/}
-					pkgbox_download "$uri" "$filename"
-				done
+				if (( ${#SRC_URI[@]} )); then
+					for uri in "${SRC_URI[@]}"; do
+						filename=${uri##*/}
+						pkgbox_download "$uri" "$filename"
+					done
+				fi
 			else
 				# SCM repository
 				pkgbox_scm_checkout "$SCM_URI" $PV $PN
@@ -254,10 +258,12 @@ function pkgbox_declare_default_actions()
 			
 			# whether to extract or locally copy the SCM repository
 			if ! pkgUseScm; then
-				local filename
-				for filename in "${A[@]-}"; do
-					pkgbox_unpack "$filename"
-				done
+				if (( ${#A[@]} )); then
+					local filename
+					for filename in "${A[@]}"; do
+						pkgbox_unpack "$filename"
+					done
+				fi
 			else
 				# synchronize repository copy with that of in PKGBOX_DIR[download]
 				local v=
