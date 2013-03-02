@@ -15,7 +15,8 @@
 ## packages / build-related ##
 
 - recursive pkgbox build support
-- package options / features (~USE flags)
+- package inheritance?
+- package options / features (~USE flags), e.g.: F["hello"]=nls
 - download
   - mirror support -> scripts
   - alternate filename support
@@ -24,14 +25,12 @@
   - version (extracting and comparing major, minor, revision, extra parts)
   - patch
   - unpack: 7z
-- package inheritance?
 - make pkgbox-files even more like Portage ebuilds
   - http://devmanual.gentoo.org/quickstart/index.html
   - http://devmanual.gentoo.org/ebuild-writing/variables/index.html
   - http://devmanual.gentoo.org/ebuild-writing/functions/index.html
   - http://devmanual.gentoo.org/function-reference/query-functions/index.html
   - http://devmanual.gentoo.org/ebuild-writing/eapi/index.html
-- package options, e.g.: F["hello"]=nls
 
 ## misc ##
 
@@ -59,4 +58,3 @@
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
 - use explicit "unset -v" / "unset -f"
-- info: show either SRC_URI _or_ SCM_URI ?

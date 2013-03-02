@@ -329,15 +329,22 @@ function pkgbox_action_clean()
 
 function pkgbox_action_info()
 {
+	local str uri
+	
+	if ! pkgUseScm; then
+		uri="Source URIs: ${SRC_URI[@]:-"n/a"}"
+	else
+		uri="SCM URI:     ${SCM_URI:-"n/a"}"
+	fi
+	
 	local str=$(cat <<-EOT
 		pkgbox package $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
 		
 		    Package:     $(_sgr bold)${PN}$(_sgr)
-		    Version:     $(_sgr bold)${PV}$(_sgr)    $(pkgUseScm && echo "(using SCM)")
+		    Version:     $(_sgr bold)${PV}$(_sgr)
 		    Description: ${DESCRIPTION:-"n/a"}
 		    Homepage:    ${HOMEPAGE:-"n/a"}
-		    Source URIs: ${SRC_URI[@]:-"n/a"}
-		    SCM URI:     ${SCM_URI:-"n/a"}
+		    ${uri}
 	EOT
 	)
 	
