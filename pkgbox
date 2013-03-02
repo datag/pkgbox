@@ -135,6 +135,7 @@ unset d
 ################################################################################
 # include required libraries
 pkgbox_include "build"
+pkgbox_include "package"
 pkgbox_include "utils"
 
 ################################################################################

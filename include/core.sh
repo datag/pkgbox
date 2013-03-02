@@ -41,6 +41,9 @@ function pkgbox_usage()
 		Actions (default: info):
 		    fetch, unpack, prepare, configure, compile, install,
 		    info, clean
+		
+		An environment variable PKGBOX_INCLUDE can be set for pkgbox to find its core
+		library. The default is the canonicalized path of this script plus "/include".
 	EOT
 }
 
@@ -337,35 +340,5 @@ function pkgbox_trim()
 	else
 		echo -n "$1"
 	fi
-}
-
-# Returns package version parts ($P $PN $PV) by package string considering default version
-# @param string Package string, e.g. app-misc/hello-2.8
-# @param [string] Override version
-# @return string Parts separated by space: "name-version name version"
-function pkgbox_package_version_parts()
-{
-	local p=${1##*/} pn pv=${2-}	# strip dirname from package, if any
-	p=${p%.pkgbox}					# strip extension, if set
-	
-	local regex='^(.*)(-[0-9\.]+[a-zA-Z_]*[0-9\.]*(-[a-zA-Z][0-9]+)?)$'
-	if [[ $p =~ $regex ]]; then
-		pn=${BASH_REMATCH[1]}
-		
-		if [[ ! $pv ]]; then		# version override
-			pv=${BASH_REMATCH[2]}
-			pv=${pv:1}				# cut off first dash
-		fi
-		
-		p="$pn-$pv"
-	else
-		pn=$p
-	fi
-	
-	if [[ $pv ]]; then
-		p="$pn-$pv"
-	fi
-	
-	echo "$p $pn $pv"
 }
 
