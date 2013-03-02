@@ -28,7 +28,8 @@
 
 
 # feature defaults
-#F=(
-#	[nls]=y
+#FEATURES=(
+#	"nls"                    # Native language support
+#	"my_path=/tmp/foobar"    # Custom variable
 #)
 

@@ -94,10 +94,17 @@ for i in "${!O_USR[@]}"; do
 	O[$i]=${O_USR[$i]}
 done
 
-unset O_USR i
+# prepend package features from configs to user-overrides (option -F)
+if (( ${#FEATURES[@]} && ${#F_USR[@]} )); then
+	F_USR=("${FEATURES[@]}" "${F_USR[@]}")
+elif (( ${#FEATURES[@]} )); then
+	F_USR=("${FEATURES[@]}")
+fi
+
+unset O_USR FEATURES i		# WARN: FEATURES is used as a package variable, too
 
 # debug output all options
-pkgbox_debug_vars O
+pkgbox_debug_vars O F_USR 
 
 ################################################################################
 # general setup

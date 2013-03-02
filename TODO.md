@@ -45,7 +45,7 @@
 - quoted_args: what about other whitespace?
 - always use determined $PN instead of $PKGBOX_PACKAGE
 - display short, relative paths (e.g. starting at ./pkg/app-misc/... for packages)
-- function-docs for build.sh
+- function-docs for build.sh and utils.sh
 - set LC_ALL=C ?
 - test suite
 	- remove jtimesched-download test
@@ -59,13 +59,10 @@
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
 - use explicit "unset -v" / "unset -f"
-- SCM: set $A with repo-dir in download
 - non-debug pkgbox_debug_vars version
-- action info: only show features which belong to this package
-- specify features in config analog to package default and command line
-- die in child process (subshell) should end parent process as well!
+- verify API-Version and exit
 
 ## readme ##
 
-- order of option/feature assignment
+- order/precedence of option/feature assignment
 

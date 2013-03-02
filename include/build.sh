@@ -157,27 +157,19 @@ function pkgbox_parse_feature()
 # 3) Feature override via option -F
 function pkgbox_merge_features()
 {
+	# prepend package default features to combined features (config + user-override)
+	if (( ${#FEATURES[@]} && ${#F_USR[@]} )); then
+		F_USR=("${FEATURES[@]}" "${F_USR[@]}")
+	elif (( ${#FEATURES[@]} )); then
+		F_USR=("${FEATURES[@]}")
+	fi
+	
+	# move all package features into global $F
 	local i fn fv
-	
-	# parse feature default of package
-	for i in "${!FEATURES[@]}"; do
-		fn=$(pkgbox_parse_feature "${FEATURES[$i]}" 1)
-		fv=$(pkgbox_parse_feature "${FEATURES[$i]}" 2)
-		
-		# only set default if not already set via config
-		if [[ ${F[$fn]+__HAS_KEY} != __HAS_KEY ]]; then
-			F[$fn]=$fv
-		else
-			pkgbox_msg debug "Overriding package feature '$fn' (by config)"
-		fi
-	done
-	
-	# user-override of package features (via option -F)
 	for i in "${!F_USR[@]}"; do
 		fn=$(pkgbox_parse_feature "${F_USR[$i]}" 1)
 		fv=$(pkgbox_parse_feature "${F_USR[$i]}" 2)
 		
-		pkgbox_msg debug "Overriding package feature '$fn' (by option -F)"
 		F[$fn]=$fv
 	done
 	unset F_USR
@@ -397,33 +389,61 @@ function pkgbox_action_clean()
 
 function pkgbox_action_info()
 {
-	local str i v a
+	local str i fn fv \
+		def v a
 	
 	local str=$(cat <<-EOT
-		$(_sgr reverse)pkgbox package    $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
 		
-		    Package:     $(_sgr bold)${PN}$(_sgr)
-		    Version:     $(_sgr bold)${PV}$(_sgr)
-		    Description: ${DESCRIPTION-}
-		    Homepage:    ${HOMEPAGE-}
-		    $(! pkgUseScm &&
-		    	echo "Source URIs: ${SRC_URI[@]-}" ||
-		    	echo "SCM URI:     ${SCM_URI-}")
-		    Features:
+		$(_sgr underline)pkgbox package    $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
+		    
+		   Package name:  $(_sgr bold)${PN}$(_sgr)
+		        Version:  $(_sgr bold)${PV}$(_sgr)
+		    Description:  ${DESCRIPTION--}
+		       Homepage:  ${HOMEPAGE--}
 	EOT
 	)
 	
-	for i in "${!F[@]}"; do
-		case "${F[$i]}" in
-		y)	v=YES        a="fg=green" ;;
-		n)	v=NO         a="fg=red"   ;;
-		*)  v=${F[$i]}   a="fg=black underline" ;;
-		esac
-		
-		str+=$'\n'"$(_sgr bold fg=blue)$(printf "% 15s" "$i")$(_sgr)  $(_sgr bold $a)$v$(_sgr)"
-	done
+	# SRC_URI / SCM_URI
+	if ! pkgUseScm; then
+		str+=$'\n'"    Source URIs:  ${SRC_URI[@]--}"
+	else
+		str+=$'\n'"        SCM URI:  ${SCM_URI--}"
+	fi
 	
-	pkgbox_echo "$str" >&2
+	# features
+	if (( ${#FEATURES[@]} )); then
+		str+=$'\n'"       Features:"
+		
+		function _pkgbox_feature_format {
+			# use $v and $a of above scope
+			case "$1" in
+			y)  v=YES   a="fg=green" ;;
+			n)  v=NO    a="fg=red"   ;;
+			*)  v=$1    a="fg=black underline" ;;
+			esac
+		}
+	
+		for i in "${!FEATURES[@]}"; do
+			fn=$(pkgbox_parse_feature "${FEATURES[$i]}" 1)
+			fv=$(pkgbox_parse_feature "${FEATURES[$i]}" 2)
+		
+			# package default overridden (different)?
+			[[ ${F[$fn]} != $fv ]] && def=1 || def=
+		
+			str+=$'\n'"$(_sgr ${def:+bold} fg=blue)$(printf "% 20s" "$fn")$(_sgr)"
+			_pkgbox_feature_format "${F[$fn]}"
+			str+="  $(_sgr ${def:+bold} $a)${v}$(_sgr)"
+			
+			if [[ $def ]]; then
+				_pkgbox_feature_format "$fv"
+				str+="    [$(_sgr $a)${v}$(_sgr)]"
+			fi
+		done
+	
+		unset -f _pkgbox_feature_format
+	fi
+	
+	pkgbox_echo "$str"$'\n' >&2
 }
 
 function pkgVer()
