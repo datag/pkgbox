@@ -26,3 +26,9 @@
 # options for Make
 #O[make_opts]="-j3"
 
+
+# feature defaults
+#F=(
+#	[nls]=y
+#)
+
