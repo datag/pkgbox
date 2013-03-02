@@ -9,7 +9,7 @@
 function _t()
 {
 	local exp=$1 cmd=$2 exp_stdout=${3-}
-	local code=0 out out_test=0 out_color=blue text
+	local code=0 out out_test=0 out_color=blue text=
 	
 	#set -x
 	out=$(eval "$cmd") || code=$?
@@ -35,7 +35,7 @@ function _t()
 		text="$(_sgr fg=green reverse)PASS"
 	fi
 	
-	text="$text $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
+	text+=" $(printf "exp:% 4s got:% 3s" $exp $code)$(_sgr)"
 	if [[ -n "$out" || $out_test != 0 ]]; then
 		out=" ($(_sgr bold)output:$(_sgr) $(_sgr fg=${out_color} underline)$out$(_sgr))"
 		[[ $out_test != 0 ]] && out="$out ($(_sgr bold)expected:$(_sgr) $(_sgr fg=${out_color} underline)$exp_stdout$(_sgr))"
@@ -50,8 +50,8 @@ function _t()
 function _expval()
 {
 	# global
-	e="${1%%:*}"
-	v="${1#*:}"
+	e=${1%%:*}
+	v=${1#*:}
 }
 
 function _run_tests()

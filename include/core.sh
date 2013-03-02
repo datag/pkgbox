@@ -182,7 +182,7 @@ function _sgr()
 		*) m=0 ;;  # reset/normal
 		esac
 		
-		sgr="${sgr-}${m};"
+		sgr+="${m};"
 	done
 	
 	[[ ! ${sgr} ]] && sgr="0" || sgr=${sgr%;}	# remove superfluous trailing ";"
@@ -301,9 +301,9 @@ function pkgbox_print_quoted_args()
 	for i in "$@"; do
 		if [[ $i =~ \  ]]; then
 			i=${i/\'/\'\\\'\'}
-			argstr="$argstr $(printf "'%s'" "$i")"   # printf("%q" "$i") doesn't put quotes around argument
+			argstr+=" $(printf "'%s'" "$i")"   # printf("%q" "$i") doesn't put quotes around argument
 		else
-			argstr="$argstr $i"
+			argstr+=" $i"
 		fi
 	done
 	

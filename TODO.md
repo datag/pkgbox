@@ -6,11 +6,11 @@
 - bash-completion file
 - prepare pkgbox for UNIX-style system installation ("make install"?)
 - log support
-- don't load libs by default, require load by package
 - info screen: script version, bash version, directories, settings/options, ...
 - long-options? http://mywiki.wooledge.org/BashFAQ/035
 - time needed (Bash $SECONDS)
 - improve usage message
+- option to force all actions
 
 ## packages / build-related ##
 
@@ -19,7 +19,7 @@
 - download
   - mirror support -> scripts
   - alternate filename support
-  - SCM (git/svn) support
+- SCM: support for CVS, Bazaar and Mercurial
 - functions
   - version (extracting and comparing major, minor, revision, extra parts)
   - patch
@@ -59,5 +59,4 @@
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
 - use explicit "unset -v" / "unset -f"
-- fix   var="${var}additional" to var+="additional"
 - info: show either SRC_URI _or_ SCM_URI ?
