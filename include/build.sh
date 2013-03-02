@@ -82,12 +82,13 @@ function pkgbox_action_init()
 	T="${PKGBOX_DIR[build]}/temp"
 	INSTALLDIR=${O[prefix]}
 	SRC_URI=()
+	FEATURES=()
 	
 	# create directories used by build process
 	mkdir -p "$WORKDIR" "$T"
 	
 	# debug: global vars
-	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV
+	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV F
 	
 	# debug: remember all variables/functions
 	local funcs_before=$(declare -F | cut -f3- -d' ')
@@ -111,12 +112,73 @@ function pkgbox_action_init()
 		A+=("${PKGBOX_DIR[download]}/${i##*/}")
 	done
 	
+	# parse and merge features
+	pkgbox_merge_features
 	
 	# debug: global vars
-	pkgbox_debug_vars S SRC_URI A INSTALLDIR P PN PV
+	pkgbox_debug_vars S SRC_URI A INSTALLDIR P PN PV F
 	
 	# declare default package actions
 	pkgbox_declare_default_actions
+}
+
+# a) foo     [yes]
+# b) foo=    [empty/no]
+# c) foo=bar [value/yes]
+# d) foo=y   [yes]
+# e) foo=n   [no]
+function pkgbox_parse_feature()
+{
+	local f=$1 p=${2-0}
+	local fn=$f fv=y o
+	
+	case "$f" in
+	*=*)  fn=${f%%=*}  fv=${f#*=}  ;;
+	 -*)  fn=${f:1}    fv=n        ;;
+	 +*)  fn=${f:1}    fv=y        ;;
+	esac
+	
+	
+	if (( p == 1 )); then
+		o="$fn"
+	elif (( p == 2 )); then
+		o="$fv"
+	else
+		o="$fn=$fv"
+	fi
+	
+	echo "$o"
+}
+
+# 1) Package feature defaults
+# 2) Feature override via config file
+# 3) Feature override via option -F
+function pkgbox_merge_features()
+{
+	local i fn fv
+	
+	# parse feature default of package
+	for i in "${!FEATURES[@]}"; do
+		fn=$(pkgbox_parse_feature "${FEATURES[$i]}" 1)
+		fv=$(pkgbox_parse_feature "${FEATURES[$i]}" 2)
+		
+		# only set default if not already set via config
+		if [[ ${F[$fn]+__HAS_KEY} != __HAS_KEY ]]; then
+			F[$fn]=$fv
+		else
+			pkgbox_msg debug "Overriding package feature '$fn' (by config)"
+		fi
+	done
+	
+	# user-override of package features (via option -F)
+	for i in "${!F_USR[@]}"; do
+		fn=$(pkgbox_parse_feature "${F_USR[$i]}" 1)
+		fv=$(pkgbox_parse_feature "${F_USR[$i]}" 2)
+		
+		pkgbox_msg debug "Overriding package feature '$fn' (by option -F)"
+		F[$fn]=$fv
+	done
+	unset F_USR
 }
 
 function pkgbox_find_package()
@@ -329,24 +391,31 @@ function pkgbox_action_clean()
 
 function pkgbox_action_info()
 {
-	local str uri
-	
-	if ! pkgUseScm; then
-		uri="Source URIs: ${SRC_URI[@]:-"n/a"}"
-	else
-		uri="SCM URI:     ${SCM_URI:-"n/a"}"
-	fi
+	local str i v a
 	
 	local str=$(cat <<-EOT
-		pkgbox package $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
+		$(_sgr reverse)pkgbox package    $(_sgr bold)${P}$(_sgr)  (API version: $PKGBOX_API)
 		
 		    Package:     $(_sgr bold)${PN}$(_sgr)
 		    Version:     $(_sgr bold)${PV}$(_sgr)
-		    Description: ${DESCRIPTION:-"n/a"}
-		    Homepage:    ${HOMEPAGE:-"n/a"}
-		    ${uri}
+		    Description: ${DESCRIPTION-}
+		    Homepage:    ${HOMEPAGE-}
+		    $(! pkgUseScm &&
+		    	echo "Source URIs: ${SRC_URI[@]-}" ||
+		    	echo "SCM URI:     ${SCM_URI-}")
+		    Features:
 	EOT
 	)
+	
+	for i in "${!F[@]}"; do
+		case "${F[$i]}" in
+		y)	v=YES        a="fg=green" ;;
+		n)	v=NO         a="fg=red"   ;;
+		*)  v=${F[$i]}   a="fg=black underline" ;;
+		esac
+		
+		str+=$'\n'"$(_sgr bold fg=blue)$(printf "% 15s" "$i")$(_sgr)  $(_sgr bold $a)$v$(_sgr)"
+	done
 	
 	pkgbox_echo "$str" >&2
 }
@@ -402,5 +471,36 @@ function pkgMake()
 	
 	pkgbox_exec \
 		make $make_opts "$@"
+}
+
+function pkgUse()
+{
+	[[ ${F[$fn]-} != "" && ${F[$fn]-} != "n" ]]		# empty or "n"
+}
+
+function pkgUseValue()
+{
+	echo "${F[$1]-}"
+}
+
+# feature prefixed with "!" inverts the result
+function pkgConfigureOption()
+{
+	local cfgtrue=$1 cfgfalse=$2 fn=$3 confn=${4-} cfg invert=0 rc=0
+	[[ ${fn:0:1} == "!" ]] && invert=1 fn=${fn:1}
+	pkgUse "$fn" || rc=$?
+	(( $invert )) && rc=$(( ! rc ))
+	(( $rc == 0 )) && cfg=$cfgtrue || cfg=$cfgfalse
+	echo "--${cfg}-${confn:-$fn}"
+}
+
+function pkgEnable()
+{
+	pkgConfigureOption "enable" "disable" "$1" ${2-}
+}
+
+function pkgWith()
+{
+	pkgConfigureOption "with" "without" "$1" ${2-}
 }
 

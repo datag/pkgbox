@@ -6,9 +6,8 @@
   - required by core: grep, egrep, sed, awk, ?
   - unpack: tar (with gzip, bz2, xz, lzma, ?), unzip, ?
   - build: make
-  - required by helpers:
-    - fetch: wget or curl
-    - SCM: git, svn, rsync(*opt)
+  - fetch: wget or curl
+  - SCM: git, svn, rsync(*opt)
 - bash-completion file
 - prepare pkgbox for UNIX-style system installation ("make install"?)
 - log support
@@ -19,12 +18,12 @@
 - time needed (Bash $SECONDS)
 - improve usage message
 - option to force re-running all actions
+- install-destination $D / /image
 
 ## packages / build-related ##
 
 - recursive pkgbox build support
 - package inheritance?
-- package options / features (~USE flags), e.g.: F["hello"]=nls
 - download
   - mirror support -> scripts
   - alternate filename support
@@ -60,3 +59,13 @@
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
 - use explicit "unset -v" / "unset -f"
+- SCM: set $A with repo-dir in download
+- non-debug pkgbox_debug_vars version
+- action info: only show features which belong to this package
+- specify features in config analog to package default and command line
+- die in child process (subshell) should end parent process as well!
+
+## readme ##
+
+- order of option/feature assignment
+

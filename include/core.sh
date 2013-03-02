@@ -32,6 +32,9 @@ function pkgbox_usage()
 		                     Options for Configure (pkgConfigure helper)
 		        * make_opts  Options for Make (pkgMake helper)
 		        * force      If set, force re-running action
+		    -F <feature>[=value]
+		        Enable/disable/set a package feature. Possible values are "y", "n" or
+		        an (empty) string. If value is omitted, the value "y" is set.
 		    -T  Run test suite
 		    -h  Display this help message and exit
 		

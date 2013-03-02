@@ -19,12 +19,12 @@ before_script:
 # 1) Usage/Synopsis/Help
 # 2) Test suite
 # 3) Display package details
-# 4) Build and install package app-misc/hello
+# 4) Build and install package app-misc/hello with NLS-support
 script:
     - "pkgbox -h"
     - "pkgbox -vvv -T"
     - "pkgbox app-misc/hello"
-    - "pkgbox -v app-misc/hello install"
+    - "pkgbox -v -F -nls app-misc/hello install"
 
 # Test the GNU hello program
 after_script:

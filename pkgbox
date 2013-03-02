@@ -28,17 +28,17 @@ source "$PKGBOX_PATH/include/core.sh" || { echo "Fatal error: Cannot include cor
 
 # core variables
 declare -i PKGBOX_VERBOSITY=1
-declare -A O
-declare -A PKGBOX_DIR
+declare -A PKGBOX_DIR O F
 
 # trap signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM and special ERR and EXIT
 trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO-}"' HUP INT QUIT TERM ERR EXIT
 
 ################################################################################
 # parse options
-declare -A O_USR		# option override
+declare -A O_USR	# option override
+declare -a F_USR	# feature override
 
-while getopts ":vqD:V:Th" opt; do
+while getopts ":vqD:F:V:Th" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
 		(( ++PKGBOX_VERBOSITY )) || :
@@ -49,8 +49,11 @@ while getopts ":vqD:V:Th" opt; do
 	V)	# override package version
 		PV=$OPTARG
 		;;
-	D)	# defines a special config variable
+	D)	# option override
 		O_USR[${OPTARG%%=*}]=${OPTARG#*=}
+		;;
+	F)	# feature override
+		F_USR+=( "$OPTARG" )
 		;;
 	T)	# marker for running test suite (alias for -D test)
 		O_USR[test]=1
@@ -78,20 +81,20 @@ unset opt OPTIND
 
 ################################################################################
 # include config(s)
-for c in /etc/pkgbox "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${O_USR[config]-}"; do
-	if [[ -f $c ]]; then
-		pkgbox_msg info "Including config '$c'"
-		source "$c"
+for i in /etc/pkgbox "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${O_USR[config]-}"; do
+	if [[ -f $i ]]; then
+		pkgbox_msg info "Including config '$i'"
+		source "$i"
 	fi
 done
-unset c
 
-# override config options with user-provided options (via option -D)
-for o in "${!O_USR[@]}"; do
-	pkgbox_msg debug "Overriding option $o"
-	O[$o]=${O_USR[$o]}
+# user-override of config options (via option -D)
+for i in "${!O_USR[@]}"; do
+	pkgbox_msg debug "Overriding option '$i'"
+	O[$i]=${O_USR[$i]}
 done
-unset o O_USR
+
+unset O_USR i
 
 # debug output all options
 pkgbox_debug_vars O
