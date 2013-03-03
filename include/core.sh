@@ -155,7 +155,7 @@ function pkgbox_is_int()
 
 # Set SGR (Select Graphic Rendition) parameters
 #
-# If called without parameters it will reset SGR
+# If called without or with unknown parameters SGR will be reset.
 #
 # @param [string...] option
 # @see http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
@@ -181,11 +181,11 @@ function _sgr()
 			"magenta") m=5 ;;
 			"cyan")    m=6 ;;
 			"white")   m=7 ;;
-			*)         m=0 ;;  # black and others
+			*)         m=0 ;;  # black (and unknown)
 			esac
 			[[ $opt == "bg" ]] && m="4${m}" || m="3${m}"
 			;;
-		*) m=0 ;;  # reset/normal
+		*) m=0 ;;  # reset/normal (and unknown)
 		esac
 		
 		sgr+="${m};"
@@ -341,7 +341,10 @@ function pkgbox_exec()
 	local cmd=$1
 	shift
 	
-	(( PKGBOX_VERBOSITY > 2 )) && pkgbox_msg debug "$FUNCNAME: $(_sgr bold)$cmd$(_sgr) $(pkgbox_print_quoted_args "$@")"
+	if (( PKGBOX_VERBOSITY > 1 )); then
+		pkgbox_msg info "Executing: $(_sgr bold underline)$cmd$(_sgr reset underline) $(pkgbox_print_quoted_args "$@")$(_sgr)"
+	fi
+	
 	$cmd "$@"
 }
 
