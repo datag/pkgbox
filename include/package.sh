@@ -71,14 +71,15 @@ function pkgbox_find_package()
 # c) foo=bar [value/yes]
 # d) foo=y   [yes]
 # e) foo=n   [no]
+# FIXME: +/- doesn't work if "[+|-]key=value" provided
 function pkgbox_parse_feature()
 {
 	local f=$1 p=${2-0}
 	local fn=$f fv=y o
 	
 	case "$f" in
-	*=*)  fn=${f%%=*}  fv=${f#*=}  ;;
 	 -*)  fn=${f:1}    fv=n        ;;
+	*=*)  fn=${f%%=*}  fv=${f#*=}  ;;
 	 +*)  fn=${f:1}    fv=y        ;;
 	esac
 	
@@ -201,6 +202,7 @@ function pkgUseScm()
 	fi
 }
 
+# @use CONFIGURE_SCRIPT: Configure script (default: ./configure)
 # @see: http://www.gnu.org/prep/standards/html_node/Configuration.html
 # @see: http://www.gnu.org/software/autoconf/manual/autoconf.html
 function pkgConfigure()
@@ -233,34 +235,73 @@ function pkgMake()
 
 function pkgUse()
 {
-	[[ ${F[$1]-} != "" && ${F[$1]-} != "n" ]]		# empty or "n"
+	pkgUseIsset "$1" && [[ ${F[$1]-} != "n" ]]		# empty value counts as enabled
+}
+
+:<<'EOC'
+function pkgUseHasValue()
+{
+	pkgUse "$1" && [[ $(pkgUseValue "$1") ]]
 }
 
 function pkgUseValue()
 {
-	echo "${F[$1]-}"
+	[[ ${F[$1]-} != "" && ${F[$1]-} != "n" && ${F[$1]-} != "y" ]] && echo "${F[$1]}"
+}
+EOC
+
+function pkgUseIsset()
+{
+	[[ ${F[$1]+__KEY_ISSET} == __KEY_ISSET ]]
 }
 
-# feature prefixed with "!" inverts the result
+# $1 = true-verb, $2 = false-verb, $3 = feature name, ${4-} = configure feature, ${5-} = mode (default: "-"), ${6-} = value override
+# e.g. pkgConfigureOption enable disable nls
+# e.g. pkgConfigureOption enable disable nls languages
+# e.g. pkgConfigureOption with without devrandom
+# e.g. pkgConfigureOption with without devrandom -omitempty
+# e.g. pkgConfigureOption with without ssl openssl - "$my_value"
 function pkgConfigureOption()
 {
-	local cfgtrue=$1 cfgfalse=$2 fn=$3 confn=${4-} cfg val= invert=0 rc=0
+	local cfgtrue=$1 cfgfalse=$2 fn=$3 confn=${4-} mode=${5:-"-"} custom=${6-} \
+		cfg val= invert=0 rc=0
+	
+	# feature prefixed with "!" inverts the logic
 	[[ ${fn:0:1} == "!" ]] && invert=1 fn=${fn:1}
+	
+	# test for feature and store non-zero result
 	pkgUse "$fn" || rc=$?
+	
+	# the actual inversion
 	(( $invert )) && rc=$(( ! rc ))
-	(( $rc == 0 )) && \
-		{ cfg=$cfgtrue; [[ ${F[$fn]-} != y ]] && val="=${F[$fn]-}"; } || \
+	
+	# whether to use the true-verb (e.g. enable) or the false-verb (e.g. disable)
+	if (( $rc == 0 )); then
+		cfg=$cfgtrue
+		
+		if (( $# < 6 )); then
+			# use feature' set value
+			[[ ${F[$fn]-} != y ]] && val="=${F[$fn]-}"
+		else
+			val="=$custom"
+		fi
+	else
 		cfg=$cfgfalse
-	echo "--${cfg}-${confn:-$fn}${val}"
+	fi
+	
+	# special case: do not print option if value is empty (w/o "=") and mode is "omitempty"
+	if [[ ${#val} > 1 || $mode != "-omitempty" ]]; then
+		echo "--${cfg}-${confn:-$fn}${val}"
+	fi
 }
 
 function pkgEnable()
 {
-	pkgConfigureOption "enable" "disable" "$1" ${2-}
+	pkgConfigureOption "enable" "disable" "$@"
 }
 
 function pkgWith()
 {
-	pkgConfigureOption "with" "without" "$1" ${2-}
+	pkgConfigureOption "with" "without" "$@"
 }
 
