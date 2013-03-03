@@ -10,17 +10,17 @@ set -o errexit -o errtrace -o pipefail -o nounset
 
 # test for too old bash version
 if (( BASH_VERSINFO[0] < 4 )); then
-	echo "Error: This script requires a bash version >= 4.0 (got $BASH_VERSION). Exiting." >&2
+	echo "Error: This script requires a Bash shell version >= 4.0 (got $BASH_VERSION)." >&2
 	exit 1
 fi
 
-# debug: remember initial variables on script start
+# debug mode: remember initial variables on script start
 __VARS=$(set -o posix; set)
 
 # determine absolute location of script
 declare -r PKGBOX_PATH=$(dirname "$(readlink -f "$BASH_SOURCE")")
 
-# NOTE: adjust this path to fit your installation layout or provide $PKGBOX_INCLUDE via environment
+# NOTE: adjust this path to point to the includes or provide PKGBOX_INCLUDE via environment
 declare -r PKGBOX_INCLUDE="${PKGBOX_INCLUDE-$PKGBOX_PATH/include}"
 
 # include core lib

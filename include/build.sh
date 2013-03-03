@@ -90,7 +90,7 @@ function pkgbox_action_init()
 	# debug: global vars
 	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV F
 	
-	# debug: remember all variables/functions
+	# debug mode: remember all variables/functions
 	if (( PKGBOX_VERBOSITY > 3 )); then
 		local funcs_before=$(declare -F | cut -f3- -d' ')
 		local vars_before=$(set -o posix; set)
@@ -102,7 +102,7 @@ function pkgbox_action_init()
 	source "$pkg_file" #|| pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
 	
 	
-	# debug: print variables/functions declared by the package script
+	# debug mode: print variables/functions declared by the package script
 	if (( PKGBOX_VERBOSITY > 3 )); then
 		pkgbox_debug_declared_vars  vars_before  "Variables declared by package"
 		pkgbox_debug_declared_funcs funcs_before "Functions declared by package"
