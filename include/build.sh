@@ -82,6 +82,8 @@ function pkgbox_action_init()
 	T="${PKGBOX_DIR[build]}/temp"
 	INSTALLDIR=${O[prefix]}
 	SRC_URI=()
+	A=()
+	PATCHES=()
 	FEATURES=()
 	
 	# create directories used by build process
@@ -113,7 +115,6 @@ function pkgbox_action_init()
 	: ${S:="$WORKDIR/$P"}
 	
 	# determine list of files by URIs
-	A=()
 	if (( ${#SRC_URI[@]} )) && ! pkgUseScm; then
 		for i in "${SRC_URI[@]}"; do
 			A+=("${PKGBOX_DIR[download]}/${i##*/}")
@@ -189,6 +190,15 @@ function pkgbox_declare_default_actions()
 						mkdir -p "$S" && cp $v -rfu -t "$S" .
 					)
 				fi
+			fi
+			
+			
+			# apply patches specified in PATCHES
+			if (( ${#PATCHES[@]} )); then
+				local filename
+				for filename in "${PATCHES[@]}"; do
+					pkgPatch "$filename"
+				done
 			fi
 		}
 	fi

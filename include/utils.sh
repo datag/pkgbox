@@ -78,6 +78,44 @@ function pkgbox_unpack()
 	esac
 }
 
+# @TODO: support for compressed patches
+function pkgPatch()
+{
+	local pfile=$1 ldir=${2:-$S} plevel out rc
+	
+	pkgbox_msg info "Applying patch $pfile"
+	
+	# try patch levels (patch num) from 0 to 4
+	for plevel in {0..4}; do
+		# If the patch fails it'll just skipped (batch mode). However, as the exit code is 1 (mild error)
+		# there seems no sane way to notice a wrong patch level (patch-util not finding the patch file.
+		# Solution: Set and catch the output from stdout and test if it returned non-zero length data.
+		out=$(patch -d "$ldir" -i "$pfile" --silent --batch -p${plevel} -o - -r - 2>/dev/null) || rc=$?
+		
+		# we've got bytes, let's give it a try
+		(( ${#out} )) && break;
+		
+		pkgbox_msg debug "#$((plevel+1)) try with patch level $plevel failed [$rc]"
+	done
+	
+	if (( ${#out} )); then
+		# -u  -N  -l --silent
+		patch -d "$ldir" -i "$pfile" --batch -N -p${plevel} && rc=0 || rc=$?
+		
+		if (( rc > 1 )); then
+			pkgbox_msg error "Error applying patch: Patch failed [$rc]"
+			return $rc
+		elif (( rc == 1 )); then
+			pkgbox_msg warn "Patch may have failed hunks"
+		else
+			pkgbox_msg info "Patch successfully applied"
+		fi
+	else
+		pkgbox_msg error "Error applying patch: Cannot determine patchlevel"
+		return 1
+	fi
+}
+
 function pkgbox_scm_checkout()
 {
 	local repo_uri=$1 version=${2-} lname=${3} ldir=${4-${PKGBOX_DIR[download]}}

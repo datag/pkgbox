@@ -19,6 +19,7 @@
 - improve usage message
 - option to force re-running all actions
 - install-destination $D / /image
+- src_install():pkgMake - get rid of general -jX stripping during install?
 
 ## packages / build-related ##
 
@@ -27,16 +28,18 @@
 - download
   - mirror support -> scripts
   - alternate filename support
+  - remember action fetch finished (cachetime?)
 - SCM: support for CVS, Bazaar and Mercurial
 - functions
   - version (extracting and comparing major, minor, revision, extra parts)
-  - patch
+- add LICENSE field
 - make pkgbox-files even more like Portage ebuilds
   - http://devmanual.gentoo.org/quickstart/index.html
   - http://devmanual.gentoo.org/ebuild-writing/variables/index.html
   - http://devmanual.gentoo.org/ebuild-writing/functions/index.html
   - http://devmanual.gentoo.org/function-reference/query-functions/index.html
   - http://devmanual.gentoo.org/ebuild-writing/eapi/index.html
+  - http://devmanual.gentoo.org/eclass-reference/ebuild/index.html
 
 ## internals ##
 
@@ -56,6 +59,7 @@
 	http://stackoverflow.com/questions/64786/error-handling-in-bash
 - cleanup-handler
 - non-debug pkgbox_debug_vars version
+- declare global variables with "declare -g" and its type instead of implicit global
 - verify API-Version and exit
 
 ## tests ##
