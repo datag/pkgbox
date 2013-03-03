@@ -233,7 +233,7 @@ function pkgMake()
 
 function pkgUse()
 {
-	[[ ${F[$fn]-} != "" && ${F[$fn]-} != "n" ]]		# empty or "n"
+	[[ ${F[$1]-} != "" && ${F[$1]-} != "n" ]]		# empty or "n"
 }
 
 function pkgUseValue()
@@ -244,12 +244,14 @@ function pkgUseValue()
 # feature prefixed with "!" inverts the result
 function pkgConfigureOption()
 {
-	local cfgtrue=$1 cfgfalse=$2 fn=$3 confn=${4-} cfg invert=0 rc=0
+	local cfgtrue=$1 cfgfalse=$2 fn=$3 confn=${4-} cfg val= invert=0 rc=0
 	[[ ${fn:0:1} == "!" ]] && invert=1 fn=${fn:1}
 	pkgUse "$fn" || rc=$?
 	(( $invert )) && rc=$(( ! rc ))
-	(( $rc == 0 )) && cfg=$cfgtrue || cfg=$cfgfalse
-	echo "--${cfg}-${confn:-$fn}"
+	(( $rc == 0 )) && \
+		{ cfg=$cfgtrue; [[ ${F[$fn]-} != y ]] && val="=${F[$fn]-}"; } || \
+		cfg=$cfgfalse
+	echo "--${cfg}-${confn:-$fn}${val}"
 }
 
 function pkgEnable()
