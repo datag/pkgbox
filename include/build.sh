@@ -91,17 +91,23 @@ function pkgbox_action_init()
 	pkgbox_debug_vars FILESDIR WORKDIR T INSTALLDIR P PN PV F
 	
 	# debug: remember all variables/functions
-	local funcs_before=$(declare -F | cut -f3- -d' ')
-	local vars_before=$(set -o posix; set)
+	if (( PKGBOX_VERBOSITY > 3 )); then
+		local funcs_before=$(declare -F | cut -f3- -d' ')
+		local vars_before=$(set -o posix; set)
+	fi
 	
-	# include script
+	
+	# include package script
 	pkgbox_msg debug "Sourcing $pkg_file"
 	source "$pkg_file" #|| pkgbox_die "Error initializing package $PKGBOX_PACKAGE"
 	
-	# debug: print variables/functions declared by the package script
-	pkgbox_msg debug "Vars after:"$'\n'"$(grep -vFe "$vars_before" <<<"$(set -o posix; set)" | grep -v "^vars_before=")"
-	pkgbox_msg debug "Funcs after:"$'\n'"$(grep -vFe "$funcs_before" <<<"$(declare -F | cut -f3- -d' ')" || true)"
 	
+	# debug: print variables/functions declared by the package script
+	if (( PKGBOX_VERBOSITY > 3 )); then
+		pkgbox_debug_declared_vars  vars_before  "Variables declared by package"
+		pkgbox_debug_declared_funcs funcs_before "Functions declared by package"
+		unset -v funcs_before vars_before
+	fi
 	
 	# set source directory, if not set by package
 	: ${S:="$WORKDIR/$P"}

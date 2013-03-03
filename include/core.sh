@@ -254,7 +254,7 @@ function pkgbox_msg()
 # @FIXME: Can eval be avoided for printing array?
 function pkgbox_debug_vars()
 {
-	(( PKGBOX_VERBOSITY < 3 )) && return	# return early
+	(( PKGBOX_VERBOSITY < 3 )) && return 0	# return early
 	
 	local str= var key ivar val func
 	for var in "$@"; do
@@ -274,6 +274,22 @@ function pkgbox_debug_vars()
 		fi
 	done
 	pkgbox_msg debug "Vars:$str"
+}
+
+# debug output declared variables against previously saved state
+# e.g. save state:  local vars_before=$(set -o posix; set)
+function pkgbox_debug_declared_vars()
+{
+	local out=$(grep -vFe "${!1}" <<<"$(set -o posix; set)" | egrep -v "^(${1}|BASH_(LINENO|SOURCE)|FUNCNAME)=")
+	pkgbox_msg debug "${2:-"Declared variables"}:"$'\n'"$(_sgr fg=black bg=white)$out$(_sgr)"
+}
+
+# debug output declared functions against previously saved state
+# e.g. save state:  local funcs_before=$(declare -F | cut -f3- -d' ')
+function pkgbox_debug_declared_funcs()
+{
+	local out=$(grep -vFe "${!1}" <<<"$(declare -F | cut -f3- -d' ')" || :)
+	pkgbox_msg debug "${2:-"Declared functions"}:"$'\n'"$(_sgr fg=black bg=white)$out$(_sgr)"
 }
 
 # Formats number of bytes into human friendly format, e.g. 1024 Bytes -> 1 KiB

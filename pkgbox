@@ -161,10 +161,7 @@ fi
 
 ################################################################################
 # debug mode: show variables defined by this script
-if (( PKGBOX_VERBOSITY > 3 )); then
-	pkgbox_msg debug "Variables defined by this script:"
-	grep -vFe "$__VARS" <<<"$(set -o posix; set)" | grep -v "^__VARS=" >&2
-fi
+(( PKGBOX_VERBOSITY > 3 )) && pkgbox_debug_declared_vars __VARS "Variables declared by this script"
 
 ################################################################################
 # exit with success (turns off EXIT trap)
