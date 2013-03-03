@@ -342,7 +342,7 @@ function pkgbox_exec()
 	shift
 	
 	if (( PKGBOX_VERBOSITY > 1 )); then
-		pkgbox_msg info "Executing: $(_sgr bold underline)$cmd$(_sgr reset underline) $(pkgbox_print_quoted_args "$@")$(_sgr)"
+		pkgbox_msg info "Executing: $(_sgr bold underline)${cmd}$(_sgr reset underline) $(pkgbox_print_quoted_args "$@")"
 	fi
 	
 	$cmd "$@"
