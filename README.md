@@ -25,6 +25,8 @@ package manager nor a complete solution.
 
 Per default the configuration is stored at `$HOME/.pkgbox/conf`. An example configuration file `conf.sample` can be found in the base directory.
 
+Additional config files can be included by specifying the `-c` option for each config.
+
 
 ## Writing packages ##
 

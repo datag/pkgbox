@@ -35,16 +35,19 @@ trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO
 
 ################################################################################
 # parse options
-declare -A O_USR			# option override
-declare -a F_USR FEATURES	# feature override
+declare -A O_USR					# option override
+declare -a CFG_USR F_USR FEATURES	# configs and feature override
 
-while getopts ":vqD:F:V:Th" opt; do
+while getopts ":vqc:V:D:F:Th" opt; do
 	case $opt in
 	v)	# be verbose; each -v increases the verbosity level
 		(( ++PKGBOX_VERBOSITY )) || :
 		;;
 	q)	# be quiet; each -q decreases the verbosity level
 		(( --PKGBOX_VERBOSITY )) || :
+		;;
+	c)	# additional configuation files
+		CFG_USR+=("$OPTARG")
 		;;
 	V)	# override package version
 		PV=$OPTARG
@@ -81,7 +84,7 @@ unset -v opt OPTIND
 
 ################################################################################
 # include config(s)
-for i in /etc/pkgbox "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${O_USR[config]-}"; do
+for i in "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${CFG_USR[@]-}"; do
 	if [[ -f $i ]]; then
 		pkgbox_msg info "Including config '$i'"
 		source "$i"
@@ -101,7 +104,7 @@ elif (( ${#FEATURES[@]} )); then
 	F_USR=("${FEATURES[@]}")
 fi
 
-unset -v O_USR FEATURES i		# unset FEATURES as its name is used in package files, too
+unset -v CFG_USR O_USR FEATURES i		# unset FEATURES as its name is used in package files, too
 
 # debug output all options
 pkgbox_debug_vars O F_USR 

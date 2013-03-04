@@ -28,7 +28,7 @@
 
 
 # feature defaults
-FEATURES=(
+FEATURES+=(
 	"nls"						# Native language support
 	"unicode"					# Unicode support
 	"ipv6"						# IPv6 support
