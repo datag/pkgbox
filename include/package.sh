@@ -149,6 +149,7 @@ pkgbox_package_info()
 			case "$1" in
 			y)  v=YES   a="fg=green" ;;
 			n)  v=NO    a="fg=red"   ;;
+			"") v="{EMPTY VALUE}" a="fg=cyan" ;;
 			*)  v=$1    a="fg=black underline" ;;
 			esac
 		}
