@@ -28,8 +28,28 @@
 
 
 # feature defaults
-#FEATURES=(
-#	"nls"                    # Native language support
-#	"my_path=/tmp/foobar"    # Custom variable
-#)
+FEATURES=(
+	"nls"						# Native language support
+	"unicode"					# Unicode support
+	"ipv6"						# IPv6 support
+#	"ssl"						# SSL support
+	"devrandom=/dev/urandom"	# Set random device, e.g. /dev/urandom
+	
+#	"-doc"						# Extra documentation
+#	"-static"					# Statical linking
+#	"-static-libs"				# Build static libraries
+#	"-rpath"					# FIXME: runpath
+#	"-debug"					# Build with debug code paths
+#	"-examples"					# Install examples
+	
+# Build/config tools
+#	"apr="
+#	"apr-util="
+#	"apxs="
+
+# Should NOT be defined globally:
+# - layout
+
+#	"package:my_path=/tmp/foobar"	# Custom variable
+)
 

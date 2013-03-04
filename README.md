@@ -15,7 +15,7 @@ package manager nor a complete solution.
 ### Package actions ###
 	$ pkgbox media-gfx/graphicsmagick install
 	$ pkgbox -v -D force media-gfx/graphicsmagick configure
-	$ pkgbox -vvv -D prefix=$HOME/local/GraphicsMagick pkg/media-gfx/graphicsmagick/graphicsmagick.pkgbox install
+	$ pkgbox -vv -D prefix=$HOME/local/GraphicsMagick pkg/media-gfx/graphicsmagick/graphicsmagick.pkgbox install
 
 ### Run test suite ###
 	$ pkgbox -vvv -T

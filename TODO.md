@@ -18,6 +18,7 @@
 - time needed (Bash $SECONDS)
 - improve usage message
 - option to force re-running all actions
+- option for clearing .pkgbox_{action} files to force re-run
 - install-destination $D / /image
 - src_install():pkgMake - get rid of general -jX stripping during install?
 
@@ -40,6 +41,8 @@
   - http://devmanual.gentoo.org/function-reference/query-functions/index.html
   - http://devmanual.gentoo.org/ebuild-writing/eapi/index.html
   - http://devmanual.gentoo.org/eclass-reference/ebuild/index.html
+- pkgConfigOption issue: allow omitting a config-file completely?
+	pkgUseIsset(): implement with --with-expat/iconv/... for apr-util [and maybe opt. param for pkgConfigOption to omit)
 
 ## internals ##
 
@@ -61,6 +64,10 @@
 - non-debug pkgbox_debug_vars version
 - declare global variables with "declare -g" and its type instead of implicit global
 - verify API-Version and exit
+- eliminate or solve INSTALLDIR
+- clearify: --enable-static (libraries) and -rpath
+- remove unnecessary $(_sgr reset)
+- pkgbox_parse_feature(): # FIXME: +/- doesn't work if "[+|-]key=value" provided
 
 ## tests ##
 
