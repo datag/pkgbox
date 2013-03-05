@@ -44,6 +44,8 @@ function pkgbox_find_package()
 		declare -a locations=(
 			"${PKGBOX_DIR[packages]}/${category}/${l_pn}/${l_p}.pkgbox"
 			"${PKGBOX_DIR[packages]}/${category}/${l_pn}/${l_pn}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${category}/${l_p}.pkgbox"
+			"${PKGBOX_DIR[packages]}/${category}/${l_pn}.pkgbox"
 			"${PKGBOX_DIR[packages]}/${l_pn}/${l_p}.pkgbox"
 			"${PKGBOX_DIR[packages]}/${l_pn}/${l_pn}.pkgbox"
 			"${PKGBOX_DIR[packages]}/${l_p}.pkgbox"
