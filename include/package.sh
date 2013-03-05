@@ -246,12 +246,13 @@ function pkgUseHasValue()
 {
 	pkgUse "$1" && [[ $(pkgUseValue "$1") ]]
 }
+EOC
 
 function pkgUseValue()
 {
 	[[ ${F[$1]-} != "" && ${F[$1]-} != "n" && ${F[$1]-} != "y" ]] && echo "${F[$1]}"
 }
-EOC
+
 
 function pkgUseIsset()
 {
