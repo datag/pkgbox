@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[[ $# == 1 ]] || { echo "Usage: ${0##*/} <path>" >&2; exit 1; }
+[[ $# == 1 ]] || { echo "Usage: ${0##*/} <path> [<prefix>]" >&2; exit 1; }
 
 export LC_ALL=C
 
