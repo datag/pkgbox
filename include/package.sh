@@ -73,18 +73,22 @@ function pkgbox_find_package()
 # c) foo=bar [value/yes]
 # d) foo=y   [yes]
 # e) foo=n   [no]
-# FIXME: +/- doesn't work if "[+|-]key=value" provided
 function pkgbox_parse_feature()
 {
 	local f=$1 p=${2-0}
 	local fn=$f fv=y o
 	
 	case "$f" in
-	 -*)  fn=${f:1}    fv=n        ;;
-	*=*)  fn=${f%%=*}  fv=${f#*=}  ;;
-	 +*)  fn=${f:1}    fv=y        ;;
+	 -*) # disable feature (remove any value (=*), if present)
+	 	fn=${f:1}; fn=${f%%=*}; fv=n
+	 	;;
+	*=*) # enable feature and set value (remove leading "+", if present)
+		fn=${f%%=*}; fn=${fn#+}; fv=${f#*=}
+		;;
+	 +*) # enable feature
+	 	fn=${f:1}; fv=y
+	 	;;
 	esac
-	
 	
 	if (( p == 1 )); then
 		o="$fn"

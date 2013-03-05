@@ -41,8 +41,6 @@
   - http://devmanual.gentoo.org/function-reference/query-functions/index.html
   - http://devmanual.gentoo.org/ebuild-writing/eapi/index.html
   - http://devmanual.gentoo.org/eclass-reference/ebuild/index.html
-- pkgConfigOption issue: allow omitting a config-file completely?
-	pkgUseIsset(): implement with --with-expat/iconv/... for apr-util [and maybe opt. param for pkgConfigOption to omit)
 
 ## internals ##
 
@@ -63,11 +61,11 @@
 - cleanup-handler
 - non-debug pkgbox_debug_vars version
 - declare global variables with "declare -g" and its type instead of implicit global
-- verify API-Version and exit
-- eliminate or solve INSTALLDIR
-- clearify: --enable-static (libraries) and -rpath
+- verify API-Version and exit? allow ignore and continue via option
+- eliminate or solve INSTALLDIR?
+- clearify: --enable-static (libraries)
+- clearify: -rpath
 - remove unnecessary $(_sgr reset)
-- pkgbox_parse_feature(): # FIXME: +/- doesn't work if "[+|-]key=value" provided
 
 ## tests ##
 
