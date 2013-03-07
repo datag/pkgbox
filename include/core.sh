@@ -40,7 +40,7 @@ function pkgbox_usage()
 		
 		Actions (default: info):
 		    fetch, unpack, prepare, configure, compile, install,
-		    info, clean
+		    info, clean, zap
 		
 		An environment variable PKGBOX_INCLUDE can be set for pkgbox to find its core
 		library. The default is the canonicalized path of this script plus "/include".

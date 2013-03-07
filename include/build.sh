@@ -12,6 +12,9 @@ function pkgbox_action()
 	"clean")
 		actions+=("clean")
 		;;
+	"zap")
+		actions+=("zap")
+		;;
 	"install")
 		actions+=("install")
 		;&
@@ -313,6 +316,13 @@ function pkgbox_action_clean()
 	pkgbox_msg notice "Removing '$PN' working directory"
 	[[ ${S:0:${#WORKDIR}} == $WORKDIR ]] || pkgbox_die "Invalid working directory '$S'"
 	rm -rf "$S" &>/dev/null
+}
+
+function pkgbox_action_zap()
+{
+	pkgbox_msg debug "zap()"
+	
+	rm -f "$S"/.pkgbox_*
 }
 
 function pkgbox_action_info()
