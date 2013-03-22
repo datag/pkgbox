@@ -80,7 +80,7 @@ function pkgbox_parse_feature()
 	
 	case "$f" in
 	 -*) # disable feature (remove any value (=*), if present)
-	 	fn=${f:1}; fn=${f%%=*}; fv=n
+	 	fn=${f:1}; fn=${fn%%=*}; fv=n
 	 	;;
 	*=*) # enable feature and set value (remove leading "+", if present)
 		fn=${f%%=*}; fn=${fn#+}; fv=${f#*=}
