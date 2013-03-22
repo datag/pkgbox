@@ -20,7 +20,7 @@ function pkgbox_usage()
 		    -v	Be verbose; Given multiple times verbosity level (default=1) increases
 		    -q	Be quiet;   Given multiple times verbosity level (default=1) decreases
 		    -V <version>	Override package default version
-		    -c <configfile> Additional config file; can be specified multiple times
+		    -c <config file> Alternative config file; can be specified multiple times
 		    -D <key>[=<value>]
 		        Define a setting. Available settings:
 		        * base       User directory of pkgbox (default: \$HOME/.pkgbox)

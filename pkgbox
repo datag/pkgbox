@@ -46,7 +46,7 @@ while getopts ":vqc:V:D:F:Th" opt; do
 	q)	# be quiet; each -q decreases the verbosity level
 		(( --PKGBOX_VERBOSITY )) || :
 		;;
-	c)	# additional configuation files
+	c)	# alternative configuation files
 		CFG_USR+=("$OPTARG")
 		;;
 	V)	# override package version
@@ -83,13 +83,23 @@ shift $((OPTIND-1))
 unset -v opt OPTIND
 
 ################################################################################
-# include config(s)
-for i in "${O_USR[base]:-"$HOME/.pkgbox"}/conf" "${CFG_USR[@]-}"; do
-	if [[ -f $i ]]; then
-		pkgbox_msg info "Including config '$i'"
-		source "$i"
+# include user config(s) or probe for default config file, if none provided
+if (( ! ${#CFG_USR[@]} )); then
+	defcfg="${O_USR[base]:-"$HOME/.pkgbox"}/conf"
+	
+	if [[ -f $defcfg ]]; then
+		pkgbox_msg info "Including default config '$defcfg'"
+		source "$defcfg"
 	fi
-done
+	unset defcfg
+else
+	for i in "${CFG_USR[@]}"; do
+		pkgbox_msg info "Including config '$i'"
+		
+		[[ -f $i ]] || pkgbox_die "Config '$i' not found"
+		source "$i"
+	done
+fi
 
 # user-override of config options (via option -D)
 for i in "${!O_USR[@]}"; do
