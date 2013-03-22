@@ -4,7 +4,7 @@
 
 export LC_ALL=C
 
-SCANPATH=$1
+SCANPATH=$(readlink -f $1)
 IPREFIX=${2-$SCANPATH}
 
 RTLDLIST="/lib/ld-linux.so.2 /lib64/ld-linux-x86-64.so.2"
