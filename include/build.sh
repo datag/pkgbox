@@ -240,7 +240,7 @@ function pkgbox_declare_default_actions()
 		{
 			pkgbox_msg debug "Default src_install()"
 			
-			pkgMake install
+			SUDO=${O[sudo]-} pkgMake install
 		}
 	fi
 	

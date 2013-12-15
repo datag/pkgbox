@@ -26,6 +26,9 @@
 # options for Make
 #O[make_opts]="-j3"
 
+# prefix certain commands (e.g. "make install") with this command if
+# super user privileges are required.
+#O[sudo]="sudo"
 
 # feature defaults
 FEATURES+=(

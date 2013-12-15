@@ -231,13 +231,13 @@ function pkgConfigure()
 # @see: http://www.gnu.org/software/make/manual/make.html
 function pkgMake()
 {
-	local make_opts=${O[make_opts]-}
+	local make_opts=${O[make_opts]-} sudo=${SUDO-}
 	
 	# target "install" may cause problems with parallel execution (-jX)
 	make_opts=$(sed -e 's/-j[0-9]\+//g' <<<"$make_opts")
 	
 	pkgbox_exec \
-		make $make_opts "$@"
+		$sudo make $make_opts "$@"
 }
 
 function pkgUse()
