@@ -31,6 +31,7 @@ function pkgbox_usage()
 		        * CFLAGS CXXFLAGS CPPFLAGS LDFLAGS EXTRA_LDFLAGS_PROGRAM LIBS CC CXX
 		                     Options for Configure (pkgConfigure helper)
 		        * make_opts  Options for Make (pkgMake helper)
+		        * sudo       Prefix command for super user privileges
 		        * force      If set, force re-running action
 		    -F <feature>[=value]
 		        Enable/disable/set a package feature. Possible values are "y", "n" or
