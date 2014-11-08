@@ -139,11 +139,11 @@ pkgbox_package_info()
 	EOT
 	)
 	
-	# SRC_URI / SCM_URI
-	if ! pkgUseScm; then
+	# SRC_URI / VCS_URI
+	if ! pkgUseVcs; then
 		str+=$'\n'"    Source URIs:  ${SRC_URI[@]--}"
 	else
-		str+=$'\n'"        SCM URI:  ${SCM_URI--}"
+		str+=$'\n'"        VCS URI:  ${VCS_URI--}"
 	fi
 	
 	# features
@@ -200,9 +200,9 @@ function pkgVer()
 	pkgbox_msg info "$str $(_sgr bold)${PV}$(_sgr) for package $(_sgr bold)${PN}$(_sgr)"
 }
 
-function pkgUseScm()
+function pkgUseVcs()
 {
-	if [[ ${SCM_URI-} ]] && ! pkgbox_is_int "${PV:0:1}"; then
+	if [[ ${VCS_URI-} ]] && ! pkgbox_is_int "${PV:0:1}"; then
 		return 0
 	else
 		return 1

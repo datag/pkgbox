@@ -7,7 +7,7 @@
   - unpack: tar (with gzip, bz2, xz, lzma, ?), unzip, ?
   - build: make
   - fetch: wget or curl
-  - SCM: git, svn, rsync(*opt)
+  - VCS: git, svn, rsync(*opt)
 - bash-completion file
 - prepare pkgbox for UNIX-style system installation ("make install"?)
 - log support
@@ -30,7 +30,7 @@
   - mirror support -> scripts
   - alternate filename support
   - remember action fetch finished (cachetime?)
-- SCM: support for CVS, Bazaar and Mercurial
+- VCS: support for CVS, Bazaar and Mercurial
 - functions
   - version (extracting and comparing major, minor, revision, extra parts)
 - add LICENSE field

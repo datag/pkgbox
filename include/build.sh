@@ -118,7 +118,7 @@ function pkgbox_action_init()
 	: ${S:="$WORKDIR/$P"}
 	
 	# determine list of files by URIs
-	if (( ${#SRC_URI[@]} )) && ! pkgUseScm; then
+	if (( ${#SRC_URI[@]} )) && ! pkgUseVcs; then
 		for i in "${SRC_URI[@]}"; do
 			A+=("${PKGBOX_DIR[download]}/${i##*/}")
 		done
@@ -129,7 +129,7 @@ function pkgbox_action_init()
 	unset -v F_USR
 	
 	# debug: global vars
-	pkgbox_debug_vars S SRC_URI SCM_URI A INSTALLDIR P PN PV F
+	pkgbox_debug_vars S SRC_URI VCS_URI A INSTALLDIR P PN PV F
 	
 	# declare default package actions
 	pkgbox_declare_default_actions
@@ -138,7 +138,7 @@ function pkgbox_action_init()
 # Declare default package actions
 function pkgbox_declare_default_actions()
 {
-	# src_fetch(): Download source package or checkout SCM repository
+	# src_fetch(): Download source package or checkout VCS repository
 	if ! pkgbox_is_function "src_fetch"; then
 		function src_fetch()
 		{
@@ -146,7 +146,7 @@ function pkgbox_declare_default_actions()
 			pkgbox_msg debug "Default src_fetch()"
 			
 			# whether to download files or checkout repository
-			if ! pkgUseScm; then
+			if ! pkgUseVcs; then
 				# regular download
 				if (( ${#SRC_URI[@]} )); then
 					for uri in "${SRC_URI[@]}"; do
@@ -155,8 +155,8 @@ function pkgbox_declare_default_actions()
 					done
 				fi
 			else
-				# SCM repository
-				pkgbox_scm_checkout "$SCM_URI" $PV $PN
+				# VCS repository
+				pkgbox_vcs_checkout "$VCS_URI" $PV $PN
 				
 				# need to synchronize repository copy
 				rm -f "$S/.pkgbox_unpack"
@@ -164,14 +164,14 @@ function pkgbox_declare_default_actions()
 		}
 	fi	
 	
-	# src_unpack(): Extract source package or copy SCM repository
+	# src_unpack(): Extract source package or copy VCS repository
 	if ! pkgbox_is_function "src_unpack"; then
 		function src_unpack()
 		{
 			pkgbox_msg debug "Default src_unpack()"
 			
-			# whether to extract or locally copy the SCM repository
-			if ! pkgUseScm; then
+			# whether to extract or locally copy the VCS repository
+			if ! pkgUseVcs; then
 				if (( ${#A[@]} )); then
 					local filename
 					for filename in "${A[@]}"; do

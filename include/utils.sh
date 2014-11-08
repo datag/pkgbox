@@ -116,7 +116,7 @@ function pkgPatch()
 	fi
 }
 
-function pkgbox_scm_checkout()
+function pkgbox_vcs_checkout()
 {
 	local repo_uri=$1 version=${2-} lname=${3} ldir=${4-${PKGBOX_DIR[download]}}
 	local lpath="$ldir/$lname" v=
@@ -155,7 +155,7 @@ function pkgbox_scm_checkout()
 			svn switch $v "$repo_uri/$version" "$lpath"
 		fi
 	else
-		pkgbox_msg error "Unknown SCM repository: $repo_uri"
+		pkgbox_msg error "Unknown VCS repository: $repo_uri"
 		return 1
 	fi
 }
