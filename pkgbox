@@ -35,8 +35,8 @@ trap 'pkgbox_trap_handler ${?-99} "${BASH_COMMAND-}" "${BASH_SOURCE-}" "${LINENO
 
 ################################################################################
 # parse options
-declare -A O_USR					# option override
-declare -a CFG_USR F_USR FEATURES	# configs and feature override
+declare -A O_USR						# option override
+declare -a CFG_USR F_USR=() FEATURES=()	# configs and feature override
 
 while getopts ":vqc:V:D:F:Th" opt; do
 	case $opt in
